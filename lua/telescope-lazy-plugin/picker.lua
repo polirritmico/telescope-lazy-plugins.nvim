@@ -6,24 +6,16 @@ local config = require("telescope.config").values
 local TelescopeLazyPicker = {}
 
 TelescopeLazyPicker.finder = function()
+  local lazy_full_spec = require("lazy.core.config").plugins
+
   local plugins = {
-    results = {
-      {
-        "persisted",
-        "/home/eduardo/.config/nvim/lua/polirritmico/plugins/develop/persisted.lua",
-        3,
-      },
-      {
-        "monokai-nightasty",
-        "/home/eduardo/.config/nvim/lua/polirritmico/plugins/ui/monokai-nightasty.lua",
-        4,
-      },
-      {
-        "telescope",
-        "/home/eduardo/.config/nvim/lua/polirritmico/plugins/core/telescope.lua",
-        3,
-      },
-    },
+    -- results = {
+    --   { "persisted", "/home/eduardo/.config/nvim/lua/polirritmico/plugins/develop/persisted.lua", 3, },
+    --   { "monokai-nightasty", "/home/eduardo/.config/nvim/lua/polirritmico/plugins/ui/monokai-nightasty.lua", 4, },
+    --   { "telescope", "/home/eduardo/.config/nvim/lua/polirritmico/plugins/core/telescope.lua", 3, },
+    --   { "telescope-heading", "/home/eduardo/.config/nvim/lua/polirritmico/plugins/core/telescope.lua", 20, },
+    -- },
+
     entry_maker = function(entry)
       return {
         value = entry,
@@ -39,7 +31,6 @@ end
 
 TelescopeLazyPicker.picker = function(opts)
   opts = opts or {}
-  -- local lazy_full_spec = require("lazy.core.config").plugins
 
   return pickers.new(opts, {
     prompt_title = "Plugins in the Lazy spec",
