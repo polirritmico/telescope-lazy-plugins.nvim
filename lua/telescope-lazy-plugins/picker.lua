@@ -14,7 +14,8 @@ local TelescopeLazyPicker = {}
 ---@field line integer Line number of the plugin definition in the lua file
 local LazyPluginSpecData = {}
 
----Finds the line number matching the plugin repository name within the plugin file and updates the `line` field of the provided `plugin` object accordingly.
+---Finds the line number matching the plugin repository name within the plugin
+---file and updates the `line` field of the provided `plugin` object accordingly.
 ---@param plugin LazyPluginData
 local function _search_and_set_the_line_number(plugin)
   local line = 1
@@ -83,8 +84,6 @@ function TelescopeLazyPicker.picker(opts)
     sorter = config.file_sorter(opts),
     previewer = config.file_previewer(opts),
   })
-
-  -- return plugins
 end
 
 return TelescopeLazyPicker
