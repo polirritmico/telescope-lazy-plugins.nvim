@@ -26,7 +26,7 @@ the first line of the plugin config.
 return {
   "nvim-telescope.nvim",
   dependencies = {
-    { "polirritmico/telescope-lazy-plugin" },
+    { "polirritmico/telescope-lazy-plugins" },
   },
   -- Etc.
 }
@@ -49,7 +49,7 @@ return {
   dependencies = {
     { "nvim-lua/plenary.nvim" },
     -- etc.
-    { "polirritmico/telescope-lazy-plugin" },
+    { "polirritmico/telescope-lazy-plugins" },
   },
   keys = {
     { "<leader>cc", "<Cmd>Telescope lazy_plugins<CR>", desc = "Telescope: Plugins configurations" },
