@@ -32,6 +32,7 @@ local function _get_plugins_data()
   local lazy_plugins = require("lazy").plugins()
   local config_path = vim.fn.stdpath("config")
 
+  -- TODO: Improve this approach to ensure compatibility with other setups, like LazyVim
   for _, lazy_plugin in pairs(lazy_plugins) do
     if lazy_plugin.name ~= "lazy.nvim" then
       local module_file = lazy_plugin._.super ~= nil and lazy_plugin._.super._.module
