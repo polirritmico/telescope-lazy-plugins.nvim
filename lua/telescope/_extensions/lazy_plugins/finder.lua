@@ -1,10 +1,4 @@
-local pickers = require("telescope.pickers")
 local finders = require("telescope.finders")
-local config = require("telescope.config").values
-
----Telescope picker to select plugins from the Lazy spec
----@class TelescopeLazyPicker
-local TelescopeLazyPicker = {}
 
 ---Stores the relevant Lazy plugin spec data to use the picker.
 ---@class LazyPluginData
@@ -58,7 +52,9 @@ local function _get_plugins_data()
   return plugins_collection
 end
 
-function TelescopeLazyPicker.finder()
+---Finder to use with the Telescope API. Get the plugin data for each plugin
+---registered on the Lazy spec.
+local function lazy_plungins_finder()
   local plugins = {
     results = _get_plugins_data(),
     ---@param entry LazyPluginData
@@ -75,15 +71,4 @@ function TelescopeLazyPicker.finder()
   return finders.new_table(plugins)
 end
 
-function TelescopeLazyPicker.picker(opts)
-  opts = opts or {}
-
-  return pickers.new(opts, {
-    prompt_title = "Plugins in the Lazy spec",
-    finder = TelescopeLazyPicker.finder(),
-    sorter = config.file_sorter(opts),
-    previewer = config.file_previewer(opts),
-  })
-end
-
-return TelescopeLazyPicker
+return lazy_plungins_finder
