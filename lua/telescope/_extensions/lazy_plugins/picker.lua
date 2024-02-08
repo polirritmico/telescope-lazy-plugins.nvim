@@ -9,9 +9,9 @@ local function lp_picker(opts)
   pickers
     .new(opts, {
       finder = lp_finder(),
+      preview_title = "Config File Preview",
       previewer = config.file_previewer(opts),
       prompt_title = "Search Plugins",
-      preview_title = "Config File Preview",
       results_title = "Matching Plugins",
       sorter = config.file_sorter(opts),
     })
