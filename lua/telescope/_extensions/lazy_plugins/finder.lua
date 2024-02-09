@@ -23,6 +23,7 @@ local function _search_and_set_the_line_number(repo_name, filepath)
   return 1
 end
 
+---Parse the `lazy_plugin` spec and insert it into the `tbl` collection.
 ---@param tbl table<LazyPluginData> Target table with the plugins collection
 ---@param lazy_plugin table Plugin spec to insert into the `tbl`
 ---@param recursion_level integer? For plugin configs split into multiple files.
