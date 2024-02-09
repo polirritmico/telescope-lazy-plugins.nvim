@@ -8,18 +8,45 @@ local finders = require("telescope.finders")
 ---@field line integer Line number of the plugin definition in the lua file
 local LazyPluginSpecData = {}
 
----Finds the line number matching the plugin repository name within the plugin
----file and updates the `line` field of the provided `plugin` object accordingly.
----@param plugin LazyPluginData
-local function _search_and_set_the_line_number(plugin)
-  local line = 1
-  for line_str in io.lines(plugin.filepath) do
-    if string.find(line_str, plugin.repo_name, 1, true) then
-      plugin.line = line
-      return
+---Finds the line number matching the plugin repository name within the plugin file
+---@param repo_name string Repository name (username/plugin)
+---@param filepath string Full file path
+---@return integer -- Matching line number
+local function _search_and_set_the_line_number(repo_name, filepath)
+  local current_line = 1
+  for line_str in io.lines(filepath) do
+    if string.find(line_str, repo_name, 1, true) then
+      return current_line
     end
-    line = line + 1
+    current_line = current_line + 1
   end
+  return 1
+end
+
+---@param tbl table<LazyPluginData> Target table with the plugins collection
+---@param lazy_plugin table Plugin spec to insert into the `tbl`
+---@param recursion_level integer? For plugin configs split into multiple files.
+local function _add_plugin(tbl, lazy_plugin, recursion_level)
+  recursion_level = recursion_level == nil and 1 or recursion_level
+  local config_path = vim.fn.stdpath("config")
+  local module_file = lazy_plugin._.module:gsub("%.", "/")
+  -- TODO: Improve this approach to ensure compatibility with other setups, like LazyVim
+  local filepath = string.format("%s/lua/%s.lua", config_path, module_file)
+
+  local entry_name = lazy_plugin.name
+  if lazy_plugin._.super ~= nil then
+    _add_plugin(tbl, lazy_plugin._.super, recursion_level + 1)
+    entry_name = string.format("%s (%d)", entry_name, recursion_level)
+  end
+
+  ---@type LazyPluginData
+  local plugin = {
+    name = entry_name,
+    repo_name = lazy_plugin[1],
+    filepath = filepath,
+    line = _search_and_set_the_line_number(lazy_plugin[1], filepath),
+  }
+  table.insert(tbl, plugin)
 end
 
 ---Get the Lazy plugin data from the Lazy specification. For each plugin,
@@ -30,24 +57,10 @@ end
 local function _get_plugins_data()
   local plugins_collection = {}
   local lazy_plugins = require("lazy").plugins()
-  local config_path = vim.fn.stdpath("config")
 
-  -- TODO: Improve this approach to ensure compatibility with other setups, like LazyVim
   for _, lazy_plugin in pairs(lazy_plugins) do
     if lazy_plugin.name ~= "lazy.nvim" then
-      local module_file = lazy_plugin._.super ~= nil and lazy_plugin._.super._.module
-        or lazy_plugin._.module
-      module_file = module_file:gsub("%.", "/")
-
-      ---@type LazyPluginData
-      local plugin = {
-        name = lazy_plugin.name,
-        repo_name = lazy_plugin[1],
-        filepath = string.format("%s/lua/%s.lua", config_path, module_file),
-        line = 0,
-      }
-      _search_and_set_the_line_number(plugin)
-      table.insert(plugins_collection, plugin)
+      _add_plugin(plugins_collection, lazy_plugin)
     end
   end
   return plugins_collection
@@ -55,7 +68,7 @@ end
 
 ---Finder to use with the Telescope API. Get the plugin data for each plugin
 ---registered on the Lazy spec.
-local function lazy_plungins_finder()
+local function lazy_plugins_finder()
   local plugins = {
     results = _get_plugins_data(),
     ---@param entry LazyPluginData
@@ -72,4 +85,4 @@ local function lazy_plungins_finder()
   return finders.new_table(plugins)
 end
 
-return lazy_plungins_finder
+return lazy_plugins_finder

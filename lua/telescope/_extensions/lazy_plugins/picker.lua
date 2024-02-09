@@ -13,9 +13,9 @@ local function lp_action(prompt_bufnr)
     action_state.get_current_line(),
     action_state.get_current_picker(prompt_bufnr)
   )
-  -- Open the file
+  -- Open the file in a new buffer
   action_set.select(prompt_bufnr, "default")
-  -- Scroll to the top
+  -- Set current line at the top position of the view
   vim.cmd(":normal! zt")
 end
 
