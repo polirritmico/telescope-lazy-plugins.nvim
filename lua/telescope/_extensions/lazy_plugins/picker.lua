@@ -31,7 +31,7 @@ local function lp_picker(opts)
       previewer = config.file_previewer(opts),
       prompt_title = "Search Plugins",
       results_title = "Matching Plugins",
-      sorter = config.file_sorter(opts),
+      sorter = config.generic_sorter(opts),
       attach_mappings = function()
         actions.select_default:replace(lp_action)
         return true
