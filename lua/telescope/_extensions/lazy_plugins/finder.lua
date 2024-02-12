@@ -60,13 +60,17 @@ end
 ---@return table<LazyPluginData>
 local function get_plugins_data()
   local plugins_collection = {}
-  local lazy_plugins = require("lazy").plugins()
+  local lazy_spec = require("lazy.core.config").spec
 
-  for _, lazy_plugin in pairs(lazy_plugins) do
-    if lazy_plugin.name ~= "lazy.nvim" then
-      add_plugin(plugins_collection, lazy_plugin)
+  for _, plugin in pairs(lazy_spec.plugins) do
+    if plugin.name ~= "lazy.nvim" then
+      add_plugin(plugins_collection, plugin)
     end
   end
+  for _, plugin in pairs(lazy_spec.disabled) do
+    add_plugin(plugins_collection, plugin)
+  end
+
   return plugins_collection
 end
 
