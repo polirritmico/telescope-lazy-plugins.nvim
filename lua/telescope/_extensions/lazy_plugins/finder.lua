@@ -29,14 +29,14 @@ end
 ---@param lazy_plugin table Plugin spec to insert into the `tbl`
 ---@param recursion_level integer? For plugin configs split into multiple files.
 local function add_plugin(tbl, lazy_plugin, recursion_level)
-  recursion_level = recursion_level == nil and 1 or recursion_level
+  recursion_level = recursion_level or 1
   local config_path = vim.fn.stdpath("config")
   local module_file = lazy_plugin._.module:gsub("%.", "/")
   -- TODO: Improve this approach to ensure compatibility with other setups, like LazyVim
   local filepath = string.format("%s/lua/%s.lua", config_path, module_file)
 
   local entry_name = lazy_plugin.name
-  if lazy_plugin._.super ~= nil then
+  if lazy_plugin._.super then
     add_plugin(tbl, lazy_plugin._.super, recursion_level + 1)
     entry_name = string.format("%s(%d)", entry_name, recursion_level + 1)
   end
