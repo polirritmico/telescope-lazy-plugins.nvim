@@ -6,7 +6,6 @@ local finders = require("telescope.finders")
 ---@field repo_name string Full name of the plugin repository
 ---@field filepath string Full file path to the plugin lua configuration
 ---@field line integer Line number of the plugin definition in the lua file
-local LazyPluginSpecData = {}
 
 ---Finds the line number matching the plugin repository name within the plugin file
 ---@private
@@ -40,6 +39,9 @@ local function add_plugin(tbl, lazy_plugin, recursion_level)
   if lazy_plugin._.super ~= nil then
     add_plugin(tbl, lazy_plugin._.super, recursion_level + 1)
     entry_name = string.format("%s(%d)", entry_name, recursion_level + 1)
+  end
+  if lazy_plugin.enabled == false then
+    entry_name = entry_name .. " (disabled)"
   end
 
   ---@type LazyPluginData
