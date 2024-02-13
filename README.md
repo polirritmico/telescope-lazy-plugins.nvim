@@ -18,6 +18,11 @@ The plugin check the `LazyPluginSpec`, extract each plugin data and generate the
 full filepath for each. When opening each config file, the cursor is setted to
 the first line of the plugin config.
 
+## TODO
+
+- [ ] Add config
+- [ ] Improve picker results
+
 ## Installation
 
 - Add it into the Telescope dependencies:
@@ -49,11 +54,18 @@ return {
   dependencies = {
     { "nvim-lua/plenary.nvim" },
     -- etc.
-    { "polirritmico/telescope-lazy-plugins" },
+    {
+      "polirritmico/telescope-lazy-plugins",
+      opts = {
+        lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua" -- nil, or the path to the file containing the require("lazy").setup(spec, otps)
+        disabled_plugins = true, -- Add or not the disabled plugins into the picker
+        full_repo_name_match = false, -- true match only the `plugin_name`, false match the `username/plugin_name`
+      },
+    },
+    keys = {
+      { "<leader>cc", "<Cmd>Telescope lazy_plugins<CR>", desc = "Telescope: Plugins configurations" },
+    }
   },
-  keys = {
-    { "<leader>cc", "<Cmd>Telescope lazy_plugins<CR>", desc = "Telescope: Plugins configurations" },
-  }
   -- etc.
 ```
 
