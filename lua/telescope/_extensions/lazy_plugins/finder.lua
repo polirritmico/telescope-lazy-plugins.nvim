@@ -73,6 +73,14 @@ local function get_plugins_data()
     add_plugin(plugins_collection, plugin)
   end
 
+  local lazy = {
+    name = "lazy.nvim",
+    repo_name = "folke/lazy.nvim",
+    filepath = vim.fn.stdpath("config") .. "/lua/config/lazy.lua",
+    line = 1,
+  }
+  table.insert(plugins_collection, lazy)
+
   return plugins_collection
 end
 
