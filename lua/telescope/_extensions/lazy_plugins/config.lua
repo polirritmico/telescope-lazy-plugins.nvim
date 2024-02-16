@@ -1,14 +1,14 @@
 ---@class TelescopeLazyPluginsConfig
----@field show_disabled boolean Also show disabled plugins from the Lazy spec.
 ---@field name_only boolean Match only the `repo_name`, false to match the full `account/repo_name`
 ---@field plugins_config string? Optional path to the file containing the lazy setup() call
+---@field show_disabled boolean Also show disabled plugins from the Lazy spec.
 
 local M = {}
 
 ---@type TelescopeLazyPluginsConfig
 local defaults = {
-  show_disabled = true,
   name_only = true,
+  show_disabled = true,
   plugins_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua",
 }
 
