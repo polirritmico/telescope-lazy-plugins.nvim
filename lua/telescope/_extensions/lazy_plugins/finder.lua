@@ -1,4 +1,5 @@
 local finders = require("telescope.finders")
+local lp_config = require("telescope._extensions.lazy_plugins.config")
 
 ---Stores the relevant Lazy plugin spec data to use the picker.
 ---@class LazyPluginData
@@ -35,7 +36,7 @@ local function add_plugin(tbl, lazy_plugin, recursion_level)
   -- TODO: Improve this approach to ensure compatibility with other setups, like LazyVim
   local filepath = string.format("%s/lua/%s.lua", config_path, module_file)
 
-  local entry_name = lazy_plugin.name
+  local entry_name = lp_config.options.name_only and lazy_plugin.name or lazy_plugin[1]
   if lazy_plugin._.super then
     add_plugin(tbl, lazy_plugin._.super, recursion_level + 1)
     entry_name = string.format("%s(%d)", entry_name, recursion_level + 1)
@@ -69,14 +70,16 @@ local function get_plugins_data()
       add_plugin(plugins_collection, plugin)
     end
   end
-  for _, plugin in pairs(lazy_spec.disabled) do
-    add_plugin(plugins_collection, plugin)
+  if lp_config.options.show_disabled then
+    for _, plugin in pairs(lazy_spec.disabled) do
+      add_plugin(plugins_collection, plugin)
+    end
   end
 
   local lazy = {
     name = "lazy.nvim",
     repo_name = "folke/lazy.nvim",
-    filepath = vim.fn.stdpath("config") .. "/lua/config/lazy.lua",
+    filepath = lp_config.options.plugins_config,
     line = 1,
   }
   table.insert(plugins_collection, lazy)
