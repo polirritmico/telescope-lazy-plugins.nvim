@@ -77,7 +77,7 @@ local function get_plugins_data()
   end
 
   local lazy = {
-    name = "lazy.nvim",
+    name = lp_config.options.name_only and "lazy.nvim" or "folke/lazy.nvim",
     repo_name = "folke/lazy.nvim",
     filepath = lp_config.options.plugins_config,
     line = 1,
