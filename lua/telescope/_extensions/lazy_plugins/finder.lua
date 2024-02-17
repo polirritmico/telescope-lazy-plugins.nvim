@@ -24,6 +24,23 @@ local function search_and_set_the_line_number(repo_name, filepath)
   return 1
 end
 
+---Get the lazy_plugin module full filepath from the runtimepath
+---@param lazy_plugin table Plugin spec to insert into the `tbl`
+---@return string
+local function get_module_filepath(lazy_plugin)
+  local rtp = vim.opt.rtp:get()
+  local mod = lazy_plugin._.module:gsub("%.", "/")
+  for _, rtp_path in ipairs(rtp) do
+    local check_path = string.format("%s/lua/%s", rtp_path, mod)
+    if vim.fn.filereadable(check_path .. ".lua") then
+      return check_path .. ".lua"
+    elseif vim.fn.filereadable(check_path .. "/init.lua") then
+      return check_path .. "/init.lua"
+    end
+  end
+  error("Module file not found on the rtp: `" .. lazy_plugin.name .. "`", 2)
+end
+
 ---Parse the `lazy_plugin` spec and insert it into the `tbl` collection.
 ---@private
 ---@param tbl table<LazyPluginData> Target table with the plugins collection
@@ -31,11 +48,7 @@ end
 ---@param recursion_level integer? For plugin configs split into multiple files.
 local function add_plugin(tbl, lazy_plugin, recursion_level)
   recursion_level = recursion_level or 1
-  local config_path = vim.fn.stdpath("config")
-  local module_file = lazy_plugin._.module:gsub("%.", "/")
-  -- TODO: Improve this approach to ensure compatibility with other setups, like LazyVim
-  local filepath = string.format("%s/lua/%s.lua", config_path, module_file)
-
+  local filepath = get_module_filepath(lazy_plugin)
   local entry_name = lp_config.options.name_only and lazy_plugin.name or lazy_plugin[1]
   if lazy_plugin._.super then
     add_plugin(tbl, lazy_plugin._.super, recursion_level + 1)
@@ -76,14 +89,17 @@ local function get_plugins_data()
     end
   end
 
-  local lazy = {
-    name = lp_config.options.name_only and "lazy.nvim" or "folke/lazy.nvim",
-    repo_name = "folke/lazy.nvim",
-    filepath = lp_config.options.plugins_config,
-    line = 1,
-  }
-  table.insert(plugins_collection, lazy)
+  if vim.fn.filereadable(vim.fn.expand(lp_config.options.lazy_config)) == 1 then
+    local lazy = {
+      name = lp_config.options.name_only and "lazy.nvim" or "folke/lazy.nvim",
+      repo_name = "folke/lazy.nvim",
+      filepath = lp_config.options.lazy_config,
+      line = 1,
+    }
+    table.insert(plugins_collection, lazy)
+  end
 
+  -- table.sort(plugins_collection, function(a, b) return a.name < b.name end)
   return plugins_collection
 end
 
