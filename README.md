@@ -11,6 +11,7 @@
 ## Description
 
 <!-- panvimdoc-ignore-start -->
+![screenshot](https://github.com/polirritmico/telescope-lazy-plugins.nvim/assets/24460484/79fa1730-4861-41a6-8fce-fe1680fb2a0b)
 <!-- panvimdoc-ignore-end -->
 
 A Telescope picker to quickly access the plugins config files loaded into the
