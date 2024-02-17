@@ -29,12 +29,14 @@ end
 ---@return string
 local function get_module_filepath(lazy_plugin)
   local rtp = vim.opt.rtp:get()
+  -- stylua: ignore
+  assert(lazy_plugin._.module ~= nil, "Missing module on lazy spec: " .. lazy_plugin.name)
   local mod = lazy_plugin._.module:gsub("%.", "/")
   for _, rtp_path in ipairs(rtp) do
     local check_path = string.format("%s/lua/%s", rtp_path, mod)
-    if vim.fn.filereadable(check_path .. ".lua") then
+    if vim.fn.filereadable(check_path .. ".lua") == 1 then
       return check_path .. ".lua"
-    elseif vim.fn.filereadable(check_path .. "/init.lua") then
+    elseif vim.fn.filereadable(check_path .. "/init.lua") == 1 then
       return check_path .. "/init.lua"
     end
   end
@@ -79,7 +81,7 @@ local function get_plugins_data()
   local lazy_spec = require("lazy.core.config").spec
 
   for _, plugin in pairs(lazy_spec.plugins) do
-    if plugin.name ~= "lazy.nvim" then
+    if plugin.name ~= "lazy.nvim" and plugin.name ~= "LazyVim" then
       add_plugin(plugins_collection, plugin)
     end
   end
