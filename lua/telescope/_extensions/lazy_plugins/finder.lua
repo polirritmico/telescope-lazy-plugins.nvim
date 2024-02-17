@@ -13,7 +13,7 @@ local lp_config = require("telescope._extensions.lazy_plugins.config")
 ---@param repo_name string Repository name (username/plugin)
 ---@param filepath string Full file path
 ---@return integer -- Matching line number
-local function search_and_set_the_line_number(repo_name, filepath)
+local function line_number_search(repo_name, filepath)
   local current_line = 1
   for line_str in io.lines(filepath) do
     if string.find(line_str, repo_name, 1, true) then
@@ -65,7 +65,7 @@ local function add_plugin(tbl, lazy_plugin, recursion_level)
     name = entry_name,
     repo_name = lazy_plugin[1],
     filepath = filepath,
-    line = search_and_set_the_line_number(lazy_plugin[1], filepath),
+    line = line_number_search(lazy_plugin[1], filepath),
   }
   table.insert(tbl, plugin)
 end
@@ -92,13 +92,12 @@ local function get_plugins_data()
   end
 
   if vim.fn.filereadable(vim.fn.expand(lp_config.options.lazy_config)) == 1 then
-    local lazy = {
+    table.insert(plugins_collection, {
       name = lp_config.options.name_only and "lazy.nvim" or "folke/lazy.nvim",
       repo_name = "folke/lazy.nvim",
       filepath = lp_config.options.lazy_config,
       line = 1,
-    }
-    table.insert(plugins_collection, lazy)
+    })
   end
 
   -- table.sort(plugins_collection, function(a, b) return a.name < b.name end)
