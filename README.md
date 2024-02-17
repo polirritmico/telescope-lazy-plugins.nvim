@@ -1,27 +1,37 @@
 # Telescope Lazy Plugins
 
+<!-- panvimdoc-ignore-start -->
+
+![Pull Requests](https://img.shields.io/badge/Pull_Requests-Welcome-a4e400?style=flat-square)
+![GitHub last commit](https://img.shields.io/github/last-commit/polirritmico/telescope-lazy-plugins.nvim/main?style=flat-square&color=62d8f1)
+![GitHub issues](https://img.shields.io/github/issues/polirritmico/telescope-lazy-plugins.nvim?style=flat-square&color=fc1a70)
+
+<!-- panvimdoc-ignore-end -->
+
+## Description
+
+<!-- panvimdoc-ignore-start -->
+<!-- panvimdoc-ignore-end -->
+
 A Telescope picker to quickly access the plugins config files loaded into the
-Lazy spec. Specially useful if you have multiple plugins grouped into multiple
+Lazy spec. Specially useful if you have multiple plugins grouped into separate
 files like this:
 
 ```
-plugins/
-├── core.lua
-├── develop.lua
-├── extras.lua
-├── helpers.lua
-├── misc.lua
-└── ui.lua
+lua/
+└── plugins
+    ├── core.lua
+    ├── develop.lua
+    ├── extras
+    │   └── others.lua
+    ├── helpers.lua
+    ├── misc.lua
+    └── ui.lua
 ```
 
-The plugin check the `LazyPluginSpec`, extract each plugin data and generate the
-full filepath for each. When opening each config file, the cursor is setted to
-the first line of the plugin config.
-
-## TODO
-
-- [ ] Add config
-- [ ] Improve picker results
+The plugin check the current `LazyPluginSpec`, extract each plugin data and
+generate the full filepath for each. When opening a config file, the cursor is
+focused on the first line of the plugin config.
 
 ## Installation
 
@@ -33,19 +43,25 @@ return {
   dependencies = {
     { "polirritmico/telescope-lazy-plugins" },
   },
-  -- Etc.
+  -- etc.
 }
 ```
 
 ## Usage
 
-From the command-line:
+### command-line:
 
 ```vimscript
 :Telescope lazy_plugins<CR>
 ```
 
-## Full Lazy config:
+### lua:
+
+```lua
+require("telescope").extensions.lazy_plugins.lazy_plugins()
+```
+
+## Full config example:
 
 ```lua
 return {
@@ -56,22 +72,16 @@ return {
     -- etc.
     {
       "polirritmico/telescope-lazy-plugins",
+      -- defaults:
       opts = {
-        lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua" -- nil, or the path to the file containing the require("lazy").setup(spec, otps)
-        disabled_plugins = true, -- Add or not the disabled plugins into the picker
-        full_repo_name_match = false, -- true match only the `plugin_name`, false match the `username/plugin_name`
+        name_only = true, -- Match only the `repo_name`, false to match the full `account/repo_name`
+        show_disabled = true, -- Also show disabled plugins from the Lazy spec.
+        lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- Optional. Path to the lua file containing the lazy `setup()` call
       },
     },
     keys = {
-      { "<leader>cc", "<Cmd>Telescope lazy_plugins<CR>", desc = "Telescope: Plugins configurations" },
+      { "<leader>cp", "<Cmd>Telescope lazy_plugins<CR>", desc = "Telescope: Plugins configurations" },
     }
   },
   -- etc.
 ```
-
-## Manually load the Telescope extension:
-
-```lua
-:lua require("telescope").load_extension("lazy_plugins")
-```
-
