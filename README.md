@@ -42,7 +42,7 @@ focused on the first line of the plugin config.
 return {
   "nvim-telescope.nvim",
   dependencies = {
-    { "polirritmico/telescope-lazy-plugins" },
+    { "polirritmico/telescope-lazy-plugins.nvim" },
   },
   -- etc.
 }
@@ -72,7 +72,7 @@ return {
     { "nvim-lua/plenary.nvim" },
     -- etc.
     {
-      "polirritmico/telescope-lazy-plugins",
+      "polirritmico/telescope-lazy-plugins.nvim",
       -- defaults:
       opts = {
         name_only = true, -- Match only the `repo_name`, false to match the full `account/repo_name`
