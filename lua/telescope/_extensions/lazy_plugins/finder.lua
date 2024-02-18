@@ -29,7 +29,6 @@ end
 ---@return string
 local function get_module_filepath(lazy_plugin)
   local rtp = vim.opt.rtp:get()
-  -- stylua: ignore
   assert(lazy_plugin._.module ~= nil, "Missing module on lazy spec: " .. lazy_plugin.name)
   local mod = lazy_plugin._.module:gsub("%.", "/")
   for _, rtp_path in ipairs(rtp) do
