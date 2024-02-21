@@ -10,15 +10,9 @@
 
 ## Description
 
-<!-- panvimdoc-ignore-start -->
-
-![screenshot](https://github.com/polirritmico/telescope-lazy-plugins.nvim/assets/24460484/79fa1730-4861-41a6-8fce-fe1680fb2a0b)
-
-<!-- panvimdoc-ignore-end -->
-
 A Telescope picker to quickly access the plugins config files loaded into the
-Lazy spec. Specially useful if you have multiple plugins grouped into separate
-files like this:
+Lazy spec. Specially useful when `:Telescope find_files` is not good enough or
+when you have multiple plugins grouped into separate files like this:
 
 ```
 lua/
@@ -33,8 +27,14 @@ lua/
 ```
 
 The plugin check the current `LazyPluginSpec`, extract each plugin data and
-generate the full filepath for each. When opening a config file, the cursor is
-focused on the first line of the plugin config.
+generate the full filepath for each. Also, when opening a config file, the
+cursor is set at the appropiate position.
+
+<!-- panvimdoc-ignore-start -->
+
+![screenshot](https://github.com/polirritmico/telescope-lazy-plugins.nvim/assets/24460484/79fa1730-4861-41a6-8fce-fe1680fb2a0b)
+
+<!-- panvimdoc-ignore-end -->
 
 ## Installation
 
@@ -46,6 +46,16 @@ return {
   dependencies = {
     { "polirritmico/telescope-lazy-plugins.nvim" },
   },
+  -- etc.
+}
+```
+
+- Or on its own spec:
+
+```lua
+return {
+  "polirritmico/telescope-lazy-plugins.nvim",
+  dependencies = { "nvim-telescope.nvim" },
   -- etc.
 }
 ```
@@ -79,7 +89,7 @@ return {
       opts = {
         name_only = true, -- Match only the `repo_name`, false to match the full `account/repo_name`
         show_disabled = true, -- Also show disabled plugins from the Lazy spec.
-        lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- Optional. Path to the lua file containing the lazy `setup()` call
+        lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- Optional. Path to the lua file containing the lazy `setup()` call. So e.g. you could search `lazy` and open your `lazy.lua` file.
       },
     },
     keys = {
