@@ -46,27 +46,48 @@ end
 ---@private
 ---@param tbl table<LazyPluginData> Target table with the plugins collection
 ---@param lazy_plugin table Plugin spec to insert into the `tbl`
----@param recursion_level integer? For plugin configs split into multiple files.
-local function add_plugin(tbl, lazy_plugin, recursion_level)
-  recursion_level = recursion_level or 1
+---@param spec_level integer? For plugin configs split into multiple files.
+local function add_plugin(tbl, lazy_plugin, spec_level)
+  spec_level = spec_level or 1
+  local repo_name = lazy_plugin[1]
+  local entry_name = lp_config.options.name_only and lazy_plugin.name or repo_name
   local filepath = get_module_filepath(lazy_plugin)
-  local entry_name = lp_config.options.name_only and lazy_plugin.name or lazy_plugin[1]
-  if lazy_plugin._.super then
-    add_plugin(tbl, lazy_plugin._.super, recursion_level + 1)
-    entry_name = string.format("%s(%d)", entry_name, recursion_level + 1)
-  end
-  if lazy_plugin.enabled == false then
-    entry_name = entry_name .. " (disabled)"
+  local line = line_number_search(repo_name, filepath)
+
+  local has_duplicates = false
+  for _, check_plugin in pairs(tbl) do
+    if
+      repo_name == check_plugin.repo_name
+      and filepath == check_plugin.filepath
+      and line == check_plugin.line
+    then
+      has_duplicates = true
+      spec_level = spec_level - 1
+      break
+    end
   end
 
-  ---@type LazyPluginData
-  local plugin = {
-    name = entry_name,
-    repo_name = lazy_plugin[1],
-    filepath = filepath,
-    line = line_number_search(lazy_plugin[1], filepath),
-  }
-  table.insert(tbl, plugin)
+  if not has_duplicates then
+    if spec_level > 1 then
+      entry_name = string.format("%s(%d)", entry_name, spec_level)
+    end
+    if lazy_plugin.enabled == false then
+      entry_name = entry_name .. " (disabled)"
+    end
+
+    ---@type LazyPluginData
+    local plugin = {
+      name = entry_name,
+      repo_name = repo_name,
+      filepath = filepath,
+      line = line,
+    }
+    table.insert(tbl, plugin)
+  end
+
+  if lazy_plugin._.super then
+    add_plugin(tbl, lazy_plugin._.super, spec_level + 1)
+  end
 end
 
 ---Get the Lazy plugin data from the Lazy specification. For each plugin,
