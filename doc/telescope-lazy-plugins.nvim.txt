@@ -1,4 +1,4 @@
-*telescope-lazy-plugins.nvim.txt*For Neovim >= 0.9Last change: 2024 February 21
+*telescope-lazy-plugins.nvim.txt*For Neovim >= 0.9Last change: 2024 February 22
 
 ==============================================================================
 Table of Contents              *telescope-lazy-plugins.nvim-table-of-contents*

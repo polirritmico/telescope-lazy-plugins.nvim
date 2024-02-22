@@ -9,7 +9,6 @@ local lp_config = require("telescope._extensions.lazy_plugins.config")
 ---@field line integer Line number of the plugin definition in the lua file
 
 ---Finds the line number matching the plugin repository name within the plugin file
----@private
 ---@param repo_name string Repository name (username/plugin)
 ---@param filepath string Full file path
 ---@return integer -- Matching line number
@@ -42,51 +41,64 @@ local function get_module_filepath(lazy_plugin)
   error("Module file not found on the rtp: `" .. lazy_plugin.name .. "`", 2)
 end
 
+---Create all the LazyPluginData configs of the plugin from the lazy spec. The
+---function recursively extract the `plugin._.super` field into one table.
+---@param plugin table Plugin data from the lazy spec
+---@return table<LazyPluginData> collected_configs Contains all the plugin data from the lazy spec
+local function collect_config_files(plugin)
+  local collected_configs = {}
+  if plugin._.super then
+    local inner_configs = collect_config_files(plugin._.super)
+    for _, inner_plugin in pairs(inner_configs) do
+      table.insert(collected_configs, inner_plugin)
+    end
+  end
+
+  local filepath = get_module_filepath(plugin)
+  local current_plugin = {
+    repo_name = plugin[1],
+    name = lp_config.options.name_only and plugin.name or plugin[1],
+    filepath = filepath,
+    line = line_number_search(plugin[1], filepath),
+  }
+  table.insert(collected_configs, current_plugin)
+
+  return collected_configs
+end
+
 ---Parse the `lazy_plugin` spec and insert it into the `tbl` collection.
----@private
 ---@param tbl table<LazyPluginData> Target table with the plugins collection
 ---@param lazy_plugin table Plugin spec to insert into the `tbl`
----@param spec_level integer? For plugin configs split into multiple files.
-local function add_plugin(tbl, lazy_plugin, spec_level)
-  spec_level = spec_level or 1
-  local repo_name = lazy_plugin[1]
-  local entry_name = lp_config.options.name_only and lazy_plugin.name or repo_name
-  local filepath = get_module_filepath(lazy_plugin)
-  local line = line_number_search(repo_name, filepath)
-
-  local has_duplicates = false
-  for _, check_plugin in pairs(tbl) do
-    if
-      repo_name == check_plugin.repo_name
-      and filepath == check_plugin.filepath
-      and line == check_plugin.line
-    then
-      has_duplicates = true
-      spec_level = spec_level - 1
-      break
-    end
+---@param disabled? boolean Optional. If disabled is true adds ' (disabled)' to the plugin name
+local function add_plugin(tbl, lazy_plugin, disabled)
+  local configs = collect_config_files(lazy_plugin)
+  if #configs == 0 then
+    local msg = "No configuration files found for " .. lazy_plugin.name
+    vim.notify(msg, vim.log.levels.WARN)
+    return
   end
+  configs[1].name = disabled and configs[1].name .. " (disabled)" or configs[1].name
+  table.insert(tbl, configs[1])
 
-  if not has_duplicates then
-    if spec_level > 1 then
-      entry_name = string.format("%s(%d)", entry_name, spec_level)
+  local duplicates_counter = 1
+  for _, plugin_cfg in pairs(configs) do
+    local duplicated = false
+    for _, plugin_in_tbl in pairs(tbl) do
+      if
+        plugin_cfg.repo_name == plugin_in_tbl.repo_name
+        and plugin_cfg.filepath == plugin_in_tbl.filepath
+        and plugin_cfg.line == plugin_in_tbl.line
+      then
+        duplicated = true
+        break
+      end
     end
-    if lazy_plugin.enabled == false then
-      entry_name = entry_name .. " (disabled)"
+    if not duplicated then
+      duplicates_counter = duplicates_counter + 1
+      plugin_cfg.name = string.format("%s(%d)", plugin_cfg.name, duplicates_counter)
+      plugin_cfg.name = disabled and plugin_cfg.name .. " (disabled)" or plugin_cfg.name
+      table.insert(tbl, plugin_cfg)
     end
-
-    ---@type LazyPluginData
-    local plugin = {
-      name = entry_name,
-      repo_name = repo_name,
-      filepath = filepath,
-      line = line,
-    }
-    table.insert(tbl, plugin)
-  end
-
-  if lazy_plugin._.super then
-    add_plugin(tbl, lazy_plugin._.super, spec_level + 1)
   end
 end
 
@@ -94,7 +106,6 @@ end
 ---obtains the plugin name, repository name (<username/plugin>), full file path
 ---of the Lua file containing the plugin config, and the line number where the
 ---repository name is found.
----@private
 ---@return table<LazyPluginData>
 local function get_plugins_data()
   local plugins_collection = {}
@@ -107,7 +118,7 @@ local function get_plugins_data()
   end
   if lp_config.options.show_disabled then
     for _, plugin in pairs(lazy_spec.disabled) do
-      add_plugin(plugins_collection, plugin)
+      add_plugin(plugins_collection, plugin, true)
     end
   end
 
