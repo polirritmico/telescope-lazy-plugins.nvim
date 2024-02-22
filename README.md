@@ -82,19 +82,23 @@ return {
   cmd = "Telescope",
   dependencies = {
     { "nvim-lua/plenary.nvim" },
-    -- etc.
     {
       "polirritmico/telescope-lazy-plugins.nvim",
-      -- defaults:
-      opts = {
+      keys = {
+        { "<leader>cp", "<Cmd>Telescope lazy_plugins<CR>", desc = "Telescope: Plugins configurations" },
+      },
+    },
+  },
+  opts = {
+    extensions = {
+      lazy_plugins = {
+        -- defaults:
         name_only = true, -- Match only the `repo_name`, false to match the full `account/repo_name`
         show_disabled = true, -- Also show disabled plugins from the Lazy spec.
         lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- Optional. Path to the lua file containing the lazy `setup()` call. So e.g. you could search `lazy` and open your `lazy.lua` file.
       },
     },
-    keys = {
-      { "<leader>cp", "<Cmd>Telescope lazy_plugins<CR>", desc = "Telescope: Plugins configurations" },
-    }
+    -- etc.
   },
   -- etc.
 ```
