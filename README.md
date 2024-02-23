@@ -10,8 +10,9 @@
 
 ## 🐧 Description
 
-A Telescope picker to quickly access plugins config files for
-[lazy.nvim](https://github.com/folke/lazy.nvim) configurations.
+> A [Telescope](https://github.com/nvim-telescope/telescope.nvim)  picker to
+> quickly access plugins config files for
+> [lazy.nvim](https://github.com/folke/lazy.nvim) configurations.
 
 ⚡ No more head overload trying to remember in which file you changed that
 plugin option, or searching through files to check for overlapping
@@ -41,6 +42,8 @@ cursor is set at the appropiate position.
 
 ### 📷 Screenshot
 
+_Searching for Telescope configs:_
+
 ![screenshot](https://github.com/polirritmico/telescope-lazy-plugins.nvim/assets/24460484/79fa1730-4861-41a6-8fce-fe1680fb2a0b)
 
 <!-- panvimdoc-ignore-end -->
@@ -55,16 +58,6 @@ return {
   dependencies = {
     { "polirritmico/telescope-lazy-plugins.nvim" },
   },
-  -- etc.
-}
-```
-
-- Or on its own spec:
-
-```lua
-return {
-  "polirritmico/telescope-lazy-plugins.nvim",
-  dependencies = { "nvim-telescope.nvim" },
   -- etc.
 }
 ```
@@ -86,7 +79,7 @@ require("telescope").extensions.lazy_plugins.lazy_plugins()
 ## 🛠️ Configuration:
 
 Add the options in the `telescope.nvim` opts `extensions` table inside
-`lazy_plugins`.
+`lazy_plugins` (check the examples).
 
 | Option            | Type      | Description                                                                                                                                                                                                                                                                   |
 |-------------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -98,8 +91,8 @@ Add the options in the `telescope.nvim` opts `extensions` table inside
 ### ⚙️ Full config example:
 
 ```lua
-return {
-  "nvim-telescope.nvim",
+{
+  "nvim-telescope/telescope.nvim",
   cmd = "Telescope",
   dependencies = {
     { "nvim-lua/plenary.nvim" },
@@ -114,15 +107,15 @@ return {
     extensions = {
       lazy_plugins = {
         -- defaults:
-        name_only = true,
-        show_disabled = true,
-        lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua",
-        lazy_spec_table = vim.fn.stdpath("config") .. "/lua/config/lazy.lua",
+        name_only = true, -- match only the `repo_name`, false to match the full `account/repo_name`
+        show_disabled = true, -- also show disabled plugins from the Lazy spec.
+        lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy opts and setup() call.
+        lazy_spec_table = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy plugin spec table.
       },
     },
     -- etc.
   },
-  -- etc.
+}
 ```
 
 ### ⚙️ Full spec table
