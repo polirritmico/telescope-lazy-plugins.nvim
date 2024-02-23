@@ -24,16 +24,20 @@ local function line_number_search(repo_name, filepath)
 end
 
 ---Get the lazy_plugin module full filepath from the runtimepath
----@param lazy_plugin table Plugin spec to insert into the `tbl`
----@return string
+---@param lazy_plugin table Plugin spec to obtain the module full filepath
+---@return string?
 local function get_module_filepath(lazy_plugin)
   local rtp = vim.opt.rtp:get()
 
-  if not lazy_plugin._.module and lp_config.options.lazy_config then
-    return lp_config.options.lazy_config
+  if not lazy_plugin._.module then
+    if lp_config.options.lazy_spec_table then
+      return lp_config.options.lazy_spec_table
+    else
+      error("Missing module in the lazy spec: " .. lazy_plugin.name, vim.log.levels.WARN)
+      return
+    end
   end
 
-  assert(lazy_plugin._.module ~= nil, "Missing module on lazy spec: " .. lazy_plugin.name)
   local mod = lazy_plugin._.module:gsub("%.", "/")
   for _, rtp_path in ipairs(rtp) do
     local check_path = string.format("%s/lua/%s", rtp_path, mod)
@@ -59,12 +63,16 @@ local function collect_config_files(plugin)
     end
   end
 
+  -- TODO: better handle of dir only and url only spec
   local repo_name = type(plugin[1]) == "string" and plugin[1] or plugin.url
   if not repo_name then
     return collected_configs
   end
-
   local filepath = get_module_filepath(plugin)
+  if not filepath then
+    return collected_configs
+  end
+
   local current_plugin = {
     repo_name = repo_name,
     name = lp_config.options.name_only and plugin.name or repo_name,
