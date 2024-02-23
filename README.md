@@ -107,5 +107,35 @@ return {
 
 When passing the plugin specification table directly to the setup function (e.g.
 `require('lazy').setup(spec, opts)`), ensure that the `lazy_config` option is
-set to the file where it is defined. For example, `vim.fn.stdpath("config") ..
-"/init.lua"`.
+set to the file where it is defined.
+
+For example:
+
+```lua
+-- .conf/nvim/init.lua
+local opts = {
+  -- lazy configuration options
+}
+require("lazy").setup({
+  -- full list of plugins and configs
+  "username/plugin",
+  opts = {
+    configurations = "values"
+  },
+  -- etc.
+  {
+    "nvim-telescope.nvim",
+    dependencies = {
+      { "nvim-lua/plenary.nvim" },
+      { "polirritmico/telescope-lazy-plugins.nvim" },
+    },
+    opts = {
+      extensions = {
+        lazy_plugins = {
+          lazy_config = vim.fn.stdpath("config") .. "/init.lua" -- path to this file
+        },
+      },
+    },
+  },
+}, opts)
+```
