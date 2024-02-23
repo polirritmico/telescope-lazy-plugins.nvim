@@ -28,6 +28,11 @@ end
 ---@return string
 local function get_module_filepath(lazy_plugin)
   local rtp = vim.opt.rtp:get()
+
+  if not lazy_plugin._.module and lp_config.options.lazy_config then
+    return lp_config.options.lazy_config
+  end
+
   assert(lazy_plugin._.module ~= nil, "Missing module on lazy spec: " .. lazy_plugin.name)
   local mod = lazy_plugin._.module:gsub("%.", "/")
   for _, rtp_path in ipairs(rtp) do
@@ -54,12 +59,13 @@ local function collect_config_files(plugin)
     end
   end
 
+  local repo_name = type(plugin[1]) == "string" and plugin[1] or plugin.url
   local filepath = get_module_filepath(plugin)
   local current_plugin = {
-    repo_name = plugin[1],
-    name = lp_config.options.name_only and plugin.name or plugin[1],
+    repo_name = repo_name,
+    name = lp_config.options.name_only and plugin.name or repo_name,
     filepath = filepath,
-    line = line_number_search(plugin[1], filepath),
+    line = line_number_search(repo_name, filepath),
   }
   table.insert(collected_configs, current_plugin)
 
@@ -122,7 +128,7 @@ local function get_plugins_data()
     end
   end
 
-  if vim.fn.filereadable(vim.fn.expand(lp_config.options.lazy_config)) == 1 then
+  if lp_config.options.lazy_config then
     table.insert(plugins_collection, {
       name = lp_config.options.name_only and "lazy.nvim" or "folke/lazy.nvim",
       repo_name = "folke/lazy.nvim",
