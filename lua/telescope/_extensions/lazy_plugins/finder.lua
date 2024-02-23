@@ -60,6 +60,10 @@ local function collect_config_files(plugin)
   end
 
   local repo_name = type(plugin[1]) == "string" and plugin[1] or plugin.url
+  if not repo_name then
+    return collected_configs
+  end
+
   local filepath = get_module_filepath(plugin)
   local current_plugin = {
     repo_name = repo_name,
