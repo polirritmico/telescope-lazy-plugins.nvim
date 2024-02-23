@@ -152,3 +152,10 @@ require("lazy").setup({
   },
 }, opts)
 ```
+
+## 🌱 Contributions
+
+This plugin is made mainly for my personal use, but suggestions, issues, or pull
+requests are very welcome.
+
+Enjoy
