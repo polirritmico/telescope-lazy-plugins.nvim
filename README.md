@@ -102,3 +102,10 @@ return {
   },
   -- etc.
 ```
+
+## Full spec table
+
+When passing the plugin specification table directly to the setup function (e.g.
+`require('lazy').setup(spec, opts)`), ensure that the `lazy_config` option is
+set to the file where it is defined. For example, `vim.fn.stdpath("config") ..
+"/init.lua"`.
