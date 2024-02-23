@@ -54,7 +54,7 @@ _Searching for Telescope configs:_
 
 ```lua
 return {
-  "nvim-telescope.nvim",
+  "nvim-telescope/telescope.nvim",
   dependencies = {
     { "polirritmico/telescope-lazy-plugins.nvim" },
   },

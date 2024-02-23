@@ -49,7 +49,7 @@ cursor is set at the appropiate position.
 
 >lua
     return {
-      "nvim-telescope.nvim",
+      "nvim-telescope/telescope.nvim",
       dependencies = {
         { "polirritmico/telescope-lazy-plugins.nvim" },
       },
