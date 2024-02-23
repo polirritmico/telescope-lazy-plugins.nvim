@@ -7,20 +7,26 @@ Table of Contents              *telescope-lazy-plugins.nvim-table-of-contents*
 2. Installation                     |telescope-lazy-plugins.nvim-installation|
 3. Usage                                   |telescope-lazy-plugins.nvim-usage|
 4. Configuration:                 |telescope-lazy-plugins.nvim-configuration:|
-5. Full config example:     |telescope-lazy-plugins.nvim-full-config-example:|
-6. Full spec table               |telescope-lazy-plugins.nvim-full-spec-table|
-7. Contributions                   |telescope-lazy-plugins.nvim-contributions|
+  - Full config example:    |telescope-lazy-plugins.nvim-full-config-example:|
+  - Full spec table              |telescope-lazy-plugins.nvim-full-spec-table|
+5. Contributions                   |telescope-lazy-plugins.nvim-contributions|
 
 ==============================================================================
 1. Description                       *telescope-lazy-plugins.nvim-description*
 
-A Telescope picker to quickly access the plugins config files loaded into the
-Lazy spec. Specially useful when `:Telescope find_files` is not good enough or
-when you have multiple plugins grouped into separate files like this:
+A Telescope picker to quickly access plugins config files for lazy.nvim
+<https://github.com/folke/lazy.nvim> configurations.
+
+No more head overload trying to remember in which file you changed that plugin
+option, or searching through files to check for overlapping configurations.
+
+Specially useful when your plugin configuration is spread across many files,
+when you have a lot of plugins in the same file or when you have multiple
+plugins grouped into separate files like this:
 
 >
     lua/
-    └── plugins
+    └── some/path
         ├── core.lua
         ├── develop.lua
         ├── extras
@@ -102,8 +108,7 @@ Add the options in the `telescope.nvim` opts `extensions` table inside
                               would be used instead.
   -------------------------------------------------------------------------------------------
 
-==============================================================================
-5. Full config example:     *telescope-lazy-plugins.nvim-full-config-example:*
+FULL CONFIG EXAMPLE:        *telescope-lazy-plugins.nvim-full-config-example:*
 
 >lua
     return {
@@ -134,8 +139,7 @@ Add the options in the `telescope.nvim` opts `extensions` table inside
 <
 
 
-==============================================================================
-6. Full spec table               *telescope-lazy-plugins.nvim-full-spec-table*
+FULL SPEC TABLE                  *telescope-lazy-plugins.nvim-full-spec-table*
 
 When passing the plugin specification table directly to the setup function
 (e.g. `require('lazy').setup(spec, opts)`), ensure that the `lazy_spec_table`
@@ -174,7 +178,7 @@ For example:
 
 
 ==============================================================================
-7. Contributions                   *telescope-lazy-plugins.nvim-contributions*
+5. Contributions                   *telescope-lazy-plugins.nvim-contributions*
 
 This plugin is made mainly for my personal use, but suggestions, issues, or
 pull requests are very welcome.

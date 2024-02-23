@@ -1,4 +1,4 @@
-# Telescope Lazy Plugins
+# 🧭 Telescope Lazy Plugins
 
 <!-- panvimdoc-ignore-start -->
 
@@ -8,15 +8,22 @@
 
 <!-- panvimdoc-ignore-end -->
 
-## Description
+## 🐧 Description
 
-A Telescope picker to quickly access the plugins config files loaded into the
-Lazy spec. Specially useful when `:Telescope find_files` is not good enough or
-when you have multiple plugins grouped into separate files like this:
+A Telescope picker to quickly access plugins config files for
+[lazy.nvim](https://github.com/folke/lazy.nvim) configurations.
+
+⚡ No more head overload trying to remember in which file you changed that
+plugin option, or searching through files to check for overlapping
+configurations.
+
+Specially useful when your plugin configuration is spread across many files,
+when you have a lot of plugins in the same file or when you have multiple
+plugins grouped into separate files like this:
 
 ```
 lua/
-└── plugins
+└── some/path
     ├── core.lua
     ├── develop.lua
     ├── extras
@@ -32,11 +39,13 @@ cursor is set at the appropiate position.
 
 <!-- panvimdoc-ignore-start -->
 
+### 📷 Screenshot
+
 ![screenshot](https://github.com/polirritmico/telescope-lazy-plugins.nvim/assets/24460484/79fa1730-4861-41a6-8fce-fe1680fb2a0b)
 
 <!-- panvimdoc-ignore-end -->
 
-## Installation
+## 📦 Installation
 
 - Add it into the Telescope dependencies:
 
@@ -60,7 +69,7 @@ return {
 }
 ```
 
-## Usage
+## 🔍 Usage
 
 - **Command-line:**
 
@@ -74,7 +83,7 @@ return {
 require("telescope").extensions.lazy_plugins.lazy_plugins()
 ```
 
-## Configuration:
+## 🛠️ Configuration:
 
 Add the options in the `telescope.nvim` opts `extensions` table inside
 `lazy_plugins`.
@@ -86,7 +95,7 @@ Add the options in the `telescope.nvim` opts `extensions` table inside
 | `lazy_config`     | `string`  | Path to the lua file containing the lazy `setup()` call. With this option set, search `lazy` and open your `lazy.lua`, `init.lua` or similar file.                                                                                                                            |
 | `lazy_spec_table` | `string`  | If plugins are directly passed to the `require("lazy").setup()` function inside a plugins table (instead of using only imports paths), set this option to the file where that table is defined. When no module is found inside a plugin spec this path would be used instead. |
 
-## Full config example:
+### ⚙️ Full config example:
 
 ```lua
 return {
@@ -116,7 +125,7 @@ return {
   -- etc.
 ```
 
-## Full spec table
+### ⚙️ Full spec table
 
 When passing the plugin specification table directly to the setup function (e.g.
 `require('lazy').setup(spec, opts)`), ensure that the `lazy_spec_table` option
