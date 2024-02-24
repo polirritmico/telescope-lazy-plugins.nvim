@@ -116,11 +116,7 @@ Add the options in the `telescope.nvim` opts `extensions` table inside
         picker_opts = {
           sorting_strategy = "ascending",
           layout_strategy = "vertical",
-          layout_config = {
-            vertical = {
-              preview_height = 0.6,
-            },
-          },
+          layout_config = { vertical = { preview_height = 0.6 } },
         },
       },
     },
