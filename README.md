@@ -87,6 +87,7 @@ Add the options in the `telescope.nvim` opts `extensions` table inside
 | `show_disabled`   | `boolean` | Also show disabled plugins from the Lazy spec.                                                                                                                                                                                                                                |
 | `lazy_config`     | `string`  | Path to the lua file containing the lazy `setup()` call. With this option set, search `lazy` and open your `lazy.lua`, `init.lua` or similar file.                                                                                                                            |
 | `lazy_spec_table` | `string`  | If plugins are directly passed to the `require("lazy").setup()` function inside a plugins table (instead of using only imports paths), set this option to the file where that table is defined. When no module is found inside a plugin spec this path would be used instead. |
+| `picker_opts`     | `table`   | Layout options passed into Telescope. Check `:h telescope.layout`.                                                                                                                                                                                                            |
 
 ### ⚙️ Full config example:
 
@@ -111,6 +112,16 @@ Add the options in the `telescope.nvim` opts `extensions` table inside
         show_disabled = true, -- also show disabled plugins from the Lazy spec.
         lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy opts and setup() call.
         lazy_spec_table = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy plugin spec table.
+        -- This is not needed. It is just an example of how you can customize the picker layout. Check `:h telescope.layout`.
+        picker_opts = {
+          sorting_strategy = "ascending",
+          layout_strategy = "vertical",
+          layout_config = {
+            vertical = {
+              preview_height = 0.6,
+            },
+          },
+        },
       },
     },
     -- etc.
