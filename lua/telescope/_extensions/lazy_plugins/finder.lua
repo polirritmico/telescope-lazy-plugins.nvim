@@ -1,5 +1,6 @@
 local finders = require("telescope.finders")
 local lp_config = require("telescope._extensions.lazy_plugins.config")
+local lp_make_entry = require("telescope._extensions.lazy_plugins.make_entry")
 
 ---Stores the relevant Lazy plugin spec data to use the picker.
 ---@class LazyPluginData
@@ -155,21 +156,13 @@ end
 
 ---Finder to use with the Telescope API. Get the plugin data for each plugin
 ---registered on the Lazy spec.
-local function lazy_plugins_finder()
-  local plugins = {
+local function lazy_plugins_finder(opts)
+  opts = vim.tbl_deep_extend("force", lp_config.options or {}, opts or {})
+
+  return finders.new_table({
     results = get_plugins_data(),
-    ---@param entry LazyPluginData
-    entry_maker = function(entry)
-      return {
-        value = entry,
-        display = entry.name,
-        ordinal = entry.name,
-        path = entry.filepath,
-        lnum = entry.line,
-      }
-    end,
-  }
-  return finders.new_table(plugins)
+    entry_maker = lp_make_entry(opts),
+  })
 end
 
 return lazy_plugins_finder

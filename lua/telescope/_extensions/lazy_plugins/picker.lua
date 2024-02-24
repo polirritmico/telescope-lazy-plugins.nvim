@@ -29,7 +29,7 @@ local function lp_picker(opts)
 
   pickers
     .new(opts, {
-      finder = lp_finder(),
+      finder = lp_finder(opts),
       preview_title = "Config File Preview",
       previewer = config.grep_previewer(opts),
       prompt_title = "Search Plugins",
