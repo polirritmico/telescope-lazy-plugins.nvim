@@ -44,7 +44,7 @@ cursor is set at the appropiate position.
 
 _Searching for Telescope configs:_
 
-![screenshot](https://github.com/polirritmico/telescope-lazy-plugins.nvim/assets/24460484/79fa1730-4861-41a6-8fce-fe1680fb2a0b)
+![Screenshot](https://github.com/polirritmico/telescope-lazy-plugins.nvim/assets/24460484/06b7d3ff-6768-4c57-a1ae-3ed509366622)
 
 <!-- panvimdoc-ignore-end -->
 
