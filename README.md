@@ -117,9 +117,9 @@ Add the options in the `telescope.nvim` opts `extensions` table inside
           sorting_strategy = "ascending",
           layout_strategy = "flex",
           layout_config = {
-            flex = { flip_columns = 120 },
-            vertical = { preview_height = 0.55 },
+            flex = { flip_columns = 150 },
             horizontal = { preview_width = { 0.55, max = 100, min = 30 } },
+            vertical = { preview_cutoff = 20, preview_height = 0.5 },
           },
         },
       },
