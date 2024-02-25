@@ -11,8 +11,8 @@ local function make_entry_lp(opts)
       separator = " ",
       items = {
         { width = 0.5 },
-        { width = 0.49 },
-        { width = 2, right_justify = true },
+        { width = 0.48 },
+        { width = 0.2 },
       },
     }
   else
