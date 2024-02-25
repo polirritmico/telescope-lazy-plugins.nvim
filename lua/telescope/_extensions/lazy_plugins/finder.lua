@@ -15,8 +15,9 @@ local lp_make_entry = require("telescope._extensions.lazy_plugins.make_entry")
 ---@return integer -- Matching line number
 local function line_number_search(repo_name, filepath)
   local current_line = 1
+  local search_str = string.format([["%s"]], repo_name)
   for line_str in io.lines(filepath) do
-    if string.find(line_str, repo_name, 1, true) then
+    if string.find(line_str, search_str, 1, true) then
       return current_line
     end
     current_line = current_line + 1
