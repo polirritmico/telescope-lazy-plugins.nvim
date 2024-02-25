@@ -78,7 +78,9 @@ local function collect_config_files(plugin)
     repo_name = repo_name,
     name = lp_config.options.name_only and plugin.name or repo_name,
     filepath = filepath,
+    file = filepath:match(".*/(.*/.*)%.%w+"),
     line = line_number_search(repo_name, filepath),
+    disabled = false,
   }
   table.insert(collected_configs, current_plugin)
 
@@ -90,13 +92,15 @@ end
 ---@param lazy_plugin table Plugin spec to insert into the `tbl`
 ---@param disabled? boolean Optional. If disabled is true adds ' (disabled)' to the plugin name
 local function add_plugin(tbl, lazy_plugin, disabled)
+  disabled = disabled or false
   local configs = collect_config_files(lazy_plugin)
   if #configs == 0 then
     local msg = "No configuration files found for " .. lazy_plugin.name
     vim.notify(msg, vim.log.levels.WARN)
     return
   end
-  configs[1].name = disabled and configs[1].name .. " (disabled)" or configs[1].name
+
+  configs[1].disabled = disabled
   table.insert(tbl, configs[1])
 
   local duplicates_counter = 1
@@ -115,7 +119,7 @@ local function add_plugin(tbl, lazy_plugin, disabled)
     if not duplicated then
       duplicates_counter = duplicates_counter + 1
       plugin_cfg.name = string.format("%s(%d)", plugin_cfg.name, duplicates_counter)
-      plugin_cfg.name = disabled and plugin_cfg.name .. " (disabled)" or plugin_cfg.name
+      plugin_cfg.disabled = disabled
       table.insert(tbl, plugin_cfg)
     end
   end
@@ -146,7 +150,9 @@ local function get_plugins_data()
       name = lp_config.options.name_only and "lazy.nvim" or "folke/lazy.nvim",
       repo_name = "folke/lazy.nvim",
       filepath = lp_config.options.lazy_config,
+      file = lp_config.options.lazy_config:match("[^/]+$"),
       line = 1,
+      disabled = false,
     })
   end
 

@@ -12,6 +12,15 @@ local defaults = {
   show_disabled = true,
   lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua",
   lazy_spec_table = vim.fn.stdpath("config") .. "/lua/config/lazy.lua",
+  picker_opts = {
+    sorting_strategy = "ascending",
+    layout_strategy = "flex",
+    layout_config = {
+      flex = { flip_columns = 120 },
+      vertical = { preview_height = 0.55 },
+      horizontal = { preview_width = { 0.55, max = 100, min = 30 } },
+    },
+  },
 }
 
 M.options = {}

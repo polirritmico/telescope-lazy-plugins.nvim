@@ -3,20 +3,45 @@ local make_entry = require("telescope.make_entry")
 
 ---@param opts TelescopeLazyPluginsConfig
 local function make_entry_lp(opts)
-  opts = opts or {}
+  local disabled = opts and opts.show_disabled == true
 
-  ---@type function
-  local displayer = entry_display.create({
-    separator = " ",
-    items = {
-      { remaining = true },
-    },
-  })
+  local lp_items
+  if disabled then
+    lp_items = {
+      separator = " ",
+      items = {
+        { width = 0.5 },
+        { width = 0.49 },
+        { width = 2, right_justify = true },
+      },
+    }
+  else
+    lp_items = {
+      separator = "  ",
+      items = {
+        { width = 0.5 },
+        { width = 0.5 },
+      },
+    }
+  end
+  local displayer = entry_display.create(lp_items) ---@type function
+  local hl_file = "Comment"
+  local hl_enabled = "TelescopeResultsClass" -- Selection
+  local hl_disabled = "Delimiter"
 
   local function make_display(entry)
-    return displayer({
-      entry.value.name,
-    })
+    if not disabled then
+      return displayer({
+        { entry.value.name },
+        { entry.value.file, hl_file },
+      })
+    else
+      return displayer({
+        { entry.value.name },
+        { entry.value.file, hl_file },
+        entry.value.disabled and { "○", hl_disabled } or { "●", hl_enabled },
+      })
+    end
   end
 
   ---@param entry LazyPluginData

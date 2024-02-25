@@ -115,8 +115,12 @@ Add the options in the `telescope.nvim` opts `extensions` table inside
         -- This is not needed. It is just an example of how you can customize the picker layout. Check `:h telescope.layout`.
         picker_opts = {
           sorting_strategy = "ascending",
-          layout_strategy = "vertical",
-          layout_config = { vertical = { preview_height = 0.6 } },
+          layout_strategy = "flex",
+          layout_config = {
+            flex = { flip_columns = 120 },
+            vertical = { preview_height = 0.55 },
+            horizontal = { preview_width = { 0.55, max = 100, min = 30 } },
+          },
         },
       },
     },
