@@ -209,6 +209,17 @@ require("lazy").setup({
 }, opts)
 ```
 
+## 🎨 Highlights
+
+This are the highlights defined by **Telescope Lazy Plugins**:
+
+| Highlight group              | Defaults to | Description                      |
+|------------------------------|-------------|----------------------------------|
+| TelescopeLazyPlugins         | Normal      | Plugin name                      |
+| TelescopeLazyPluginsFile     | Comment     | Module file with the config spec |
+| TelescopeLazyPluginsEnabled  | Function    | Enabled plugin icon              |
+| TelescopeLazyPluginsDisabled | Delimiter   | Disabled plugin icon             |
+
 ## 🌱 Contributions
 
 This plugin is made mainly for my personal use, but suggestions, issues, or pull

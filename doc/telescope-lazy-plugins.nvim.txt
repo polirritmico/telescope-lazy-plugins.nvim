@@ -1,4 +1,4 @@
-*telescope-lazy-plugins.nvim.txt*For Neovim >= 0.9Last change: 2024 February 25
+*telescope-lazy-plugins.nvim.txt*For Neovim >= 0.9Last change: 2024 February 26
 
 ==============================================================================
 Table of Contents              *telescope-lazy-plugins.nvim-table-of-contents*
@@ -11,7 +11,8 @@ Table of Contents              *telescope-lazy-plugins.nvim-table-of-contents*
   - Defaults                            |telescope-lazy-plugins.nvim-defaults|
   - Full config example:    |telescope-lazy-plugins.nvim-full-config-example:|
   - Full spec table              |telescope-lazy-plugins.nvim-full-spec-table|
-6. Contributions                   |telescope-lazy-plugins.nvim-contributions|
+6. Highlights                         |telescope-lazy-plugins.nvim-highlights|
+7. Contributions                   |telescope-lazy-plugins.nvim-contributions|
 
 ==============================================================================
 1. Description                       *telescope-lazy-plugins.nvim-description*
@@ -237,7 +238,25 @@ For example:
 
 
 ==============================================================================
-6. Contributions                   *telescope-lazy-plugins.nvim-contributions*
+6. Highlights                         *telescope-lazy-plugins.nvim-highlights*
+
+This are the highlights defined by **Telescope Lazy Plugins**
+
+  --------------------------------------------------------------------------
+  Highlightgroup                 Defaults to Description
+  ------------------------------ ----------- -------------------------------
+  TelescopeLazyPlugins           Normal      Plugin name
+
+  TelescopeLazyPluginsFile       Comment     Module file with the config
+                                             spec
+
+  TelescopeLazyPluginsEnabled    Function    Enabled plugin icon
+
+  TelescopeLazyPluginsDisabled   Delimiter   Disabled plugin icon
+  --------------------------------------------------------------------------
+
+==============================================================================
+7. Contributions                   *telescope-lazy-plugins.nvim-contributions*
 
 This plugin is made mainly for my personal use, but suggestions, issues, or
 pull requests are very welcome.

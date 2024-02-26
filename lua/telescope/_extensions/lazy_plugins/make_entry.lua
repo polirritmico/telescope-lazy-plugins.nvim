@@ -11,8 +11,8 @@ local function make_entry_lp(opts)
       separator = " ",
       items = {
         { width = 0.5 },
-        { width = 0.48 },
-        { width = 0.2 },
+        { width = 0.45 },
+        { remaining = true },
       },
     }
   else
@@ -25,9 +25,10 @@ local function make_entry_lp(opts)
     }
   end
   local displayer = entry_display.create(lp_items) ---@type function
-  local hl_file = "Comment"
-  local hl_enabled = "TelescopeResultsClass" -- Selection
-  local hl_disabled = "Delimiter"
+  local hl_plugin = "TelescopeLazyPlugins"
+  local hl_file = "TelescopeLazyPluginsFile"
+  local hl_enabled = "TelescopeLazyPluginsEnabled"
+  local hl_disabled = "TelescopeLazyPluginsDisabled"
 
   local function make_display(entry)
     if not disabled then
@@ -37,7 +38,7 @@ local function make_entry_lp(opts)
       })
     else
       return displayer({
-        { entry.value.name },
+        { entry.value.name, hl_plugin },
         { entry.value.file, hl_file },
         entry.value.disabled and { "○", hl_disabled } or { "●", hl_enabled },
       })

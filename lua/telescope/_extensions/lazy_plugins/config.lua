@@ -1,4 +1,5 @@
 local lp_actions = require("telescope._extensions.lazy_plugins.actions")
+local lp_highlights = require("telescope._extensions.lazy_plugins.highlights")
 
 ---@class TelescopeLazyPluginsConfig
 ---@field name_only boolean Match only the `repo_name`, false to match the full `account/repo_name`
@@ -48,6 +49,8 @@ function M.setup(opts)
   local spec_tbl = vim.fn.expand(M.options.lazy_spec_table)
   M.options.lazy_config = vim.fn.filereadable(lazy_cfg) == 1 and lazy_cfg or nil
   M.options.lazy_spec_table = vim.fn.filereadable(spec_tbl) == 1 and spec_tbl or nil
+
+  lp_highlights.setup()
 end
 
 return M
