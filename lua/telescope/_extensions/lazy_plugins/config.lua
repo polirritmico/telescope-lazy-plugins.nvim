@@ -1,8 +1,12 @@
+local lp_actions = require("telescope._extensions.lazy_plugins.actions")
+
 ---@class TelescopeLazyPluginsConfig
 ---@field name_only boolean Match only the `repo_name`, false to match the full `account/repo_name`
----@field show_disabled boolean Also show disabled plugins from the Lazy spec.
+---@field show_disabled boolean Also show disabled plugins from the Lazy spec
 ---@field lazy_config string? Optional. Path to the file containing the lazy opts and setup() call
 ---@field lazy_spec_table string? Optional. Path to the file containing the lazy plugin spec table
+---@field mappings table Keymaps attached to the picker. See `:h telescope.mappings`
+---@field picker_opts table Layout options passed into Telescope. Check `:h telescope.layout`
 
 local M = {}
 
@@ -12,6 +16,17 @@ local defaults = {
   show_disabled = true,
   lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua",
   lazy_spec_table = vim.fn.stdpath("config") .. "/lua/config/lazy.lua",
+  mappings = {
+    ["i"] = {
+      ["<C-g>"] = lp_actions.open_repo_url,
+      -- HACK: Add a dummy function to the mouse click to avoid closing the picker
+      ["<LeftMouse>"] = lp_actions.nothing,
+    },
+    ["n"] = {
+      ["g"] = lp_actions.open_repo_url,
+      ["<LeftMouse>"] = lp_actions.nothing,
+    },
+  },
   picker_opts = {
     sorting_strategy = "ascending",
     layout_strategy = "flex",

@@ -8,6 +8,7 @@ local lp_make_entry = require("telescope._extensions.lazy_plugins.make_entry")
 ---@field repo_name string Full name of the plugin repository
 ---@field filepath string Full file path to the plugin lua configuration
 ---@field line integer Line number of the plugin definition in the lua file
+---@field repo_url integer Url to the repo
 
 ---Finds the line number matching the plugin repository name within the plugin file
 ---@param repo_name string Repository name (username/plugin)
@@ -74,9 +75,12 @@ local function collect_config_files(plugin)
   if not filepath then
     return collected_configs
   end
+  local repo_url = plugin.url and plugin.url:gsub("%.git$", "")
+    or "https://github.com/" .. repo_name
 
   local current_plugin = {
     repo_name = repo_name,
+    repo_url = repo_url,
     name = lp_config.options.name_only and plugin.name or repo_name,
     filepath = filepath,
     file = filepath:match(".*/(.*/.*)%.%w+"),
@@ -150,6 +154,7 @@ local function get_plugins_data()
     table.insert(plugins_collection, {
       name = lp_config.options.name_only and "lazy.nvim" or "folke/lazy.nvim",
       repo_name = "folke/lazy.nvim",
+      repo_url = "https://github.com/folke/lazy.nvim",
       filepath = lp_config.options.lazy_config,
       file = lp_config.options.lazy_config:match("[^/]+$"),
       line = 1,
