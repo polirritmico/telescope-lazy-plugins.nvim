@@ -18,6 +18,9 @@
 plugin option, or searching through files to check for overlapping
 configurations.
 
+⚡ Quickly open the selected plugin repository webpage in your browser with a
+single keystroke (`<C-g>` by default).
+
 Specially useful when your plugin configuration is spread across many files,
 when you have a lot of plugins in the same file or when you have multiple
 plugins grouped into separate files like this:
