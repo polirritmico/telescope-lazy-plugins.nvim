@@ -83,11 +83,58 @@ Add the options in the `telescope.nvim` opts `extensions` table inside
 
 | Option            | Type      | Description                                                                                                                                                                                                                                                                   |
 |-------------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `lazy_config`     | `string`  | Path to the lua file containing the lazy options passed to the `setup()` call. With this value setted, the `lazy` entry is added, e.g. searching for `lazy` to open `nvim/lua/config/lazy.lua`.                                                                               |
+| `lazy_spec_table` | `string`  | If plugins are directly passed to the `require("lazy").setup()` function inside a plugins table (instead of using only imports paths), set this option to the file where that table is defined. When no module is found inside a plugin spec this path would be used instead. |
 | `name_only`       | `boolean` | Match only the repository name. False to match the full `account/repo_name`.                                                                                                                                                                                                  |
 | `show_disabled`   | `boolean` | Also show disabled plugins from the Lazy spec.                                                                                                                                                                                                                                |
-| `lazy_config`     | `string`  | Path to the lua file containing the lazy `setup()` call. With this option set, search `lazy` and open your `lazy.lua`, `init.lua` or similar file.                                                                                                                            |
-| `lazy_spec_table` | `string`  | If plugins are directly passed to the `require("lazy").setup()` function inside a plugins table (instead of using only imports paths), set this option to the file where that table is defined. When no module is found inside a plugin spec this path would be used instead. |
 | `picker_opts`     | `table`   | Layout options passed into Telescope. Check `:h telescope.layout`.                                                                                                                                                                                                            |
+| `mappings`        | `table`   | Keymaps attached to the picker. See `:h telescope.mappings`.                                                                                                                                                                                                                  |
+
+## ⌨️ Mappings
+
+`lp_actions` refers to the table provided by `telescope-lazy-plugins.actions`,
+accessible via:
+
+```lua
+require("telescope").extensions.lazy_plugins.actions
+```
+
+| Insert       | Normal        | lp_actions      | Description                                                                                                                                                                       |
+|--------------|---------------|-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `<CR>`       | `<CR>`        | `open`          | Open the selected plugin config file at the first line of the plugin spec.                                                                                                        |
+| `<C-g>`      | `g`           | `open_repo_url` | Open the plugin repository url in your default web browser.                                                                                                                       |
+| `<LefMouse>` | `<LeftMouse>` | `nothing`       | A dummy function to prevent closing Telescope on mouse clicks. Useful for keeping Telescope open when focus is regained by a mouse click after browsing the plugin documentation. |
+
+
+### Defaults
+
+```lua
+-- defaults:
+name_only = true, -- match only the `repo_name`, false to match the full `account/repo_name`
+show_disabled = true, -- also show disabled plugins from the Lazy spec.
+lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy opts and setup() call.
+lazy_spec_table = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy plugin spec table.
+picker_opts = {
+  sorting_strategy = "ascending",
+  layout_strategy = "flex",
+  layout_config = {
+    flex = { flip_columns = 150 },
+    horizontal = { preview_width = { 0.55, max = 100, min = 30 } },
+    vertical = { preview_cutoff = 20, preview_height = 0.5 },
+  },
+},
+mappings = {
+  ["i"] = {
+    ["<C-g>"] = lp_actions.open_repo_url,
+    ["<LeftMouse>"] = lp_actions.nothing,
+  },
+  ["n"] = {
+    ["g"] = lp_actions.open_repo_url,
+    ["<LeftMouse>"] = lp_actions.nothing,
+  },
+},
+```
+
 
 ### ⚙️ Full config example:
 
@@ -107,19 +154,15 @@ Add the options in the `telescope.nvim` opts `extensions` table inside
   opts = {
     extensions = {
       lazy_plugins = {
-        -- defaults:
-        name_only = true, -- match only the `repo_name`, false to match the full `account/repo_name`
-        show_disabled = true, -- also show disabled plugins from the Lazy spec.
+        name_only = true,
+        show_disabled = true,
         lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy opts and setup() call.
         lazy_spec_table = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy plugin spec table.
         -- This is not needed. It is just an example of how you can customize the picker layout. Check `:h telescope.layout`.
         picker_opts = {
-          sorting_strategy = "ascending",
-          layout_strategy = "flex",
+          layout_strategy = "vertical",
           layout_config = {
-            flex = { flip_columns = 150 },
-            horizontal = { preview_width = { 0.55, max = 100, min = 30 } },
-            vertical = { preview_cutoff = 20, preview_height = 0.5 },
+            vertical = { preview_cutoff = 15, preview_height = 0.5 },
           },
         },
       },
