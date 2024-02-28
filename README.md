@@ -112,30 +112,31 @@ require("telescope").extensions.lazy_plugins.actions
 ### Defaults
 
 ```lua
--- defaults:
-name_only = true, -- match only the `repo_name`, false to match the full `account/repo_name`
-show_disabled = true, -- also show disabled plugins from the Lazy spec.
-lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy opts and setup() call.
-lazy_spec_table = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy plugin spec table.
-picker_opts = {
-  sorting_strategy = "ascending",
-  layout_strategy = "flex",
-  layout_config = {
-    flex = { flip_columns = 150 },
-    horizontal = { preview_width = { 0.55, max = 100, min = 30 } },
-    vertical = { preview_cutoff = 20, preview_height = 0.5 },
+{
+  name_only = true, -- match only the `repo_name`, false to match the full `account/repo_name`
+  show_disabled = true, -- also show disabled plugins from the Lazy spec.
+  lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy opts and setup() call.
+  lazy_spec_table = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy plugin spec table.
+  picker_opts = {
+    sorting_strategy = "ascending",
+    layout_strategy = "flex",
+    layout_config = {
+      flex = { flip_columns = 150 },
+      horizontal = { preview_width = { 0.55, max = 100, min = 30 } },
+      vertical = { preview_cutoff = 20, preview_height = 0.5 },
+    },
   },
-},
-mappings = {
-  ["i"] = {
-    ["<C-g>"] = lp_actions.open_repo_url,
-    ["<LeftMouse>"] = lp_actions.nothing,
+  mappings = {
+    ["i"] = {
+      ["<C-g>"] = lp_actions.open_repo_url,
+      ["<LeftMouse>"] = lp_actions.nothing,
+    },
+    ["n"] = {
+      ["g"] = lp_actions.open_repo_url,
+      ["<LeftMouse>"] = lp_actions.nothing,
+    },
   },
-  ["n"] = {
-    ["g"] = lp_actions.open_repo_url,
-    ["<LeftMouse>"] = lp_actions.nothing,
-  },
-},
+}
 ```
 
 
@@ -228,4 +229,4 @@ This are the highlights defined by **Telescope Lazy Plugins**:
 This plugin is made mainly for my personal use, but suggestions, issues, or pull
 requests are very welcome.
 
-Enjoy
+***Enjoy***
