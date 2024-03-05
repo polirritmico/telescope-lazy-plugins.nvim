@@ -9,6 +9,7 @@ local lp_make_entry = require("telescope._extensions.lazy_plugins.make_entry")
 ---@field filepath string Full file path to the plugin lua configuration
 ---@field line integer Line number of the plugin definition in the lua file
 ---@field repo_url integer Url to the repo
+---@field repo_dir integer Path to the local repository clone
 
 ---Finds the line number matching the plugin repository name within the plugin file
 ---@param repo_name string Repository name (username/plugin)
@@ -78,9 +79,11 @@ local function collect_config_files(plugin)
   local repo_url = plugin.url and plugin.url:gsub("%.git$", "")
     or "https://github.com/" .. repo_name
 
+  ---@type LazyPluginData
   local current_plugin = {
     repo_name = repo_name,
     repo_url = repo_url,
+    repo_dir = plugin.dir,
     name = lp_config.options.name_only and plugin.name or repo_name,
     filepath = filepath,
     file = filepath:match(".*/(.*/.*)%.%w+"),
@@ -137,7 +140,8 @@ end
 ---@return table<LazyPluginData>
 local function get_plugins_data()
   local plugins_collection = {}
-  local lazy_spec = require("lazy.core.config").spec
+  local lazy_config = require("lazy.core.config")
+  local lazy_spec = lazy_config.spec
 
   for _, plugin in pairs(lazy_spec.plugins) do
     if plugin.name ~= "lazy.nvim" and plugin.name ~= "LazyVim" then
@@ -155,6 +159,7 @@ local function get_plugins_data()
       name = lp_config.options.name_only and "lazy.nvim" or "folke/lazy.nvim",
       repo_name = "folke/lazy.nvim",
       repo_url = "https://github.com/folke/lazy.nvim",
+      repo_dir = lazy_config.me or lazy_config.options.root,
       filepath = lp_config.options.lazy_config,
       file = lp_config.options.lazy_config:match("[^/]+$"),
       line = 1,

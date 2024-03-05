@@ -2,12 +2,12 @@ local lp_actions = require("telescope._extensions.lazy_plugins.actions")
 local lp_highlights = require("telescope._extensions.lazy_plugins.highlights")
 
 ---@class TelescopeLazyPluginsConfig
----@field name_only boolean Match only the `repo_name`, false to match the full `account/repo_name`
----@field show_disabled boolean Also show disabled plugins from the Lazy spec
 ---@field lazy_config string? Optional. Path to the file containing the lazy opts and setup() call
 ---@field lazy_spec_table string? Optional. Path to the file containing the lazy plugin spec table
 ---@field mappings table Keymaps attached to the picker. See `:h telescope.mappings`
+---@field name_only boolean Match only the `repo_name`, false to match the full `account/repo_name`
 ---@field picker_opts table Layout options passed into Telescope. Check `:h telescope.layout`
+---@field show_disabled boolean Also show disabled plugins from the Lazy spec
 
 local M = {}
 
@@ -20,11 +20,13 @@ local defaults = {
   mappings = {
     ["i"] = {
       ["<C-g>"] = lp_actions.open_repo_url,
-      -- HACK: Add a dummy function to the mouse click to avoid closing the picker
+      ["<C-r>"] = lp_actions.open_repo_dir,
+      -- HACK: Add a dummy function to avoid closing the picker on a mouse click
       ["<LeftMouse>"] = lp_actions.nothing,
     },
     ["n"] = {
       ["g"] = lp_actions.open_repo_url,
+      ["r"] = lp_actions.open_repo_dir,
       ["<LeftMouse>"] = lp_actions.nothing,
     },
   },

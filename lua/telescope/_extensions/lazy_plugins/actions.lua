@@ -1,5 +1,6 @@
-local action_state = require("telescope.actions.state")
 local action_set = require("telescope.actions.set")
+local action_state = require("telescope.actions.state")
+local actions = require("telescope.actions")
 
 local lp_actions = {}
 
@@ -17,6 +18,28 @@ function lp_actions.open(prompt_bufnr)
   action_set.select(prompt_bufnr, "default")
   -- Set current line at the top position of the view
   vim.cmd(":normal! zt")
+end
+
+---Custom picker action to open the plugin repository local clone folder
+---Uses the value of the `dir` field from the Lazy plugin spec.
+---@param prompt_bufnr integer Telescope prompt buffer value
+function lp_actions.open_repo_dir(prompt_bufnr)
+  local entry = action_state.get_selected_entry().value ---@type LazyPluginData
+  if not entry.repo_dir then
+    local msg = "Missing `dir` field for `%s` from the Lazy plugin spec."
+    vim.notify(string.format(msg, entry.name), vim.log.levels.WARN)
+    return
+  end
+  -- Append to Telescope history
+  action_state
+    .get_current_history()
+    :append(
+      action_state.get_current_line(),
+      action_state.get_current_picker(prompt_bufnr)
+    )
+  actions.close(prompt_bufnr)
+  -- Open the file in a new buffer
+  vim.cmd("edit " .. entry.repo_dir)
 end
 
 ---Dummy function to not close Telescope from mouse clicks.

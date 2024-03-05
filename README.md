@@ -19,7 +19,7 @@ plugin option, or searching through files to check for overlapping
 configurations.
 
 ⚡ Quickly open the selected plugin repository webpage in your browser with a
-single keystroke (`<C-g>` by default).
+single keystroke (`<C-g>` by default) or its repository local clone dir (`<C-r>`).
 
 Specially useful when your plugin configuration is spread across many files,
 when you have a lot of plugins in the same file or when you have multiple
@@ -108,6 +108,7 @@ require("telescope").extensions.lazy_plugins.actions
 |--------------|---------------|-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `<CR>`       | `<CR>`        | `open`          | Open the selected plugin config file at the first line of the plugin spec.                                                                                                        |
 | `<C-g>`      | `g`           | `open_repo_url` | Open the plugin repository url in your default web browser.                                                                                                                       |
+| `<C-r>`      | `r`           | `open_repo_dir` | Open the plugin repository Lazy local clone folder.                                                                                                                               |
 | `<LefMouse>` | `<LeftMouse>` | `nothing`       | A dummy function to prevent closing Telescope on mouse clicks. Useful for keeping Telescope open when focus is regained by a mouse click after browsing the plugin documentation. |
 
 
