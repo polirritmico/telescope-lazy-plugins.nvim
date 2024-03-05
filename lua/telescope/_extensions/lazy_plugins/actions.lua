@@ -25,7 +25,7 @@ end
 ---@param prompt_bufnr integer Telescope prompt buffer value
 function lp_actions.open_repo_dir(prompt_bufnr)
   local entry = action_state.get_selected_entry().value ---@type LazyPluginData
-  if not entry.repo_dir then
+  if not entry.repo_dir or entry.repo_dir == "" then
     local msg = "Missing `dir` field for `%s` from the Lazy plugin spec."
     vim.notify(string.format(msg, entry.name), vim.log.levels.WARN)
     return

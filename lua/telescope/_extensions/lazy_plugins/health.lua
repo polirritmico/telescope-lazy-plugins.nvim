@@ -8,7 +8,8 @@ function M.health()
   local error = health.error or health.report_error
 
   local ok_requires = true
-  if not pcall(require, "telescope") then
+  local telescope_ok, telescope = pcall(require, "telescope")
+  if not telescope_ok then
     error("unexpected: Telescope configuration couldn't be loaded.")
     ok_requires = false
   end
@@ -37,7 +38,7 @@ function M.health()
   end
 
   -- Check plugins spec
-  local lazy_plugins = require("telescope").extensions.lazy_plugins.finder().results
+  local lazy_plugins = telescope.extensions.lazy_plugins.finder().results
   if not opts.lazy_spec_table then
     if #lazy_plugins < min_plugins then
       error("No plugins configuration files found. Check the `lazy_spec_table` path.")

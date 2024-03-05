@@ -26,7 +26,7 @@ local function lp_picker(opts)
     .new(opts.picker_opts, {
       actions = lp_actions,
       attach_mappings = attach_mappings,
-      finder = lp_finder(opts),
+      finder = lp_finder.finder(opts),
       preview_title = "Config File Preview",
       previewer = config.grep_previewer(opts),
       prompt_title = "Search Plugins",
