@@ -65,6 +65,8 @@ return {
 }
 ```
 
+> Run `:checkhealth telescope` after the installation is recommended.
+
 ## 🔍 Usage
 
 - **Command-line:**

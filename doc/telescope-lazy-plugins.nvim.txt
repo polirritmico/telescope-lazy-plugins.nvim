@@ -1,4 +1,4 @@
-*telescope-lazy-plugins.nvim.txt*For Neovim >= 0.9Last change: 2024 February 28
+*telescope-lazy-plugins.nvim.txt* For Neovim >= 0.9 Last change: 2024 March 05
 
 ==============================================================================
 Table of Contents              *telescope-lazy-plugins.nvim-table-of-contents*
@@ -63,6 +63,8 @@ cursor is set at the appropiate position.
     }
 <
 
+
+  Run `:checkhealth telescope` after the installation is recommended.
 
 ==============================================================================
 3. Usage                                   *telescope-lazy-plugins.nvim-usage*
