@@ -25,13 +25,13 @@ local function lp_picker(opts)
   pickers
     .new(opts.picker_opts, {
       actions = lp_actions,
+      attach_mappings = attach_mappings,
       finder = lp_finder(opts),
       preview_title = "Config File Preview",
       previewer = config.grep_previewer(opts),
       prompt_title = "Search Plugins",
       results_title = "Matching Plugins",
       sorter = config.generic_sorter(opts),
-      attach_mappings = attach_mappings,
     })
     :find()
 end

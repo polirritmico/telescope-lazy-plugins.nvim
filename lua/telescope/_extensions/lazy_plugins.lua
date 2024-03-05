@@ -7,9 +7,11 @@ local lp_actions = require("telescope._extensions.lazy_plugins.actions")
 local lp_config = require("telescope._extensions.lazy_plugins.config")
 local lp_finder = require("telescope._extensions.lazy_plugins.finder")
 local lp_picker = require("telescope._extensions.lazy_plugins.picker")
+local lp_health = require("telescope._extensions.lazy_plugins.health")
 
 return telescope.register_extension({
   setup = lp_config.setup,
+  health = lp_health,
   exports = {
     lazy_plugins = lp_picker,
     actions = lp_actions,
