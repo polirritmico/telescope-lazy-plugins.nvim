@@ -38,7 +38,7 @@ function M.health()
   end
 
   -- Check plugins spec
-  local lazy_plugins = telescope.extensions.lazy_plugins.finder().results
+  local lazy_plugins = telescope.extensions.lazy_plugins.finder.finder().results
   if not opts.lazy_spec_table then
     if #lazy_plugins < min_plugins then
       error("No plugins configuration files found. Check the `lazy_spec_table` path.")
