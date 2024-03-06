@@ -41,7 +41,7 @@ local defaults = {
   },
 }
 
-M.options = {}
+M.options = M.options or {}
 
 ---@param opts TelescopeLazyPluginsConfig?
 function M.setup(opts)
