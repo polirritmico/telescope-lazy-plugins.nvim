@@ -40,7 +40,7 @@ local function check_health()
     if #lazy_plugins < min_plugins then
       error("No plugins configuration files found. Check the `lazy_spec_table` path.")
     else
-      warn("No Lazy plugins spec table file found.")
+      warn("No Lazy plugins spec table file found. (Set in `lazy_spec_table`)")
     end
   else
     ok("Path to Lazy plugins spec table file found.")
