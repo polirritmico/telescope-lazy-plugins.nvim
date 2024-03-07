@@ -8,7 +8,7 @@ local lp_actions = require("telescope._extensions.lazy_plugins.actions")
 ---Telescope picker to quickly open plugins configuration files within the Lazy spec.
 ---@param opts table? Options passed to the Telescope previewer and sorter.
 local function lp_picker(opts)
-  opts = vim.tbl_deep_extend("force", lp_config.options or {}, opts or {})
+  opts = vim.tbl_deep_extend("force", {}, lp_config.options, opts or {})
 
   local function attach_mappings(_, map)
     actions.select_default:replace(lp_actions.open)

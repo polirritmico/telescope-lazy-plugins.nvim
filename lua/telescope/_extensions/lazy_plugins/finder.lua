@@ -177,7 +177,7 @@ end
 ---Finder to use with the Telescope API. Get the plugin data for each plugin
 ---registered on the Lazy spec.
 function lp_finder.finder(opts)
-  opts = vim.tbl_deep_extend("force", lp_config.options or {}, opts or {})
+  opts = vim.tbl_deep_extend("force", {}, lp_config.options, opts or {})
 
   return finders.new_table({
     results = lp_finder.get_plugins_data(),
