@@ -1,7 +1,4 @@
-local M = {}
-
----@class TelescopeLazyPluginsHealth
-function M.health()
+local function check_health()
   local health = vim.health or require("health")
   local ok = health.ok or health.report_ok
   local warn = health.warn or health.report_warn
@@ -50,4 +47,4 @@ function M.health()
   end
 end
 
-return M.health
+return check_health
