@@ -5,16 +5,15 @@ local lp_make_entry = require("telescope._extensions.lazy_plugins.make_entry")
 ---@class TelescopeLazyPluginsFinder
 local lp_finder = {}
 
----Stores the relevant Lazy plugin spec data to use the picker.
+---Stores the relevant Lazy plugin spec data to use by the picker.
 ---@class LazyPluginData
 ---@field name string Plugin name
 ---@field repo_name string Full name of the plugin repository
 ---@field filepath string Full file path to the plugin lua configuration
 ---@field line integer Line number of the plugin definition in the lua file
----@field repo_url integer Url to the repo
----@field repo_dir integer Path to the local repository clone
+---@field repo_url string Url to the repo
+---@field repo_dir string Path to the local repository clone
 
----Finds the line number matching the plugin repository name within the plugin file
 ---@param repo_name string Repository name (username/plugin)
 ---@param filepath string Full file path
 ---@return integer -- Matching line number
@@ -152,8 +151,8 @@ function lp_finder.get_plugins_data()
     end
   end
   if lp_config.options.show_disabled then
-    for _, plugin in pairs(lazy_spec.disabled) do
-      lp_finder.add_plugin(plugins_collection, plugin, true)
+    for _, disabled_plugin in pairs(lazy_spec.disabled) do
+      lp_finder.add_plugin(plugins_collection, disabled_plugin, true)
     end
   end
 
@@ -166,11 +165,13 @@ function lp_finder.get_plugins_data()
       filepath = lp_config.options.lazy_config,
       file = lp_config.options.lazy_config:match("[^/]+$"),
       line = 1,
-      disabled = false,
     })
   end
 
-  -- table.sort(plugins_collection, function(a, b) return a.name < b.name end)
+  for _, entry in pairs(lp_config.options.custom_entries) do
+    table.insert(plugins_collection, entry)
+  end
+
   return plugins_collection
 end
 

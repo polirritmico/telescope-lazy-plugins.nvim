@@ -45,6 +45,42 @@ local function check_health()
   else
     ok("Path to Lazy plugins spec table file found.")
   end
+
+  -- Check custom user entries
+  if config.raw_custom_entries then
+    local custom_entries_errors = {}
+    local errors_detected = false
+    for i, entry in ipairs(config.raw_custom_entries) do
+      local msg = ""
+      if not entry.name or type(entry.name) ~= "string" or entry.name == "" then
+        msg = string.format("- name: '%s'\n", entry.name)
+        errors_detected = true
+      end
+      if entry.filepath and vim.fn.filereadable(entry.filepath) ~= 1 then
+        msg = msg .. string.format("- filepath: '%s'\n", entry.filepath)
+        errors_detected = true
+      end
+      if entry.repo_dir and vim.fn.isdirectory(entry.repo_dir) ~= 1 then
+        msg = msg .. string.format("- repo_dir:\n'%s'\n", entry.repo_dir)
+        errors_detected = true
+      end
+
+      if msg == "" then
+        msg = "- No errors detected\n"
+      end
+      table.insert(custom_entries_errors, i, msg)
+    end
+
+    if errors_detected then
+      local msg = "Problems detected in user custom_entries:\n"
+      for idx, error_msg in pairs(custom_entries_errors) do
+        msg = msg .. string.format("Custom entry number %d:\n%s", idx, error_msg)
+      end
+      error(msg)
+    else
+      ok("No problems detected in custom_entries.")
+    end
+  end
 end
 
 return check_health
