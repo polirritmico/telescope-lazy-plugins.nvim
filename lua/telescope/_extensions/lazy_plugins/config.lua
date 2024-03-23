@@ -45,7 +45,7 @@ M.options = M.options or {}
 
 ---@param opts TelescopeLazyPluginsConfig?
 function M.setup(opts)
-  M.options = vim.tbl_deep_extend("force", {}, defaults, M.options, opts or {})
+  M.options = vim.tbl_deep_extend("force", defaults, M.options, opts or {})
 
   local lazy_cfg = vim.fn.expand(M.options.lazy_config)
   local spec_tbl = vim.fn.expand(M.options.lazy_spec_table)
