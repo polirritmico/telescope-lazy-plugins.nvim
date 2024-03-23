@@ -8,6 +8,14 @@ local lp_highlights = require("telescope._extensions.lazy_plugins.highlights")
 ---@field name_only boolean Match only the `repo_name`, false to match the full `account/repo_name`
 ---@field picker_opts table Layout options passed into Telescope. Check `:h telescope.layout`
 ---@field show_disabled boolean Also show disabled plugins from the Lazy spec
+---@field custom_entries? table<LazyPluginsCustomEntry|LazyPluginData> Table to pass custom entries to the picker.
+
+---@class LazyPluginsCustomEntry
+---@field name string Entry name
+---@field filepath string Full file path to the lua target file
+---@field line? integer Optional: Line number to set the view on the target file
+---@field repo_url? string Optional: Url to open with the `open_repo_url` action
+---@field repo_dir? string Optional: Directory path to open with the `open_repo_dir` action
 
 local M = {}
 
@@ -17,6 +25,7 @@ local defaults = {
   show_disabled = true,
   lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua",
   lazy_spec_table = vim.fn.stdpath("config") .. "/lua/config/lazy.lua",
+  custom_entries = {}, ---@type table<LazyPluginsCustomEntry>
   mappings = {
     ["i"] = {
       ["<C-g>"] = lp_actions.open_repo_url,
@@ -52,7 +61,47 @@ function M.setup(opts)
   M.options.lazy_config = vim.fn.filereadable(lazy_cfg) == 1 and lazy_cfg or nil
   M.options.lazy_spec_table = vim.fn.filereadable(spec_tbl) == 1 and spec_tbl or nil
 
+  if type(M.options.custom_entries) == "table" and #M.options.custom_entries > 0 then
+    M.options.custom_entries = M.create_custom_entries_from_user_config()
+  end
+
   lp_highlights.setup()
+end
+
+---@return table<LazyPluginData>
+function M.create_custom_entries_from_user_config()
+  local function check_errors(entry)
+    if not entry.name or type(entry.name) ~= "string" or entry.name == "" then
+      return true
+    end
+    if entry.filepath and vim.fn.filereadable(entry.filepath) ~= 1 then
+      return true
+    end
+    if entry.repo_dir and vim.fn.isdirectory(entry.repo_dir) ~= 1 then
+      return true
+    end
+    return false
+  end
+
+  local custom_entries = {}
+  for _, entry in pairs(M.options.custom_entries) do
+    if check_errors(entry) then
+      -- HACK: Avoid repeated warning messages: https://github.com/nvim-telescope/telescope.nvim/issues/2659
+      if not M.raw_custom_entries then
+        M.raw_custom_entries = vim.deepcopy(M.options.custom_entries) -- Used by checkhealth
+        vim.notify(
+          "[telescope-lazy-plugins] Errors detected in custom_entries.\n"
+            .. "Run ':checkhealth telescope' for more details.",
+          vim.log.levels.WARN
+        )
+      end
+      return {}
+    end
+    entry["file"] = entry.file or entry.filepath:match(".*/(.*/.*)%.%w+")
+    entry.line = entry.line or 1
+    table.insert(custom_entries, entry)
+  end
+  return custom_entries
 end
 
 return M

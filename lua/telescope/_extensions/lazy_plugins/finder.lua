@@ -139,6 +139,7 @@ end
 ---obtains the plugin name, repository name (<username/plugin>), full file path
 ---of the Lua file containing the plugin config, and the line number where the
 ---repository name is found.
+---@param opts TelescopeLazyPluginsConfig
 ---@return table<LazyPluginData>
 function lp_finder.get_plugins_data()
   local plugins_collection = {}
@@ -168,7 +169,10 @@ function lp_finder.get_plugins_data()
     })
   end
 
-  -- table.sort(plugins_collection, function(a, b) return a.name < b.name end)
+  for _, entry in pairs(lp_config.options.custom_entries) do
+    table.insert(plugins_collection, entry)
+  end
+
   return plugins_collection
 end
 
