@@ -14,19 +14,23 @@
 > quickly access plugins config files for
 > [lazy.nvim](https://github.com/folke/lazy.nvim) configurations.
 
+⚡ Simply search the plugin name and open its configuration at the corresponding
+line. No matter if it is in a unique file, grouped with other plugins in the
+same file, grouped in the same table or if is only a dependency.
+
 ⚡ No more head overload trying to remember in which file you changed that
 plugin option, or searching through files to check for overlapping
 configurations.
 
 ⚡ Quickly open the selected plugin repository webpage in your browser with a
-single keystroke (`<C-g>` by default) or its repository local clone directory
-(`<C-r>`).
+single keystroke (`<C-g>`).
+
+⚡ Quickly open the repository local clone directory (`<C-r>`).
 
 ⚡ Add custom entries for your special needs.
 
-The plugin is specially useful when your plugin configuration is spread across
-many files, when you have a lot of plugins in the same file or when you have
-multiple plugins grouped into separate files like this:
+Specially useful when a plugin configuration is spread across many files or you
+have multiple plugins into separate files like this:
 
 ```
 lua/
@@ -41,14 +45,14 @@ lua/
 ```
 
 The plugin check the current `LazyPluginSpec`, extract each plugin data and
-generate the full filepath for each. Also, when opening a config file, the
-cursor is set at the appropriate position.
+generate the full filepath for each with the corresponding line number, so the
+file is open at the appropriate cursor position.
 
 <!-- panvimdoc-ignore-start -->
 
 ### 📷 Screenshot
 
-_Searching for Telescope configurations:_
+_Example: Searching for Telescope configurations:_
 
 ![Screenshot](https://github.com/polirritmico/telescope-lazy-plugins.nvim/assets/24460484/c2ca5c7b-c325-4e32-8aa1-4a014970d1ed)
 
@@ -248,17 +252,13 @@ return {
       { "nvim-lua/plenary.nvim" },
       {
         "polirritmico/telescope-lazy-plugins.nvim",
-        keys = {
-          {
-            "<leader>cp",
-            "<Cmd>Telescope lazy_plugins<CR>",
-            desc = "Telescope: Plugins configurations"
-          },
-        },
         init = function()
           load_extension_after_telescope_is_loaded("lazy_plugins")
         end,
       },
+    },
+    keys = {
+      {"<leader>cp", "<Cmd>Telescope lazy_plugins<CR>", desc = "Telescope: Plugins configurations"},
     },
     -- Add the configuration through the Telescope options:
     opts = {
@@ -296,10 +296,10 @@ return {
 
 ### 📜 Full spec table
 
-When passing the plugin specification table directly to the setup function (e.g.
-`require('lazy').setup({...}, opts)`), ensure that the `lazy_spec_table` option
-is set pointing to the file where the spec table is defined. For example, for
-configurations with a single `init.lua` file:
+If your plugins are inside a large table passed directly to the
+`require('lazy').setup({...}, opts)` call, make sure to set the
+`lazy_spec_table` option to specify the file where the spec table is defined.
+For example, for configurations in a single `init.lua` file:
 
 <details>
 <summary> Click to see the configuration example</summary>
@@ -311,9 +311,9 @@ local opts = {
 }
 require("lazy").setup({
   -- full list of plugins and configs like this:
-  "username/plugin",
+  "username/a_plugin",
   opts = {
-    configurations = "values"
+    configurations = "custom values",
   },
   -- etc.
   {
@@ -325,8 +325,8 @@ require("lazy").setup({
     opts = {
       extensions = {
         lazy_plugins = {
-          -- Since in this config is only one big table, pass the path of this
-          -- file into the `lazy_spec_table` field:
+          -- Since this config is only in one big table, pass the path of this
+          -- file (~/.config/nvim/init.lua) into the `lazy_spec_table` field:
           lazy_spec_table = vim.fn.stdpath("config") .. "/init.lua"
         },
       },
