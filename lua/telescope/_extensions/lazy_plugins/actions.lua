@@ -48,7 +48,7 @@ function lp_actions.nothing() end
 local open_url_cmd = "" ---@type string|nil
 
 ---Custom picker action to open the repo url in the default browser
-function lp_actions.open_repo_url()
+function lp_actions.open_repo_url(prompt_bufnr)
   local entry = action_state.get_selected_entry()
   local repo_url = entry.value.repo_url
   if type(repo_url) ~= "string" or repo_url == "" or not open_url_cmd then
@@ -79,6 +79,8 @@ function lp_actions.open_repo_url()
   if cmd_output <= 0 then
     local msg = string.format("Error opening '%s' with '%s'.", repo_url, open_url_cmd)
     vim.notify(msg, vim.log.levels.ERROR, { title = "Telescope Lazy Plugins" })
+  else
+    actions.close(prompt_bufnr)
   end
 end
 
