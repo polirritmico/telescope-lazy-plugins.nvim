@@ -23,26 +23,12 @@ plugin option, or searching through files to check for overlapping
 configurations.
 
 ⚡ Quickly open the selected plugin repository webpage in your browser with a
-single keystroke (`<C-g>`).
+single keystroke (`<C-g>x`).
 
-⚡ Quickly open the repository local clone directory (`<C-r>`).
+⚡ Quickly open the repository local clone directory (`<C-g>r`) or a `live_grep`
+picker (`<C-g>l`).
 
 ⚡ Add custom entries for your special needs.
-
-Specially useful when a plugin configuration is spread across many files or you
-have multiple plugins into separate files like this:
-
-```
-lua/
-└── some/path
-    ├── core.lua
-    ├── develop.lua
-    ├── extras
-    │   └── others.lua
-    ├── helpers.lua
-    ├── misc.lua
-    └── ui.lua
-```
 
 The plugin check the current `LazyPluginSpec`, extract each plugin data and
 generate the full filepath for each with the corresponding line number, so the
@@ -98,7 +84,7 @@ require("telescope").extensions.lazy_plugins.lazy_plugins()
 ## 🛠️ Configuration:
 
 Add the options in the `telescope.nvim` opts `extensions` table inside
-`lazy_plugins` (check the examples).
+`lazy_plugins` (check the configuration examples).
 
 | Option            | Type      | Description                                                                                                                                                                                                                                                                   |
 | ----------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -108,6 +94,7 @@ Add the options in the `telescope.nvim` opts `extensions` table inside
 | `show_disabled`   | `boolean` | Also show disabled plugins from the Lazy spec.                                                                                                                                                                                                                                |
 | `picker_opts`     | `table`   | Layout options passed into Telescope. Check `:h telescope.layout`.                                                                                                                                                                                                            |
 | `mappings`        | `table`   | Keymaps attached to the picker. See `:h telescope.mappings`.                                                                                                                                                                                                                  |
+| `live_grep`       | `table`   | Options to pass into the Telescope builtin live_grep picker. See `:h telescope.builtin.live_grep`.                                                                                                                                                                            |
 | `custom_entries`  | `table`   | A collection of custom entries to add into the picker. See the '[Custom Entries](#-custom-entries)' section.                                                                                                                                                                  |
 
 ### ⌨️ Mappings
@@ -119,12 +106,13 @@ accessible via:
 require("telescope").extensions.lazy_plugins.actions
 ```
 
-| Insert       | Normal        | lp_actions      | Description                                                                                                                                                                       |
-| ------------ | ------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `<CR>`       | `<CR>`        | `open`          | Open the selected plugin config file at the first line of the plugin spec.                                                                                                        |
-| `<C-g>`      | `g`           | `open_repo_url` | Open the plugin repository url in your default web browser.                                                                                                                       |
-| `<C-r>`      | `r`           | `open_repo_dir` | Open the plugin repository Lazy local clone folder.                                                                                                                               |
-| `<LefMouse>` | `<LeftMouse>` | `nothing`       | A dummy function to prevent closing Telescope on mouse clicks. Useful for keeping Telescope open when focus is regained by a mouse click after browsing the plugin documentation. |
+| Insert       | Normal        | lp_actions            | Description                                                                                                                                                                       |
+| ------------ | ------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `<CR>`       | `<CR>`        | `open`                | Open the selected plugin config file at the first line of the plugin spec.                                                                                                        |
+| `<C-g>x`     | `gx`          | `open_repo_url`       | Open the plugin repository url in your default web browser.                                                                                                                       |
+| `<C-g>r`     | `gr`          | `open_repo_dir`       | Open the plugin repository Lazy local clone folder.                                                                                                                               |
+| `<C-g>l`     | `gl`          | `open_repo_live_grep` | Open Telescope `live_grep` at the repository local clone folder.                                                                                                                  |
+| `<LefMouse>` | `<LeftMouse>` | `nothing`             | A dummy function to prevent closing Telescope on mouse clicks. Useful for keeping Telescope open when focus is regained by a mouse click after browsing the plugin documentation. |
 
 ### 💈 Custom Entries
 
@@ -160,15 +148,18 @@ Should follow this specs:
   lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy opts and setup() call.
   lazy_spec_table = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy plugin spec table.
   custom_entries = {}, ---@type table<LazyPluginsCustomEntry>
+  live_grep = {}, -- Opts to pass into `live_grep`. Check `:h telescope.builtin.live_grep`
   mappings = {
     ["i"] = {
-      ["<C-g>"] = lp_actions.open_repo_url,
-      ["<C-r>"] = lp_actions.open_repo_dir,
+      ["<C-g>x"] = lp_actions.open_repo_url,
+      ["<C-g>r"] = lp_actions.open_repo_dir,
+      ["<C-g>l"] = lp_actions.open_repo_live_grep,
       ["<LeftMouse>"] = lp_actions.nothing,
     },
     ["n"] = {
-      ["g"] = lp_actions.open_repo_url,
-      ["r"] = lp_actions.open_repo_dir,
+      ["gx"] = lp_actions.open_repo_url,
+      ["gr"] = lp_actions.open_repo_dir,
+      ["gl"] = lp_actions.open_repo_live_grep,
       ["<LeftMouse>"] = lp_actions.nothing,
     },
   },
@@ -216,8 +207,8 @@ Should follow this specs:
 
 Lazy-loading Telescope extensions could be a little tricky. This approach
 creates a user auto command that checks when the `telescope.nvim` plugin is
-loaded and then executes the `load_extension` function (Could be used in any
-Telescope extensions).
+loaded and then executes the `load_extension` function (Could be used with any
+Telescope extension).
 
 <details>
 <summary> Click to see the configuration example</summary>
@@ -243,7 +234,6 @@ local load_extension_after_telescope_is_loaded = function(extension_name)
   end
 end
 
--- etc.
 return {
   {
     "nvim-telescope/telescope.nvim",
@@ -264,7 +254,6 @@ return {
     opts = {
       extensions = {
         lazy_plugins = {
-          name_only = true,
           show_disabled = true,
           lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy opts and setup() call.
           lazy_spec_table = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy plugin spec table.
