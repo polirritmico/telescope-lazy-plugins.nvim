@@ -9,6 +9,7 @@ local lp_highlights = require("telescope._extensions.lazy_plugins.highlights")
 ---@field picker_opts table Layout options passed into Telescope. Check `:h telescope.layout`
 ---@field show_disabled boolean Also show disabled plugins from the Lazy spec
 ---@field custom_entries? table<LazyPluginsCustomEntry|LazyPluginData> Table to pass custom entries to the picker.
+---@field live_grep? table Options to pass into the `live_grep` telescope builtin picker
 
 ---@class LazyPluginsCustomEntry
 ---@field name string Entry name
@@ -21,21 +22,24 @@ local M = {}
 
 ---@type TelescopeLazyPluginsConfig
 local defaults = {
-  name_only = true,
-  show_disabled = true,
-  lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua",
-  lazy_spec_table = vim.fn.stdpath("config") .. "/lua/config/lazy.lua",
-  custom_entries = {}, ---@type table<LazyPluginsCustomEntry>
+  name_only = true, -- match only the `repo_name`, false to match the full `account/repo_name`
+  show_disabled = true, -- also show disabled plugins from the Lazy spec.
+  lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy opts and setup() call.
+  lazy_spec_table = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy plugin spec table.
+  custom_entries = {}, ---@type table<LazyPluginsCustomEntry> Table to pass custom entries to the picker.
+  live_grep = {}, -- Options to pass into the `live_grep` telescope builtin picker.
   mappings = {
     ["i"] = {
       ["<C-g>"] = lp_actions.open_repo_url,
       ["<C-r>"] = lp_actions.open_repo_dir,
+      ["<C-l>"] = lp_actions.open_repo_live_grep,
       -- HACK: Add a dummy function to avoid closing the picker on a mouse click
       ["<LeftMouse>"] = lp_actions.nothing,
     },
     ["n"] = {
       ["g"] = lp_actions.open_repo_url,
       ["r"] = lp_actions.open_repo_dir,
+      ["l"] = lp_actions.open_repo_live_grep,
       ["<LeftMouse>"] = lp_actions.nothing,
     },
   },
