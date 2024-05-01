@@ -30,16 +30,16 @@ local defaults = {
   live_grep = {}, -- Options to pass into the `live_grep` telescope builtin picker.
   mappings = {
     ["i"] = {
-      ["<C-g>"] = lp_actions.open_repo_url,
-      ["<C-r>"] = lp_actions.open_repo_dir,
-      ["<C-l>"] = lp_actions.open_repo_live_grep,
+      ["<C-g>x"] = lp_actions.open_repo_url,
+      ["<C-g>r"] = lp_actions.open_repo_dir,
+      ["<C-g>l"] = lp_actions.open_repo_live_grep,
       -- HACK: Add a dummy function to avoid closing the picker on a mouse click
       ["<LeftMouse>"] = lp_actions.nothing,
     },
     ["n"] = {
-      ["g"] = lp_actions.open_repo_url,
-      ["r"] = lp_actions.open_repo_dir,
-      ["l"] = lp_actions.open_repo_live_grep,
+      ["gx"] = lp_actions.open_repo_url,
+      ["gr"] = lp_actions.open_repo_dir,
+      ["gl"] = lp_actions.open_repo_live_grep,
       ["<LeftMouse>"] = lp_actions.nothing,
     },
   },
