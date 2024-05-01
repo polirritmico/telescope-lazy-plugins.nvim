@@ -3,63 +3,70 @@ local action_state = require("telescope.actions.state")
 local actions = require("telescope.actions")
 local builtin = require("telescope.builtin")
 
+---Collection of plugin's actions and helpers functions to create your own
+---@class TelescopeLazyPluginActions
 local lp_actions = {}
 
 ---Dummy function to not close Telescope from mouse clicks.
 function lp_actions.nothing() end
 
+---Append the current search into Telescope history
+---@param prompt_bufnr integer Telescope prompt buffer value
+function lp_actions.append_to_telescope_history(prompt_bufnr)
+  action_state.get_current_history():append(
+    action_state.get_current_line(),
+    action_state.get_current_picker(prompt_bufnr),
+    false
+  )
+end
+
+---Close the Telescope prompt buffer (wrapper of telescope close action)
+---@param prompt_bufnr integer Telescope prompt buffer value
+function lp_actions.close(prompt_bufnr)
+  actions.close(prompt_bufnr)
+end
+
+---Check if the Telescope selected entry has the passed `field`
+---@param field string LazyPluginData field of the selected entry to check.
+---@return LazyPluginData? entry - `true` when the field is found
+function lp_actions.get_selected_entry(field)
+  local selected_entry = action_state.get_selected_entry().value ---@type LazyPluginData
+  if not selected_entry[field] or selected_entry[field] == "" then
+    local msg = "Missing `%s` field for `%s` from the Lazy plugin spec."
+    vim.notify(string.format(msg, field, selected_entry.name), vim.log.levels.WARN)
+    return
+  end
+  return selected_entry
+end
+
 ---Custom picker action to open the file and move the current line at the top.
 ---@param prompt_bufnr integer Telescope prompt buffer value
 function lp_actions.open(prompt_bufnr)
-  -- Append to Telescope history
-  action_state
-    .get_current_history()
-    :append(
-      action_state.get_current_line(),
-      action_state.get_current_picker(prompt_bufnr)
-    )
+  lp_actions.append_to_telescope_history(prompt_bufnr)
   -- Open the file in a new buffer
   action_set.select(prompt_bufnr, "default")
   -- Set current line at the top position of the view
   vim.cmd(":normal! zt")
 end
 
----Check if the telescope selected entry has the passed `field`
----@param field string
----@return LazyPluginData? entry - `true` when the field is found
-local function get_entry(field)
-  local entry = action_state.get_selected_entry().value ---@type LazyPluginData
-  if not entry[field] or entry[field] == "" then
-    local msg = "Missing `%s` field for `%s` from the Lazy plugin spec."
-    vim.notify(string.format(msg, field, entry.name), vim.log.levels.WARN)
-    return
-  end
-  return entry
-end
-
 ---Custom picker action to open the plugin repository local clone folder
 ---Uses the value of the `dir` field from the Lazy plugin spec.
 ---@param prompt_bufnr integer Telescope prompt buffer value
 function lp_actions.open_repo_dir(prompt_bufnr)
-  local entry = get_entry("repo_dir")
+  local entry = lp_actions.get_selected_entry("repo_dir")
   if not entry then
     return
   end
-
-  -- Append to Telescope history
-  action_state
-    .get_current_history()
-    :append(
-      action_state.get_current_line(),
-      action_state.get_current_picker(prompt_bufnr)
-    )
+  lp_actions.append_to_telescope_history(prompt_bufnr)
   actions.close(prompt_bufnr)
-  -- Open the file in a new buffer
+  -- Open the folder in a new buffer
   vim.cmd("edit " .. entry.repo_dir)
 end
 
+---Open the builtin `live_grep` Telescope picker at the plugin repo cwd
+---@param prompt_bufnr integer Telescope prompt buffer value
 function lp_actions.open_repo_live_grep(prompt_bufnr)
-  local entry = get_entry("repo_dir")
+  local entry = lp_actions.get_selected_entry("repo_dir")
   if not entry then
     return
   end
@@ -71,6 +78,7 @@ function lp_actions.open_repo_live_grep(prompt_bufnr)
   end
   opts["cwd"] = entry.repo_dir
 
+  lp_actions.append_to_telescope_history(prompt_bufnr)
   actions.close(prompt_bufnr)
   builtin.live_grep(opts)
 end
@@ -79,7 +87,7 @@ local open_url_cmd = "" ---@type string|nil
 
 ---Custom picker action to open the repo url in the default browser
 function lp_actions.open_repo_url()
-  local entry = get_entry("repo_url")
+  local entry = lp_actions.get_selected_entry("repo_url")
   if not entry or not open_url_cmd then
     return
   end
