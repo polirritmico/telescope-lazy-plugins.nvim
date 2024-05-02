@@ -8,6 +8,7 @@ Table of Contents              *telescope-lazy-plugins.nvim-table-of-contents*
 3. Usage                                   |telescope-lazy-plugins.nvim-usage|
 4. Configuration:                 |telescope-lazy-plugins.nvim-configuration:|
   - Mappings                            |telescope-lazy-plugins.nvim-mappings|
+  - Custom Actions                |telescope-lazy-plugins.nvim-custom-actions|
   - Custom Entries                |telescope-lazy-plugins.nvim-custom-entries|
   - Defaults                            |telescope-lazy-plugins.nvim-defaults|
 5. Configuration Examples:|telescope-lazy-plugins.nvim-configuration-examples:|
@@ -161,35 +162,12 @@ accessible via:
                                                    Actions’ section.
   ---------------------------------------------------------------------------------------------------------
 
-CUSTOM ACTIONS ~
+CUSTOM ACTIONS                    *telescope-lazy-plugins.nvim-custom-actions*
 
 The plugin also offer the possibility to add and define your custom actions
 through `custom_action` and helper functions.
 
-**custom_action**
-
-Awrapper function to use custom actions. This function get and validates the
-selected entry field, executes the passed `custom_function` in a protected call
-and returns its output.
-
-- **param** `prompt_bufnr` — Telescope prompt buffer value
-- **param** `field` — Field of the `LazyPluginData` to validate the selected
-    entry (before the custom_function call). Check the
-    '|telescope-lazy-plugins.nvim-custom-entries|' section for details on the entry field.
-- **param** `custom_function` — Custom function to execute.
-- **param** `args` — Custom args if needed.
-- **return** `output` — The output of the custom_function, nil or the error
-    object from pcall
-
->
-    function custom_action(
-      prompt_bufnr: integer,
-      field: string,
-      custom_function: fun(prompt_bufnr: integer, entry: LazyPluginData, args?: table): any,
-      args?: table
-    ) -> output: any
-<
-
+------------------------------------------------------------------------------
 **Helper Functions:**
 
 - `append_to_telescope_history`Append the search value into the Telescope
@@ -197,6 +175,28 @@ and returns its output.
 - `close`Close the Telescope picker. Use if you want to close Telescope during
     the execution of your `custom_action`.
 
+**custom_action:**
+
+A wrapper function to use custom actions. This function get and validates the
+selected entry field, executes the passed `custom_function` in a protected call
+and returns its output.
+
+  -------------------------------------------------------------------------------------------
+  Param/Output      Type       Description
+  ----------------- ---------- --------------------------------------------------------------
+  prompt_bufnr      integer    Telescope prompt buffer value
+
+  field             string     Field of the LazyPluginData to validate the selected entry
+                               (before the custom_function call). Check the ‘Custom Entries’
+                               section for details on the entry field.
+
+  custom_function   function   Custom function to execute.
+
+  args              table      Custom args if needed.
+
+  return: output    any        The output of the custom_function, nil or the error object
+                               from pcall.
+  -------------------------------------------------------------------------------------------
 
 EXAMPLES: ~
 

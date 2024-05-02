@@ -14,6 +14,16 @@
 > quickly access plugins config files for
 > [lazy.nvim](https://github.com/folke/lazy.nvim) configurations.
 
+<!-- panvimdoc-ignore-start -->
+
+### 📷 Screenshot
+
+_Example: Searching for Telescope configurations:_
+
+![Screenshot](https://github.com/polirritmico/telescope-lazy-plugins.nvim/assets/24460484/c2ca5c7b-c325-4e32-8aa1-4a014970d1ed)
+
+<!-- panvimdoc-ignore-end -->
+
 ⚡ Simply search the plugin name and open its configuration at the corresponding
 line.
 
@@ -40,16 +50,6 @@ configurations files or custom utilities.
 The plugin check the current `LazyPluginSpec`, extract each plugin data and
 generate the full filepath for each with the corresponding line number, so the
 file is open at the appropriate cursor position.
-
-<!-- panvimdoc-ignore-start -->
-
-### 📷 Screenshot
-
-_Example: Searching for Telescope configurations:_
-
-![Screenshot](https://github.com/polirritmico/telescope-lazy-plugins.nvim/assets/24460484/c2ca5c7b-c325-4e32-8aa1-4a014970d1ed)
-
-<!-- panvimdoc-ignore-end -->
 
 ## 📦 Installation
 
@@ -122,41 +122,17 @@ require("telescope").extensions.lazy_plugins.actions
 | `<LefMouse>` | `<LeftMouse>` | `nothing`             | A dummy function to prevent closing Telescope on mouse clicks. Useful for keeping Telescope open when focus is regained by a mouse click after browsing the plugin documentation. |
 |              |               | `custom_action`       | A wrapper to pass custom actions. See the '[Custom Actions](#-custom-actions)' section.                                                                                           |
 
-#### Custom Actions
+### 🔧 Custom Actions
 
 The plugin also offer the possibility to add and define your custom actions
 through `custom_action` and helper functions.
 
-**custom_action**:
-
-A wrapper function to use custom actions. This function get and validates the
-selected entry field, executes the passed `custom_function` in a protected call
-and returns its output.
-
 <!-- panvimdoc-ignore-start -->
 <details>
-<summary> Click to see the function details</summary>
+<summary> Click to see the functions details</summary>
 <!-- panvimdoc-ignore-end -->
 
-- **_param_** `prompt_bufnr` — Telescope prompt buffer value
-- **_param_** `field` — Field of the `LazyPluginData` to validate the selected
-  entry (before the custom_function call). Check the
-  '[Custom Entries](#-custom-entries)' section for details on the entry field.
-- **_param_** `custom_function` — Custom function to execute.
-- **_param_** `args` — Custom args if needed.
-- **_return_** `output` — The output of the custom_function, nil or the error
-  object from pcall
-
-```
-function custom_action(
-  prompt_bufnr: integer,
-  field: string,
-  custom_function: fun(prompt_bufnr: integer, entry: LazyPluginData, args?: table): any,
-  args?: table
-) -> output: any
-```
-
-</details>
+---
 
 **Helper Functions:**
 
@@ -164,6 +140,22 @@ function custom_action(
   history. For example, when using `:Telescope resume`.
 - `close`: Close the Telescope picker. Use if you want to close Telescope during
   the execution of your `custom_action`.
+
+**custom_action:**
+
+A wrapper function to use custom actions. This function get and validates the
+selected entry field, executes the passed `custom_function` in a protected call
+and returns its output.
+
+| Param/Output      | Type     | Description                                                                                                                                                                              |
+| ----------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `prompt_bufnr`    | integer  | Telescope prompt buffer value                                                                                                                                                            |
+| `field`           | string   | Field of the `LazyPluginData` to validate the selected entry (before the `custom_function` call). Check the '[Custom Entries](#-custom-entries)' section for details on the entry field. |
+| `custom_function` | function | Custom function to execute.                                                                                                                                                              |
+| `args`            | table    | Custom args if needed.                                                                                                                                                                   |
+| return: `output`  | any      | The output of the custom_function, nil or the error object from pcall.                                                                                                                   |
+
+</details>
 
 #### Examples:
 
