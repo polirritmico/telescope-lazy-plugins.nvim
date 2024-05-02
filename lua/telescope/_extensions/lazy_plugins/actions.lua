@@ -39,6 +39,26 @@ function lp_actions.get_selected_entry(field)
   return selected_entry
 end
 
+---Wrapper to use custom actions. This function get and validates the selected
+---entry field, executes the passed `custom_function` in a protected call and
+---returns its output.
+---@param prompt_bufnr integer Telescope prompt buffer value
+---@param field string Field of the `LazyPluginData` to validate the selected entry (before the custom_function call).
+---@param custom_function fun(prompt_bufnr: integer, entry: LazyPluginData, args: table?): any Custom function to execute.
+---@param args table? Custom args if needed.
+---@return any output The output of the custom_function, nil or the error object from pcall
+function lp_actions.custom_action(prompt_bufnr, field, custom_function, args)
+  local selected_entry = lp_actions.get_selected_entry(field)
+  if not selected_entry then
+    return
+  end
+  local ok, output = pcall(custom_function, prompt_bufnr, selected_entry, args)
+  if not ok then
+    vim.notify("Error in custom action", vim.log.levels.WARN)
+  end
+  return output
+end
+
 ---Custom picker action to open the file and move the current line at the top.
 ---@param prompt_bufnr integer Telescope prompt buffer value
 function lp_actions.open(prompt_bufnr)
