@@ -36,8 +36,8 @@ plugin option or searching through files to check for overlapping configs.
 
 ⚡ Add custom entries for your special needs.
 
-For example to access the configuration file of a config distributions, custom
-configurations files or custom utilities.
+For example a custom entry to quickly access a configuration file from a config
+distribution like LazyVim, NvChad, etc.
 
 ⚡ Quickly execute builtin actions on the selected entry:
 
@@ -151,7 +151,7 @@ and returns its output.
 | ----------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `prompt_bufnr`    | integer  | Telescope prompt buffer value                                                                                                                                                            |
 | `field`           | string   | Field of the `LazyPluginData` to validate the selected entry (before the `custom_function` call). Check the '[Custom Entries](#-custom-entries)' section for details on the entry field. |
-| `custom_function` | function | Custom function to execute.                                                                                                                                                              |
+| `custom_function` | function | Custom function to execute, e.g., `foo(bufnr, entry, custom_args)`. Check the custom action example.                                                                                     |
 | `args`            | table    | Custom args if needed.                                                                                                                                                                   |
 | return: `output`  | any      | The output of the custom_function, nil or the error object from pcall.                                                                                                                   |
 
