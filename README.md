@@ -258,13 +258,13 @@ Should follow this specs:
       ["<C-g>x"] = lp_actions.open_repo_url,
       ["<C-g>r"] = lp_actions.open_repo_dir,
       ["<C-g>l"] = lp_actions.open_repo_live_grep,
-      ["<LeftMouse>"] = lp_actions.nothing,
+      ["<LeftMouse>"] = lp_actions.nothing, -- Set to `false` to fallback to the default telescope setting
     },
     ["n"] = {
       ["gx"] = lp_actions.open_repo_url,
       ["gr"] = lp_actions.open_repo_dir,
       ["gl"] = lp_actions.open_repo_live_grep,
-      ["<LeftMouse>"] = lp_actions.nothing,
+      ["<LeftMouse>"] = lp_actions.nothing, -- Set to `false` to fallback to the default telescope setting
     },
   },
   picker_opts = {
