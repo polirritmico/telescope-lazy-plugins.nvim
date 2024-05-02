@@ -15,14 +15,18 @@
 > [lazy.nvim](https://github.com/folke/lazy.nvim) configurations.
 
 ⚡ Simply search the plugin name and open its configuration at the corresponding
-line. No matter if the config is in a unique file, grouped in the same file with
-other plugins configs, grouped in a big table or splitted across multiple plugin
+line.
+
+No matter if the config is in a unique file, grouped in the same file with other
+plugins configs, grouped in a big table or splitted across multiple plugin
 dependencies.
 
 ⚡ No more head overload trying to remember in which file you changed that
 plugin option or searching through files to check for overlapping configs.
 
-⚡ Add custom entries for your special needs like config distributions, custom
+⚡ Add custom entries for your special needs.
+
+For example to access the configuration file of a config distributions, custom
 configurations files or custom utilities.
 
 ⚡ Quickly execute builtin actions on the selected entry:
