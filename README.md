@@ -27,17 +27,17 @@ _Example: Searching for Telescope configurations:_
 ⚡ Simply search the plugin name and open its configuration at the corresponding
 line.
 
-No matter if the config is in a unique file, grouped in the same file with other
-plugins configs, grouped in a big table or splitted across multiple plugin
-dependencies.
+_No matter if the config is in a unique file, grouped in the same file with
+other plugins configs, grouped in a big table or splitted across multiple plugin
+dependencies._
 
 ⚡ No more head overload trying to remember in which file you changed that
 plugin option or searching through files to check for overlapping configs.
 
 ⚡ Add custom entries for your special needs.
 
-For example a custom entry to quickly access a configuration file from a config
-distribution like LazyVim, NvChad, etc.
+_For example a custom entry to quickly access a configuration file from a config
+distribution like LazyVim, NvChad, etc._
 
 ⚡ Quickly execute builtin actions on the selected entry:
 
@@ -92,7 +92,7 @@ require("telescope").extensions.lazy_plugins.lazy_plugins()
 ## 🛠️ Configuration:
 
 Add the options in the `telescope.nvim` opts `extensions` table inside
-`lazy_plugins` (check the [configuration examples](#-configuration-examples)).
+`lazy_plugins` (check the [configuration examples](#⚙️-configuration-examples)).
 
 | Option            | Type      | Description                                                                                                                                                                                                                                                                   |
 | ----------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -316,7 +316,7 @@ require("lazy").setup({
 
 </details>
 
-## Advanced Features
+## 💻 Advanced Features
 
 ### 🔧 Custom Actions
 

@@ -9,7 +9,7 @@ Table of Contents              *telescope-lazy-plugins.nvim-table-of-contents*
 4. Configuration:                 |telescope-lazy-plugins.nvim-configuration:|
   - Mappings                            |telescope-lazy-plugins.nvim-mappings|
   - Defaults                            |telescope-lazy-plugins.nvim-defaults|
-5. Configuration Examples:|telescope-lazy-plugins.nvim-configuration-examples:|
+5. Configuration Examples: |telescope-lazy-plugins.nvim-configuration-examples:|
   - Simple config:                |telescope-lazy-plugins.nvim-simple-config:|
   - Lazy loading:                  |telescope-lazy-plugins.nvim-lazy-loading:|
   - Full spec table              |telescope-lazy-plugins.nvim-full-spec-table|
@@ -29,17 +29,17 @@ Table of Contents              *telescope-lazy-plugins.nvim-table-of-contents*
 Simply search the plugin name and open its configuration at the corresponding
 line.
 
-No matter if the config is in a unique file, grouped in the same file with
+_No matter if the config is in a unique file, grouped in the same file with
 other plugins configs, grouped in a big table or splitted across multiple
-plugin dependencies.
+plugin dependencies._
 
 No more head overload trying to remember in which file you changed that plugin
 option or searching through files to check for overlapping configs.
 
 Add custom entries for your special needs.
 
-For example a custom entry to quickly access a configuration file from a config
-distribution like LazyVim, NvChad, etc.
+_For example a custom entry to quickly access a configuration file from a
+config distribution like LazyVim, NvChad, etc._
 
 Quickly execute builtin actions on the selected entry:
 
@@ -416,7 +416,7 @@ from the selected entry:
 >lua
     -- To access the selected entry value, `custom_action` could be used:
     local lp_actions = require("telescope").extensions.lazy_plugins.actions
-    
+
     ---@param bufnr integer passed by the telescope mapping execution call
     ---@param entry LazyPluginData passed inside `custom_action`
     ---@param custom_args {foo: string} If needed custom_args could be added in a table
@@ -426,7 +426,7 @@ from the selected entry:
       lp_actions.close(bufnr)
     end
     -- etc.
-    
+
     lazy_plugins = {
       mappings = {
         ["i"] = {
