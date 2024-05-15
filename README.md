@@ -92,7 +92,7 @@ require("telescope").extensions.lazy_plugins.lazy_plugins()
 ## 🛠️ Configuration:
 
 Add the options in the `telescope.nvim` opts `extensions` table inside
-`lazy_plugins` (check the [configuration examples](#⚙️-configuration-examples)).
+`lazy_plugins` (check the [configuration examples](#-simple-config)).
 
 | Option            | Type      | Description                                                                                                                                                                                                                                                                   |
 | ----------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
