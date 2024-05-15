@@ -1,4 +1,4 @@
-*telescope-lazy-plugins.nvim.txt*  For Neovim >= 0.9  Last change: 2024 May 02
+*telescope-lazy-plugins.nvim.txt*  For Neovim >= 0.9  Last change: 2024 May 14
 
 ==============================================================================
 Table of Contents              *telescope-lazy-plugins.nvim-table-of-contents*
@@ -8,15 +8,16 @@ Table of Contents              *telescope-lazy-plugins.nvim-table-of-contents*
 3. Usage                                   |telescope-lazy-plugins.nvim-usage|
 4. Configuration:                 |telescope-lazy-plugins.nvim-configuration:|
   - Mappings                            |telescope-lazy-plugins.nvim-mappings|
-  - Custom Actions                |telescope-lazy-plugins.nvim-custom-actions|
-  - Custom Entries                |telescope-lazy-plugins.nvim-custom-entries|
   - Defaults                            |telescope-lazy-plugins.nvim-defaults|
 5. Configuration Examples:|telescope-lazy-plugins.nvim-configuration-examples:|
   - Simple config:                |telescope-lazy-plugins.nvim-simple-config:|
   - Lazy loading:                  |telescope-lazy-plugins.nvim-lazy-loading:|
   - Full spec table              |telescope-lazy-plugins.nvim-full-spec-table|
-6. Highlights                         |telescope-lazy-plugins.nvim-highlights|
-7. Contributions                   |telescope-lazy-plugins.nvim-contributions|
+6. Advanced Features           |telescope-lazy-plugins.nvim-advanced-features|
+  - Custom Actions                |telescope-lazy-plugins.nvim-custom-actions|
+  - Custom Entries                |telescope-lazy-plugins.nvim-custom-entries|
+7. Highlights                         |telescope-lazy-plugins.nvim-highlights|
+8. Contributions                   |telescope-lazy-plugins.nvim-contributions|
 
 ==============================================================================
 1. Description                       *telescope-lazy-plugins.nvim-description*
@@ -48,9 +49,10 @@ Quickly execute builtin actions on the selected entry:
     path (`<C-g>l`).
 - Create your custom actions.
 
-The plugin check the current `LazyPluginSpec`, extract each plugin data and
-generate the full filepath for each with the corresponding line number, so the
-file is open at the appropriate cursor position.
+The plugin check the current `LazyPluginSpec`, extract each plugin data, and
+generate the full filepath for each plugin, including the corresponding line
+number. This allows the correct config file to open at the appropriate cursor
+position.
 
 
 ==============================================================================
@@ -98,7 +100,8 @@ file is open at the appropriate cursor position.
 4. Configuration:                 *telescope-lazy-plugins.nvim-configuration:*
 
 Add the options in the `telescope.nvim` opts `extensions` table inside
-`lazy_plugins` (check the configuration examples).
+`lazy_plugins` (check the
+|telescope-lazy-plugins.nvim-configuration-examples|).
 
   --------------------------------------------------------------------------------------------
   Option            Type      Description
@@ -161,124 +164,6 @@ accessible via:
                              custom_action         A wrapper to pass custom actions. See the ‘Custom
                                                    Actions’ section.
   ---------------------------------------------------------------------------------------------------------
-
-CUSTOM ACTIONS                    *telescope-lazy-plugins.nvim-custom-actions*
-
-The plugin also offer the possibility to add and define your custom actions
-through `custom_action` and helper functions.
-
-------------------------------------------------------------------------------
-**Helper Functions:**
-
-- `append_to_telescope_history`Append the search value into the Telescope
-    history. For example, when using `:Telescope resume`.
-- `close`Close the Telescope picker. Use if you want to close Telescope during
-    the execution of your `custom_action`.
-
-**custom_action:**
-
-A wrapper function to use custom actions. This function get and validates the
-selected entry field, executes the passed `custom_function` in a protected call
-and returns its output.
-
-  -------------------------------------------------------------------------------------------
-  Param/Output      Type       Description
-  ----------------- ---------- --------------------------------------------------------------
-  prompt_bufnr      integer    Telescope prompt buffer value
-
-  field             string     Field of the LazyPluginData to validate the selected entry
-                               (before the custom_function call). Check the ‘Custom Entries’
-                               section for details on the entry field.
-
-  custom_function   function   Custom function to execute, e.g.,
-                               foo(bufnr, entry, custom_args). Check the custom action
-                               example.
-
-  args              table      Custom args if needed.
-
-  return: output    any        The output of the custom_function, nil or the error object
-                               from pcall.
-  -------------------------------------------------------------------------------------------
-
-EXAMPLES: ~
-
-Demo of a custom action to close Telescope when opening a repository url on the
-browser:
-
->lua
-    lazy_plugins = {
-      mappings = {
-        ["i"] = {
-          ["<C-g>"] = function(bufnr)
-            local lp_actions = require("telescope").extensions.lazy_plugins.actions
-            lp_actions.open_repo_url()
-            lp_actions.close(bufnr)
-          end,
-        },
-      },
-<
-
-Demo of a custom action to show a message with the repository local clone path
-from the selected entry:
-
->lua
-    -- To access the selected entry value, `custom_action` could be used:
-    local lp_actions = require("telescope").extensions.lazy_plugins.actions
-    
-    ---@param bufnr integer passed by the telescope mapping execution call
-    ---@param entry LazyPluginData passed inside `custom_action`
-    ---@param custom_args {foo: string} If needed custom_args could be added in a table
-    local function demo_custom_function(bufnr, entry, custom_args)
-      vim.notify(string.format("%s%s", custom_args.foo, entry.repo_dir))
-      lp_actions.append_to_telescope_history(bufnr)
-      lp_actions.close(bufnr)
-    end
-    -- etc.
-    
-    lazy_plugins = {
-      mappings = {
-        ["i"] = {
-          ["<C-g>d"] = function(prompt_bufnr)
-            local data = { foo = "Plugin path from the selected entry.repo_dir: " }
-            lp_actions.custom_action(
-              prompt_bufnr,
-              "repo_dir", -- This is used to validate that the entry valid. Could be any field of LazyPluginData.
-              demo_custom_function,
-              data
-            )
-          end,
-        },
-      },
-    },
-<
-
-
-CUSTOM ENTRIES                    *telescope-lazy-plugins.nvim-custom-entries*
-
-Custom entries could be added into the `custom_entries` field in the options.
-Should follow this specs:
-
->lua
-    ---@class LazyPluginsCustomEntry
-    ---@field name string Entry name
-    ---@field filepath string Full path to the lua target file
-    ---@field line? integer Optional: Line number to set the view on the target file. Defaults to 1.
-    ---@field repo_url? string Optional: URL to open with the `open_repo_url` action
-    ---@field repo_dir? string Optional: Directory path to open with the `open_repo_dir` action
-<
-
->lua
-    --- Custom entry example:
-    {
-        name = "custom-entry",
-        filepath = vim.fn.stdpath("config") .. "lua/extra-options/somefile.lua",
-        -- Optional:
-        line = 42,
-        repo_url = "https://www.lua.org/manual/5.2/",
-        repo_dir = vim.fn.stdpath("config") .. "lua/extra-options/",
-    }
-<
-
 
 DEFAULTS                                *telescope-lazy-plugins.nvim-defaults*
 
@@ -466,7 +351,129 @@ For example, for configurations in a single `init.lua` file:
 
 
 ==============================================================================
-6. Highlights                         *telescope-lazy-plugins.nvim-highlights*
+6. Advanced Features           *telescope-lazy-plugins.nvim-advanced-features*
+
+
+CUSTOM ACTIONS                    *telescope-lazy-plugins.nvim-custom-actions*
+
+The plugin also offer the possibility to add and define your custom actions to
+the picker through `custom_action` and helper functions.
+
+------------------------------------------------------------------------------
+**Helper Functions:**
+
+- `append_to_telescope_history`Append the search value into the Telescope
+    history. For example, when using `:Telescope resume`.
+- `close`Close the Telescope picker. Use if you want to close Telescope during
+    the execution of your action or to avoid importing telescope in your config.
+
+**custom_action:**
+
+A wrapper function to use custom actions. This function get and validates the
+selected entry field, executes the passed `custom_function` in a protected call
+and returns its output.
+
+  -------------------------------------------------------------------------------------------
+  Param/Output      Type       Description
+  ----------------- ---------- --------------------------------------------------------------
+  prompt_bufnr      integer    Telescope prompt buffer value
+
+  field             string     Field of the LazyPluginData to validate the selected entry
+                               (before the custom_function call). Check the ‘Custom Entries’
+                               section for details on the entry field.
+
+  custom_function   function   Custom function to execute, e.g.,
+                               foo(bufnr, entry, custom_args). Check the custom action
+                               example.
+
+  args              table      Custom args if needed.
+
+  return: output    any        The output of the custom_function, nil or the error object
+                               from pcall.
+  -------------------------------------------------------------------------------------------
+
+EXAMPLES: ~
+
+Demo of a custom action to close Telescope when opening a repository url on the
+browser:
+
+>lua
+    lazy_plugins = {
+      mappings = {
+        ["i"] = {
+          ["<C-g>"] = function(bufnr)
+            local lp_actions = require("telescope").extensions.lazy_plugins.actions
+            lp_actions.open_repo_url()
+            lp_actions.close(bufnr)
+          end,
+        },
+      },
+<
+
+Demo of a custom action to show a message with the repository local clone path
+from the selected entry:
+
+>lua
+    -- To access the selected entry value, `custom_action` could be used:
+    local lp_actions = require("telescope").extensions.lazy_plugins.actions
+    
+    ---@param bufnr integer passed by the telescope mapping execution call
+    ---@param entry LazyPluginData passed inside `custom_action`
+    ---@param custom_args {foo: string} If needed custom_args could be added in a table
+    local function demo_custom_function(bufnr, entry, custom_args)
+      vim.notify(string.format("%s%s", custom_args.foo, entry.repo_dir))
+      lp_actions.append_to_telescope_history(bufnr)
+      lp_actions.close(bufnr)
+    end
+    -- etc.
+    
+    lazy_plugins = {
+      mappings = {
+        ["i"] = {
+          ["<C-g>d"] = function(prompt_bufnr)
+            local data = { foo = "Plugin path from the selected entry.repo_dir: " }
+            lp_actions.custom_action(
+              prompt_bufnr,
+              "repo_dir", -- This is used to validate the entry. Could be any field of LazyPluginData.
+              demo_custom_function,
+              data
+            )
+          end,
+        },
+      },
+    },
+<
+
+
+CUSTOM ENTRIES                    *telescope-lazy-plugins.nvim-custom-entries*
+
+Custom entries could be added into the `custom_entries` field in the options.
+Should follow this specs:
+
+>lua
+    ---@class LazyPluginsCustomEntry
+    ---@field name string Entry name
+    ---@field filepath string Full path to the lua target file
+    ---@field line? integer Optional: Line number to set the view on the target file. Defaults to 1.
+    ---@field repo_url? string Optional: URL to open with the `open_repo_url` action
+    ---@field repo_dir? string Optional: Directory path to open with the `open_repo_dir` action
+<
+
+>lua
+    --- Custom entry example:
+    {
+        name = "custom-entry",
+        filepath = vim.fn.stdpath("config") .. "lua/extra-options/somefile.lua",
+        -- Optional:
+        line = 42,
+        repo_url = "https://www.lua.org/manual/5.2/",
+        repo_dir = vim.fn.stdpath("config") .. "lua/extra-options/",
+    }
+<
+
+
+==============================================================================
+7. Highlights                         *telescope-lazy-plugins.nvim-highlights*
 
 This are the highlights defined by **Telescope Lazy Plugins**
 
@@ -483,7 +490,7 @@ This are the highlights defined by **Telescope Lazy Plugins**
   ---------------------------------------------------------------------------
 
 ==============================================================================
-7. Contributions                   *telescope-lazy-plugins.nvim-contributions*
+8. Contributions                   *telescope-lazy-plugins.nvim-contributions*
 
 This plugin is made mainly for my personal use, but suggestions, issues, or
 pull requests are very welcome.
