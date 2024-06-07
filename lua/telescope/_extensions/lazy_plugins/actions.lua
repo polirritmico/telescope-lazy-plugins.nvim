@@ -7,9 +7,6 @@ local builtin = require("telescope.builtin")
 ---@class TelescopeLazyPluginActions
 local lp_actions = {}
 
----Dummy function to not close Telescope from mouse clicks.
-function lp_actions.nothing() end
-
 ---Append the current search into Telescope history
 ---@param prompt_bufnr integer Telescope prompt buffer value
 function lp_actions.append_to_telescope_history(prompt_bufnr)
@@ -106,7 +103,7 @@ end
 local open_url_cmd = "" ---@type string|nil
 
 ---Custom picker action to open the repo url in the default browser
-function lp_actions.open_repo_url()
+function lp_actions.open_repo_url(prompt_bufnr)
   local entry = lp_actions.get_selected_entry("repo_url")
   if not entry or not open_url_cmd then
     return
@@ -132,6 +129,7 @@ function lp_actions.open_repo_url()
     end
   end
 
+  actions.close(prompt_bufnr)
   local cmd_output = vim.fn.jobstart({ open_url_cmd, entry.repo_url }, { detach = true })
   if cmd_output <= 0 then
     local msg =
