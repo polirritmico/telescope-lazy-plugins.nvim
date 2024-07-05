@@ -3,135 +3,277 @@ local lp_config = require("telescope._extensions.lazy_plugins.config")
 local lp_make_entry = require("telescope._extensions.lazy_plugins.make_entry")
 
 ---@class TelescopeLazyPluginsFinder
-local lp_finder = {}
+local M = {}
 
----Stores the relevant Lazy plugin spec data to use by the picker.
----@class LazyPluginData
----@field name string Plugin name
----@field repo_name string Full name of the plugin repository
----@field filepath string Full file path to the plugin lua configuration
----@field line integer Line number of the plugin definition in the lua file
----@field repo_url string Url to the repo
----@field repo_dir string Path to the local repository clone
+M.search_history = {}
+function M.add_search_history(search, file, linenr)
+  if not M.search_history[file] then
+    M.search_history[file] = {}
+  end
+  M.search_history[file][search] = linenr
+end
+
+function M.last_search_line(search, file)
+  if M.search_history[file] and M.search_history[file][search] then
+    return M.search_history[file][search]
+  end
+end
 
 ---@param repo_name string Repository name (username/plugin)
 ---@param filepath string Full file path
----@return integer -- Matching line number
-function lp_finder.line_number_search(repo_name, filepath)
-  local current_line = 1
+---@return integer -- Matching line number or 1
+function M.line_number_search(repo_name, filepath)
   local search_str = string.format([["%s"]], repo_name)
+  local from_line = M.last_search_line(search_str, filepath) or 1
+  local current_line = 1
   for line_str in io.lines(filepath) do
-    if string.find(line_str, search_str, 1, true) then
-      return current_line
+    if current_line > from_line then
+      if string.find(line_str, search_str, 1, true) then
+        M.add_search_history(search_str, filepath, current_line)
+        return current_line
+      end
     end
     current_line = current_line + 1
   end
   return 1
 end
 
----Get the lazy_plugin module full filepath from the runtimepath
----@param lazy_plugin table Plugin spec to obtain the module full filepath
----@return string?
-function lp_finder.get_module_filepath(lazy_plugin)
-  local rtp = vim.opt.rtp:get()
+---Fast implementation to check if a table is a list
+---@param obj table
+function M.is_list(obj)
+  local i = 0
+  for _ in pairs(obj) do
+    i = i + 1
+    if obj[i] == nil then
+      return false
+    end
+  end
+  return true
+end
 
-  if not lazy_plugin._.module then
-    if lp_config.options.lazy_spec_table then
-      return lp_config.options.lazy_spec_table
-    else
-      error("Missing module in the lazy spec: " .. lazy_plugin.name, vim.log.levels.WARN)
+---@type table<string, string[]>
+M.unloaded_cache = {}
+
+---@param filename string
+---@return string
+function M.normalize_filename(filename)
+  local ret = filename
+    :lower()
+    :gsub("^n?vim%-", "")
+    :gsub("%.n?vim$", "")
+    :gsub("%.lua", "")
+    :gsub("[^a-z]+", "")
+  return ret
+end
+
+---@param opts? {cache?:boolean}
+function M.get_unloaded_rtp(modname, opts)
+  opts = opts or {}
+
+  local topmod = modname:match("^[^./]+") or modname
+
+  if opts.cache and M.unloaded_cache[topmod] then
+    return M.unloaded_cache[topmod], true
+  end
+
+  local norm = M.normalize_filename(topmod)
+
+  ---@type string[]
+  local rtp = {}
+  local Config = require("lazy.core.config")
+  if Config.spec then
+    for _, plugin in pairs(Config.spec.plugins) do
+      if not (plugin._.loaded or plugin.module == false) then
+        if norm == M.normalize_filename(plugin.name) then
+          table.insert(rtp, 1, plugin.dir)
+        else
+          table.insert(rtp, plugin.dir)
+        end
+      end
+    end
+  end
+  M.unloaded_cache[topmod] = rtp
+  return rtp, false
+end
+
+function M.find_root(modname)
+  local paths, cached = M.get_unloaded_rtp(modname, { cache = true })
+
+  local query = {
+    rtp = true,
+    paths = paths,
+    patterns = { ".lua", "" },
+  }
+  local ret = require("lazy.core.cache").find(modname, query)[1]
+
+  if not ret and cached then
+    query.rtp = false
+    query.paths = M.get_unloaded_rtp(modname)
+    ret = require("lazy.core.cache").find(modname, query)[1]
+  end
+  if ret then
+    return ret.modpath:gsub("%.lua$", ""), ret.modpath
+  end
+end
+
+---@param path string
+---@param fn fun(path: string, name:string, type:FileType):boolean?
+function M.ls(path, fn)
+  local handle = vim.uv.fs_scandir(path)
+  while handle do
+    local name, _type = vim.uv.fs_scandir_next(handle)
+    if not name then
+      break
+    end
+
+    local fname = path .. "/" .. name
+    _type = _type and _type or vim.uv.fs_stat(fname).type
+    ---@cast _type string
+    if fn(fname, name, _type) == false then
+      break
+    end
+  end
+end
+
+---@param modname string
+---@param fn fun(modname:string, modpath:string)
+function M.lsmod(modname, fn)
+  local root, match = M.find_root(modname)
+  if not root then
+    return
+  end
+
+  if match:sub(-4) == ".lua" then
+    fn(modname, match)
+    if not vim.uv.fs_stat(root) then
       return
     end
   end
 
-  local mod = lazy_plugin._.module:gsub("%.", "/")
-  for _, rtp_path in ipairs(rtp) do
-    local check_path = string.format("%s/lua/%s", rtp_path, mod)
-    if vim.fn.filereadable(check_path .. ".lua") == 1 then
-      return check_path .. ".lua"
-    elseif vim.fn.filereadable(check_path .. "/init.lua") == 1 then
-      return check_path .. "/init.lua"
+  M.ls(root, function(path, name, type)
+    if name == "init.lua" then
+      fn(modname, path)
+    elseif (type == "file" or type == "link") and name:sub(-4) == ".lua" then
+      fn(modname .. "." .. name:sub(1, -5), path)
+    elseif type == "directory" and vim.uv.fs_stat(path .. "/init.lua") then
+      fn(modname .. "." .. name, path .. "/init.lua")
     end
-  end
-  error("Module file not found on the rtp: `" .. lazy_plugin.name .. "`", 2)
+  end)
 end
 
----Create all the LazyPluginData configs of the plugin from the lazy spec. The
----function recursively extract the `plugin._.super` field into one table.
----@param plugin table Plugin data from the lazy spec
----@return table<LazyPluginData> collected_configs Contains all the plugin data from the lazy spec
-function lp_finder.collect_config_files(plugin)
-  local collected_configs = {}
-  if plugin._.super then
-    local inner_configs = lp_finder.collect_config_files(plugin._.super)
-    for _, inner_plugin in pairs(inner_configs) do
-      table.insert(collected_configs, inner_plugin)
-    end
-  end
-
-  -- TODO: better handle of dir only and url only spec
-  local repo_name = type(plugin[1]) == "string" and plugin[1] or plugin.url
-  if not repo_name then
-    return collected_configs
-  end
-  local filepath = lp_finder.get_module_filepath(plugin)
-  if not filepath then
-    return collected_configs
-  end
-  local repo_url = plugin.url and plugin.url:gsub("%.git$", "")
-    or "https://github.com/" .. repo_name
-
-  ---@type LazyPluginData
-  local current_plugin = {
-    repo_name = repo_name,
-    repo_url = repo_url,
-    repo_dir = plugin.dir,
-    name = lp_config.options.name_only and plugin.name or repo_name,
-    filepath = filepath,
-    file = filepath:match(".*/(.*/.*)%.%w+"),
-    line = lp_finder.line_number_search(repo_name, filepath),
-    disabled = false,
-  }
-  table.insert(collected_configs, current_plugin)
-
-  return collected_configs
-end
-
----Parse the `lazy_plugin` spec and insert it into the `tbl` collection.
----@param tbl table<LazyPluginData> Target table with the plugins collection
----@param lazy_plugin table Plugin spec to insert into the `tbl`
----@param disabled? boolean Optional. If disabled is true adds ' (disabled)' to the plugin name
-function lp_finder.add_plugin(tbl, lazy_plugin, disabled)
-  disabled = disabled or false
-  local configs = lp_finder.collect_config_files(lazy_plugin)
-  if #configs == 0 then
-    local msg = "No configuration files found for " .. lazy_plugin.name
-    vim.notify(msg, vim.log.levels.WARN)
+---@param spec LazyMinSpec
+function M.expand_import(spec)
+  if type(spec.import) == "function" and not spec.name then
+    vim.notify("import: Error missing spec.name", vim.log.levels.ERROR)
+    return
+  elseif type(spec.import) ~= "function" and type(spec.import) ~= "string" then
+    vim.notify("import: spec.import is not string", vim.log.levels.ERROR)
     return
   end
 
-  configs[1].disabled = disabled
-  table.insert(tbl, configs[1])
+  -- if spec.cond == false or (type(spec.cond) == "function" and not spec.cond()) then return end
+  -- if spec.enabled == false or (type(spec.enabled) == "function" and not spec.enabled()) then return end
 
-  local duplicates_counter = 1
-  for _, plugin_cfg in pairs(configs) do
-    local duplicated = false
-    for _, plugin_in_tbl in pairs(tbl) do
-      if
-        plugin_cfg.repo_name == plugin_in_tbl.repo_name
-        and plugin_cfg.filepath == plugin_in_tbl.filepath
-        and plugin_cfg.line == plugin_in_tbl.line
-      then
-        duplicated = true
-        break
-      end
+  local spec_import = spec.import
+
+  local modspecs = {}
+  if type(spec_import) == "string" then
+    ---@cast spec_import string
+    M.lsmod(spec_import, function(modname, modpath)
+      modspecs[#modspecs + 1] = { mod = modname, path = modpath }
+    end)
+  else
+    modspecs = { { mod = spec.import } }
+  end
+
+  for _, modspec in ipairs(modspecs) do
+    local mod = type(modspec.mod) == "function" and modspec() or require(modspec.mod)
+    if type(mod) ~= "table" then
+      vim.notify("import: module spec is not a table")
     end
-    if not duplicated then
-      duplicates_counter = duplicates_counter + 1
-      plugin_cfg.name = string.format("%s(%d)", plugin_cfg.name, duplicates_counter)
-      plugin_cfg.disabled = disabled
-      table.insert(tbl, plugin_cfg)
+    M.import(mod, modspec.path)
+  end
+  return modspecs
+end
+
+---Add the spec into the fragments. If the spec has dependencies expand them
+---and import them
+function M.add(spec, path)
+  if not path then
+    error("Adding spec without path")
+  end
+  M.fragments[#M.fragments + 1] = { mod = spec, path = path }
+
+  if spec.dependencies then
+    M.import(spec.dependencies, path)
+  end
+end
+
+---Check the spec type, expand it, import it or add it to the fragments
+---@param spec string|LazyMinSpec
+---@param path? string
+function M.import(spec, path)
+  if type(spec) == "string" then
+    M.add({ spec }, path)
+  elseif #spec > 1 or M.is_list(spec) then
+    for _, inner_spec in pairs(spec) do
+      M.import(inner_spec, path)
     end
+  elseif spec[1] or spec.dir or spec.url then
+    M.add(spec, path)
+    if spec and spec.import then
+      M.expand_import(spec)
+    end
+  elseif spec.import then
+    M.expand_import(spec)
+  else
+    vim.notify("lp_finder.import: Not supported spec", vim.log.levels.ERROR)
+  end
+end
+
+function M.collect_fragments()
+  local lazy_specs = require("lazy.core.config").options.spec
+  ---@cast lazy_specs LazyMinSpec
+  M.import(lazy_specs)
+end
+
+---Convert the fragment data into a LazyPluginData
+---@param mod LazyMinSpec
+---@param cfg_path string
+---@return LazyPluginData
+function M.extract_plugin_info(mod, cfg_path)
+  local repo_name = mod.name or mod[1]
+  local name = repo_name:match("[^/]+$")
+  local line = M.line_number_search(repo_name, cfg_path)
+
+  local repo_url = mod.url and mod.url
+    or name:sub(1, 8) == "https://" and name
+    or string.format("https://github.com/%s", name)
+  repo_url = repo_url:gsub("%.git$", "")
+
+  ---@type LazyPluginData
+  local plugin = {
+    name = name,
+    filepath = cfg_path,
+    file = cfg_path:match(".*/(.*/.*)%.%w+"),
+    line = line,
+    repo_name = repo_name,
+    repo_url = repo_url,
+    repo_dir = mod.dir or "", -- TODO: Implement
+  }
+
+  return plugin
+end
+
+function M.build_plugins_collection(fragments)
+  if not fragments or #fragments < 1 then
+    vim.notify("Empty fragments", vim.log.levels.WARN)
+    return {}
+  end
+
+  for _, fragment in pairs(fragments) do
+    local plugin = M.extract_plugin_info(fragment.mod, fragment.path)
+    table.insert(M.plugins_collection, plugin)
   end
 end
 
@@ -140,50 +282,30 @@ end
 ---of the Lua file containing the plugin config, and the line number where the
 ---repository name is found.
 ---@return table<LazyPluginData>
-function lp_finder.get_plugins_data()
-  local plugins_collection = {}
-  local lazy_config = require("lazy.core.config")
-  local lazy_spec = lazy_config.spec
-
-  for _, plugin in pairs(lazy_spec.plugins) do
-    if plugin.name ~= "lazy.nvim" and plugin.name ~= "LazyVim" then
-      lp_finder.add_plugin(plugins_collection, plugin)
-    end
-  end
-  if lp_config.options.show_disabled then
-    for _, disabled_plugin in pairs(lazy_spec.disabled) do
-      lp_finder.add_plugin(plugins_collection, disabled_plugin, true)
-    end
+function M.get_plugins_data()
+  ---@diagnostic disable undefined
+  if M.plugins_collection then
+    return M.plugins_collection
   end
 
-  if lp_config.options.lazy_config then
-    table.insert(plugins_collection, {
-      name = lp_config.options.name_only and "lazy.nvim" or "folke/lazy.nvim",
-      repo_name = "folke/lazy.nvim",
-      repo_url = "https://github.com/folke/lazy.nvim",
-      repo_dir = lazy_config.me or lazy_config.options.root,
-      filepath = lp_config.options.lazy_config,
-      file = lp_config.options.lazy_config:match("[^/]+$"),
-      line = 1,
-    })
-  end
+  M.fragments = {}
+  M.plugins_collection = {}
 
-  for _, entry in pairs(lp_config.options.custom_entries) do
-    table.insert(plugins_collection, entry)
-  end
+  M.collect_fragments()
+  M.build_plugins_collection(M.fragments)
 
-  return plugins_collection
+  return M.plugins_collection
 end
 
 ---Finder to use with the Telescope API. Get the plugin data for each plugin
 ---registered on the Lazy spec.
-function lp_finder.finder(opts)
+function M.finder(opts)
   opts = vim.tbl_deep_extend("force", {}, lp_config.options, opts or {})
 
   return finders.new_table({
-    results = lp_finder.get_plugins_data(),
+    results = M.get_plugins_data(),
     entry_maker = lp_make_entry(opts),
   })
 end
 
-return lp_finder
+return M
