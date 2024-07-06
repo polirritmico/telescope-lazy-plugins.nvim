@@ -55,14 +55,30 @@ function M.walk(path, fn)
 end
 
 ---@param dir string
---function M.fs_rmdir(dir)
---  dir = M.norm(M.root_path .. "/" .. dir)
---  M.walk(dir, function(path, _, type)
---    if type == "directory" then
---      vim.uv.fs_rmdir(path)
---    else
---      vim.uv.fs_unlink(path)
---    end
---  end)
---  vim.uv.fs_rmdir(dir)
---end
+function M.fs_rmdir(dir)
+  vim.notify("executing fs_rmdir")
+  dir = M.norm(M.root_path .. "/" .. dir)
+  M.walk(dir, function(path, _, type)
+    if type == "directory" then
+      vim.notify("vim.uv.fs_rmdir(path): " .. tostring(dir))
+      -- vim.uv.fs_rmdir(path)
+    else
+      vim.notify("vim.uv.fs_unlink(path): " .. tostring(path))
+      -- vim.uv.fs_unlink(path)
+    end
+  end)
+  vim.notify("vim.uv.fs_rmdir(dir): " .. tostring(dir))
+  -- vim.uv.fs_rmdir(dir)
+end
+
+function M.P(...)
+  local args = { ... }
+  local mapped = {}
+  for _, variable in pairs(args) do
+    table.insert(mapped, vim.inspect(variable))
+  end
+  print(unpack(mapped))
+  return unpack(args)
+end
+
+return M
