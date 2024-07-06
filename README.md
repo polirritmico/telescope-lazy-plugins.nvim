@@ -52,6 +52,11 @@ generate the full filepath for each plugin, including the corresponding line
 number. This allows the correct config file to open at the appropriate cursor
 position.
 
+## 📌 Requirements
+
+- Neovim >= v0.9.0
+- lazy.nvim >= v11.0.0
+
 ## 📦 Installation
 
 - Add it into the Telescope dependencies:
