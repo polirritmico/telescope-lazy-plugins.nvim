@@ -294,6 +294,22 @@ function M.get_plugins_data()
   M.collect_fragments()
   M.build_plugins_collection(M.fragments)
 
+  if lp_config.options.lazy_config then
+    table.insert(M.plugins_collection, {
+      name = lp_config.options.name_only and "lazy.nvim" or "folke/lazy.nvim",
+      repo_name = "folke/lazy.nvim",
+      repo_url = "https://github.com/folke/lazy.nvim",
+      repo_dir = require("lazy.core.config").me or lazy_config.options.root,
+      filepath = lp_config.options.lazy_config,
+      file = lp_config.options.lazy_config:match("[^/]+$"),
+      line = 1,
+    })
+  end
+
+  for _, entry in pairs(lp_config.options.custom_entries) do
+    table.insert(M.plugins_collection, entry)
+  end
+
   return M.plugins_collection
 end
 
