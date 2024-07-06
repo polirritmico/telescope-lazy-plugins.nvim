@@ -6,6 +6,10 @@ local lp_make_entry = require("telescope._extensions.lazy_plugins.make_entry")
 local M = {}
 
 M.search_history = {}
+
+---@param search string
+---@param file string
+---@param linenr integer
 function M.add_search_history(search, file, linenr)
   if not M.search_history[file] then
     M.search_history[file] = {}
@@ -13,7 +17,10 @@ function M.add_search_history(search, file, linenr)
   M.search_history[file][search] = linenr
 end
 
-function M.last_search_line(search, file)
+---@param search string
+---@param file string
+---@return integer?
+function M.get_last_search_history(search, file)
   if M.search_history[file] and M.search_history[file][search] then
     return M.search_history[file][search]
   end
@@ -24,7 +31,7 @@ end
 ---@return integer -- Matching line number or 1
 function M.line_number_search(repo_name, filepath)
   local search_str = string.format([["%s"]], repo_name)
-  local from_line = M.last_search_line(search_str, filepath) or 1
+  local from_line = M.get_last_search_history(search_str, filepath) or 1
   local current_line = 1
   for line_str in io.lines(filepath) do
     if current_line > from_line then
@@ -51,8 +58,8 @@ function M.is_list(obj)
   return true
 end
 
----@type table<string, string[]>
-M.unloaded_cache = {}
+-- ---@type table<string, string[]>
+-- M.unloaded_cache = {}
 
 ---@param filename string
 ---@return string
@@ -72,9 +79,9 @@ function M.get_unloaded_rtp(modname, opts)
 
   local topmod = modname:match("^[^./]+") or modname
 
-  if opts.cache and M.unloaded_cache[topmod] then
-    return M.unloaded_cache[topmod], true
-  end
+  -- if opts.cache and M.unloaded_cache[topmod] then
+  --   return M.unloaded_cache[topmod], true
+  -- end
 
   local norm = M.normalize_filename(topmod)
 
@@ -92,7 +99,7 @@ function M.get_unloaded_rtp(modname, opts)
       end
     end
   end
-  M.unloaded_cache[topmod] = rtp
+  -- M.unloaded_cache[topmod] = rtp
   return rtp, false
 end
 
@@ -161,6 +168,18 @@ function M.lsmod(modname, fn)
   end)
 end
 
+---Returns `true` if the plugin is disabled. `false` otherwise
+---@param spec LazyMinSpec
+function M.is_disabled(spec)
+  if spec.cond == false or (type(spec.cond) == "function" and not spec.cond()) then
+    return true
+  end
+  if spec.enabled == false or (type(spec.enabled) == "function" and not spec.enabled()) then
+    return true
+  end
+  return false
+end
+
 ---@param spec LazyMinSpec
 function M.expand_import(spec)
   if type(spec.import) == "function" and not spec.name then
@@ -170,9 +189,6 @@ function M.expand_import(spec)
     vim.notify("import: spec.import is not string", vim.log.levels.ERROR)
     return
   end
-
-  -- if spec.cond == false or (type(spec.cond) == "function" and not spec.cond()) then return end
-  -- if spec.enabled == false or (type(spec.enabled) == "function" and not spec.enabled()) then return end
 
   local spec_import = spec.import
 
@@ -260,6 +276,7 @@ function M.extract_plugin_info(mod, cfg_path)
     repo_name = repo_name,
     repo_url = repo_url,
     repo_dir = mod.dir or "", -- TODO: Implement
+    -- disabled = M.is_disabled(mod),
   }
 
   return plugin

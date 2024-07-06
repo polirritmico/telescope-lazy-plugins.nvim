@@ -6,6 +6,7 @@
 ---@field line integer Line number of the plugin definition in the lua file
 ---@field repo_url string Url to the repo
 ---@field repo_dir string Path to the local repository clone
+---@field enabled? boolean
 
 ---Collected data from Lazy spec
 ---@class LazyMinSpec
@@ -15,6 +16,7 @@
 ---@field import? string|table<LazyMinSpec>
 ---@field cond? boolean|fun():boolean
 ---@field enabled? boolean|fun():boolean
+---@field dependency? string
 
 ---@class LazyPluginFragment
 ---@field mod LazyMinSpec
