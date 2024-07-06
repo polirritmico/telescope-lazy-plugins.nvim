@@ -1,9 +1,10 @@
 local M = {}
 
-M.root_path = vim.fn.fnamemodify("./.tests/fs", ":p")
+M.fs_root = vim.fn.fnamemodify("./.tests/fs", ":p")
 
 ---@return string
 function M.norm(path)
+  assert(type(path) == "string")
   if path:sub(1, 1) == "~" then
     local home = vim.uv.os_homedir()
     assert(home, "vim.uv.os_homedir return nil")
@@ -16,19 +17,28 @@ function M.norm(path)
   return path:sub(-1) == "/" and path:sub(1, -2) or path
 end
 
----@param files string[]
-function M.fs_create(files)
-  local ret = {} ---@type string[]
-  for _, file in ipairs(files) do
-    ret[#ret + 1] = M.norm(M.root_path .. "/" .. file)
-    local parent = vim.fn.fnamemodify(ret[#ret], ":h:p")
-    vim.fn.mkdir(parent, "p")
-    M.write_file(ret[#ret], "")
+---@param files table<{ path: string, data: string }>
+function M.write_files(files)
+  for _, file in pairs(files) do
+    M.write_file(file.data, file.path)
   end
-  return ret
 end
 
+---@param data string
+---@param path string
+function M.write_file(data, path)
+  path = M.path(path)
+  -- print("[write] " .. path)
+  vim.fn.mkdir(vim.fs.dirname(path), "p")
+  local file = assert(io.open(path, "w"))
+  file:write(data)
+  file:close()
+end
+
+---@param path string
+---@param fn function
 function M.ls(path, fn)
+  path = M.norm(path)
   local handle = vim.uv.fs_scandir(path)
   while handle do
     local name, _type = vim.uv.fs_scandir_next(handle)
@@ -54,21 +64,38 @@ function M.walk(path, fn)
   end)
 end
 
+---@param path string
+function M.path(path)
+  return M.norm(M.fs_root .. "/" .. path)
+end
+
+function M.clean_loaded_packages()
+  for k, _ in pairs(package.loaded) do
+    if k:find("^foobar") then
+      package.loaded[k] = nil
+    end
+  end
+end
+
+function M.clean_test_fs()
+  M.fs_rmdir("")
+end
+
 ---@param dir string
 function M.fs_rmdir(dir)
-  vim.notify("executing fs_rmdir")
-  dir = M.norm(M.root_path .. "/" .. dir)
+  -- vim.notify("executing fs_rmdir")
+  dir = M.norm(M.fs_root .. "/" .. dir)
   M.walk(dir, function(path, _, type)
     if type == "directory" then
-      vim.notify("vim.uv.fs_rmdir(path): " .. tostring(dir))
-      -- vim.uv.fs_rmdir(path)
+      -- vim.notify("vim.uv.fs_rmdir(path): " .. tostring(dir))
+      vim.uv.fs_rmdir(path)
     else
-      vim.notify("vim.uv.fs_unlink(path): " .. tostring(path))
-      -- vim.uv.fs_unlink(path)
+      -- vim.notify("vim.uv.fs_unlink(path): " .. tostring(path))
+      vim.uv.fs_unlink(path)
     end
   end)
-  vim.notify("vim.uv.fs_rmdir(dir): " .. tostring(dir))
-  -- vim.uv.fs_rmdir(dir)
+  -- vim.notify("vim.uv.fs_rmdir(dir): " .. tostring(dir))
+  vim.uv.fs_rmdir(dir)
 end
 
 function M.P(...)
