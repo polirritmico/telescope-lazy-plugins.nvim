@@ -16,7 +16,6 @@
 ---@field import? string|table<LazyMinSpec>
 ---@field cond? boolean|fun():boolean
 ---@field enabled? boolean|fun():boolean
----@field dependency? string
 
 ---@class LazyPluginFragment
 ---@field mod LazyMinSpec

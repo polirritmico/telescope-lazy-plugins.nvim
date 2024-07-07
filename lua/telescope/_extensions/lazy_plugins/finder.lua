@@ -58,8 +58,8 @@ function M.is_list(obj)
   return true
 end
 
--- ---@type table<string, string[]>
--- M.unloaded_cache = {}
+---@type table<string, string[]>
+M.unloaded_cache = {}
 
 ---@param filename string
 ---@return string
@@ -78,11 +78,6 @@ function M.get_unloaded_rtp(modname, opts)
   opts = opts or {}
 
   local topmod = modname:match("^[^./]+") or modname
-
-  -- if opts.cache and M.unloaded_cache[topmod] then
-  --   return M.unloaded_cache[topmod], true
-  -- end
-
   local norm = M.normalize_filename(topmod)
 
   ---@type string[]
@@ -99,7 +94,7 @@ function M.get_unloaded_rtp(modname, opts)
       end
     end
   end
-  -- M.unloaded_cache[topmod] = rtp
+  M.unloaded_cache[topmod] = rtp
   return rtp, false
 end
 
@@ -169,19 +164,20 @@ function M.lsmod(modname, fn)
 end
 
 ---Returns `true` if the plugin is disabled. `false` otherwise
----@param spec LazyMinSpec
-function M.is_disabled(spec)
+---@param spec LazyMinSpec|LazyPluginSpec
+function M.is_enabled(spec)
   if spec.cond == false or (type(spec.cond) == "function" and not spec.cond()) then
-    return true
+    return false
   end
   if spec.enabled == false or (type(spec.enabled) == "function" and not spec.enabled()) then
-    return true
+    return false
   end
-  return false
+  return true
 end
 
 ---@param spec LazyMinSpec
-function M.expand_import(spec)
+---@param parent_enabled? boolean
+function M.expand_import(spec, parent_enabled)
   if type(spec.import) == "function" and not spec.name then
     vim.notify("import: Error missing spec.name", vim.log.levels.ERROR)
     return
@@ -189,6 +185,10 @@ function M.expand_import(spec)
     vim.notify("import: spec.import is not string", vim.log.levels.ERROR)
     return
   end
+
+  parent_enabled = parent_enabled == nil and true or parent_enabled
+  local current_enabled = not parent_enabled and false or M.is_enabled(spec)
+  spec.enabled = current_enabled
 
   local spec_import = spec.import
 
@@ -207,41 +207,48 @@ function M.expand_import(spec)
     if type(mod) ~= "table" then
       vim.notify("import: module spec is not a table")
     end
-    M.import(mod, modspec.path)
+    M.import(mod, modspec.path, current_enabled)
   end
   return modspecs
 end
 
 ---Add the spec into the fragments. If the spec has dependencies expand them
 ---and import them
-function M.add(spec, path)
+---@param spec LazyMinSpec|LazyPluginSpec
+---@param path string
+---@param parent_enabled? boolean
+function M.add(spec, path, parent_enabled)
   if not path then
     error("Adding spec without path")
+  end
+  if spec.enabled == nil and parent_enabled ~= nil then
+    spec.enabled = parent_enabled
   end
   M.fragments[#M.fragments + 1] = { mod = spec, path = path }
 
   if spec.dependencies then
-    M.import(spec.dependencies, path)
+    M.import(spec.dependencies, path, M.is_enabled(spec))
   end
 end
 
 ---Check the spec type, expand it, import it or add it to the fragments
 ---@param spec string|LazyMinSpec
----@param path? string
-function M.import(spec, path)
+---@param path string
+---@param parent_enabled? boolean
+function M.import(spec, path, parent_enabled)
   if type(spec) == "string" then
-    M.add({ spec }, path)
+    M.add({ spec }, path, parent_enabled)
   elseif #spec > 1 or M.is_list(spec) then
     for _, inner_spec in pairs(spec) do
-      M.import(inner_spec, path)
+      M.import(inner_spec, path, parent_enabled)
     end
   elseif spec[1] or spec.dir or spec.url then
-    M.add(spec, path)
+    M.add(spec, path, parent_enabled)
     if spec and spec.import then
-      M.expand_import(spec)
+      M.expand_import(spec, parent_enabled)
     end
   elseif spec.import then
-    M.expand_import(spec)
+    M.expand_import(spec, parent_enabled)
   else
     vim.notify("lp_finder.import: Not supported spec", vim.log.levels.ERROR)
   end
@@ -250,7 +257,7 @@ end
 function M.collect_fragments()
   local lazy_specs = require("lazy.core.config").options.spec
   ---@cast lazy_specs LazyMinSpec
-  M.import(lazy_specs)
+  M.import(lazy_specs, lp_config.options.lazy_config)
 end
 
 ---Convert the fragment data into a LazyPluginData
@@ -261,6 +268,7 @@ function M.extract_plugin_info(mod, cfg_path)
   local repo_name = mod.name or mod[1]
   local name = repo_name:match("[^/]+$")
   local line = M.line_number_search(repo_name, cfg_path)
+  local disabled = not mod.enabled
 
   local repo_url = mod.url and mod.url
     or name:sub(1, 8) == "https://" and name
@@ -275,8 +283,9 @@ function M.extract_plugin_info(mod, cfg_path)
     line = line,
     repo_name = repo_name,
     repo_url = repo_url,
-    repo_dir = mod.dir or "", -- TODO: Implement
-    -- disabled = M.is_disabled(mod),
+    -- TODO: Implement
+    repo_dir = mod.dir or "",
+    disabled = disabled,
   }
 
   return plugin
