@@ -8,7 +8,6 @@ local defaults = {
   name_only = true, -- match only the `repo_name`, false to match the full `account/repo_name`
   show_disabled = true, -- also show disabled plugins from the Lazy spec.
   lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy opts and setup() call.
-  lazy_spec_table = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy plugin spec table.
   custom_entries = {}, ---@type table<LazyPluginsCustomEntry> Table to pass custom entries to the picker.
   live_grep = {}, -- Options to pass into the `live_grep` telescope builtin picker.
   mappings = {
@@ -41,9 +40,7 @@ function M.setup(opts)
   M.options = vim.tbl_deep_extend("force", defaults, M.options, opts or {})
 
   local lazy_cfg = vim.fn.expand(M.options.lazy_config)
-  local spec_tbl = vim.fn.expand(M.options.lazy_spec_table)
-  M.options.lazy_config = vim.fn.filereadable(lazy_cfg) == 1 and lazy_cfg or nil
-  M.options.lazy_spec_table = vim.fn.filereadable(spec_tbl) == 1 and spec_tbl or nil
+  M.options.lazy_config = (vim.uv or vim.loop).fs_stat(lazy_cfg) and lazy_cfg or nil
 
   if type(M.options.custom_entries) == "table" and #M.options.custom_entries > 0 then
     M.options.custom_entries = M.create_custom_entries_from_user_config()
