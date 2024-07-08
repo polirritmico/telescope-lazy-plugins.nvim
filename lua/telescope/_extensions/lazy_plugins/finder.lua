@@ -240,7 +240,9 @@ function M.import(spec, path, parent_enabled)
     M.add({ spec }, path, parent_enabled)
   elseif #spec > 1 or M.is_list(spec) then
     for _, inner_spec in pairs(spec) do
-      M.import(inner_spec, path, parent_enabled)
+      if inner_spec[1] ~= "LazyVim/LazyVim" then
+        M.import(inner_spec, path, parent_enabled)
+      end
     end
   elseif spec[1] or spec.dir or spec.url then
     M.add(spec, path, parent_enabled)
