@@ -273,7 +273,7 @@ function M.extract_plugin_info(mod, cfg_path)
 
   local repo_url = mod.url and mod.url
     or name:sub(1, 8) == "https://" and name
-    or string.format("https://github.com/%s", name)
+    or string.format("https://github.com/%s", repo_name)
   repo_url = repo_url:gsub("%.git$", "")
 
   ---@type LazyPluginData
