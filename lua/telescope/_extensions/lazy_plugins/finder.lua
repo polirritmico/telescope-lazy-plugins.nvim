@@ -203,7 +203,7 @@ function M.expand_import(spec, parent_enabled)
   end
 
   for _, modspec in ipairs(modspecs) do
-    local mod = type(modspec.mod) == "function" and modspec() or require(modspec.mod)
+    local mod = type(modspec.mod) == "function" and modspec.mod() or require(modspec.mod)
     if type(mod) ~= "table" then
       vim.notify("import: module spec is not a table")
     end
