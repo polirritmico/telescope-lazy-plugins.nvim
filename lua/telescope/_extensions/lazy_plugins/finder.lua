@@ -257,6 +257,7 @@ end
 function M.collect_fragments()
   local lazy_specs = require("lazy.core.config").options.spec
   ---@cast lazy_specs LazyMinSpec
+  M.fragments = {}
   M.import(lazy_specs, lp_config.options.lazy_config)
 end
 
@@ -291,16 +292,18 @@ function M.extract_plugin_info(mod, cfg_path)
   return plugin
 end
 
-function M.build_plugins_collection(fragments)
-  if not fragments or #fragments < 1 then
+function M.build_plugins_collection()
+  if not M.fragments or #M.fragments < 1 then
     vim.notify("Empty fragments", vim.log.levels.WARN)
     return {}
   end
 
-  for _, fragment in pairs(fragments) do
+  for _, fragment in pairs(M.fragments) do
     local plugin = M.extract_plugin_info(fragment.mod, fragment.path)
     table.insert(M.plugins_collection, plugin)
   end
+
+  M.fragments = nil -- no longer needed
 end
 
 ---Get the Lazy plugin data from the Lazy specification. For each plugin,
@@ -314,11 +317,9 @@ function M.get_plugins_data()
     return M.plugins_collection
   end
 
-  M.fragments = {}
   M.plugins_collection = {}
-
   M.collect_fragments()
-  M.build_plugins_collection(M.fragments)
+  M.build_plugins_collection()
 
   if lp_config.options.lazy_config then
     table.insert(M.plugins_collection, {
