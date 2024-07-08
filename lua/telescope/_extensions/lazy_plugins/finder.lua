@@ -99,19 +99,17 @@ function M.get_unloaded_rtp(modname, opts)
 end
 
 function M.find_root(modname)
-  local paths, cached = M.get_unloaded_rtp(modname, { cache = true })
+  local find = require("lazy.core.cache").find
 
-  local query = {
-    rtp = true,
-    paths = paths,
-    patterns = { ".lua", "" },
-  }
-  local ret = require("lazy.core.cache").find(modname, query)[1]
+  local paths, cached = M.get_unloaded_rtp(modname, { cache = true })
+  local ret = find(modname, { rtp = true, paths = paths, patterns = { ".lua", "" } })[1]
 
   if not ret and cached then
-    query.rtp = false
-    query.paths = M.get_unloaded_rtp(modname)
-    ret = require("lazy.core.cache").find(modname, query)[1]
+    ret = find(modname, {
+      rtp = false,
+      paths = M.get_unloaded_rtp(modname),
+      patterns = { ".lua", "" },
+    })[1]
   end
   if ret then
     return ret.modpath:gsub("%.lua$", ""), ret.modpath
@@ -166,10 +164,12 @@ end
 ---Returns `true` if the plugin is disabled. `false` otherwise
 ---@param spec LazyMinSpec|LazyPluginSpec
 function M.is_enabled(spec)
-  if spec.cond == false or (type(spec.cond) == "function" and not spec.cond()) then
-    return false
-  end
-  if spec.enabled == false or (type(spec.enabled) == "function" and not spec.enabled()) then
+  if
+    spec.cond == false
+    or (type(spec.cond) == "function" and not spec.cond())
+    or spec.enabled == false
+    or (type(spec.enabled) == "function" and not spec.enabled())
+  then
     return false
   end
   return true
