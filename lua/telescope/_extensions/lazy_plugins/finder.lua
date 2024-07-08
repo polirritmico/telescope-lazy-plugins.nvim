@@ -186,16 +186,21 @@ function M.expand_import(spec, parent_enabled)
     return
   end
 
+  local import_name = spec.name or spec.import
+
+  -- Avoid re-importing modules
+  if vim.tbl_contains(M.imported_modules, import_name) then
+    return
+  end
+  M.imported_modules[#M.imported_modules + 1] = import_name
+
   parent_enabled = parent_enabled == nil and true or parent_enabled
   local current_enabled = not parent_enabled and false or M.is_enabled(spec)
   spec.enabled = current_enabled
 
-  local spec_import = spec.import
-
   local modspecs = {}
-  if type(spec_import) == "string" then
-    ---@cast spec_import string
-    M.lsmod(spec_import, function(modname, modpath)
+  if type(import_name) == "string" then
+    M.lsmod(import_name, function(modname, modpath)
       modspecs[#modspecs + 1] = { mod = modname, path = modpath }
     end)
   else
@@ -240,7 +245,8 @@ function M.import(spec, path, parent_enabled)
     M.add({ spec }, path, parent_enabled)
   elseif #spec > 1 or M.is_list(spec) then
     for _, inner_spec in pairs(spec) do
-      if inner_spec[1] ~= "LazyVim/LazyVim" then
+      local inner_type = type(inner_spec)
+      if inner_type == "table" or inner_type == "string" and not inner_spec:find("%s") then
         M.import(inner_spec, path, parent_enabled)
       end
     end
@@ -260,6 +266,7 @@ function M.collect_fragments()
   local lazy_specs = require("lazy.core.config").options.spec
   ---@cast lazy_specs LazyMinSpec
   M.fragments = {}
+  M.imported_modules = {}
   M.import(lazy_specs, lp_config.options.lazy_config)
 end
 
@@ -299,18 +306,20 @@ function M.build_plugins_collection()
     return {}
   end
 
-  local spec = require("lazy.core.config").spec
+  local lazy_spec = require("lazy.core.config").spec
 
   for _, fragment in pairs(M.fragments) do
     local plugin = M.extract_plugin_info(fragment.mod, fragment.path)
-    plugin.repo_dir = spec.plugins[plugin.name] and spec.plugins[plugin.name].dir
-      or spec.disabled[plugin.name] and spec.disabled[plugin.name].dir
+    plugin.repo_dir = lazy_spec.plugins[plugin.name] and lazy_spec.plugins[plugin.name].dir
+      or lazy_spec.disabled[plugin.name] and lazy_spec.disabled[plugin.name].dir
       or ""
 
     table.insert(M.plugins_collection, plugin)
   end
 
-  M.fragments = nil -- no longer needed
+  -- no longer needed
+  M.fragments = nil
+  M.imported_modules = nil
 end
 
 ---Get the Lazy plugin data from the Lazy specification. For each plugin,
@@ -319,7 +328,6 @@ end
 ---repository name is found.
 ---@return table<LazyPluginData>
 function M.get_plugins_data()
-  ---@diagnostic disable undefined
   if M.plugins_collection then
     return M.plugins_collection
   end
@@ -329,11 +337,12 @@ function M.get_plugins_data()
   M.build_plugins_collection()
 
   if lp_config.options.lazy_config then
+    local lazy = require("lazy.core.config")
     table.insert(M.plugins_collection, {
       name = lp_config.options.name_only and "lazy.nvim" or "folke/lazy.nvim",
       repo_name = "folke/lazy.nvim",
       repo_url = "https://github.com/folke/lazy.nvim",
-      repo_dir = require("lazy.core.config").me or lazy_config.options.root,
+      repo_dir = lazy.me or lazy.options.root,
       filepath = lp_config.options.lazy_config,
       file = lp_config.options.lazy_config:match("[^/]+$"),
       line = 1,
