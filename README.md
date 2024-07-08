@@ -11,14 +11,14 @@
 ## 🐧 Description
 
 > A [Telescope](https://github.com/nvim-telescope/telescope.nvim) picker to
-> quickly access plugins config files for
-> [lazy.nvim](https://github.com/folke/lazy.nvim) configurations.
+> quickly access configurations of plugins managed by
+> [lazy.nvim](https://github.com/folke/lazy.nvim).
 
 <!-- panvimdoc-ignore-start -->
 
 ### 📷 Screenshot
 
-_Example: Searching for Telescope configurations:_
+_Example: Searching for `Telescope` configurations:_
 
 ![Screenshot](https://github.com/polirritmico/telescope-lazy-plugins.nvim/assets/24460484/c2ca5c7b-c325-4e32-8aa1-4a014970d1ed)
 

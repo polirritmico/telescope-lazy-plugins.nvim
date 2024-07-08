@@ -1,31 +1,32 @@
-*telescope-lazy-plugins.nvim.txt*  For Neovim >= 0.9 Last change: 2024 June 07
+*telescope-lazy-plugins.nvim.txt*  For Neovim >= 0.9 Last change: 2024 July 07
 
 ==============================================================================
 Table of Contents              *telescope-lazy-plugins.nvim-table-of-contents*
 
 1. Description                       |telescope-lazy-plugins.nvim-description|
-2. Installation                     |telescope-lazy-plugins.nvim-installation|
-3. Usage                                   |telescope-lazy-plugins.nvim-usage|
-4. Configuration:                 |telescope-lazy-plugins.nvim-configuration:|
+2. Requirements                     |telescope-lazy-plugins.nvim-requirements|
+3. Installation                     |telescope-lazy-plugins.nvim-installation|
+4. Usage                                   |telescope-lazy-plugins.nvim-usage|
+5. Configuration:                 |telescope-lazy-plugins.nvim-configuration:|
   - Mappings                            |telescope-lazy-plugins.nvim-mappings|
   - Defaults                            |telescope-lazy-plugins.nvim-defaults|
-5. Configuration Examples:|telescope-lazy-plugins.nvim-configuration-examples:|
+6. Configuration Examples:|telescope-lazy-plugins.nvim-configuration-examples:|
   - Simple config:                |telescope-lazy-plugins.nvim-simple-config:|
   - Lazy loading:                  |telescope-lazy-plugins.nvim-lazy-loading:|
   - Full spec table              |telescope-lazy-plugins.nvim-full-spec-table|
-6. Advanced Features           |telescope-lazy-plugins.nvim-advanced-features|
+7. Advanced Features           |telescope-lazy-plugins.nvim-advanced-features|
   - Custom Actions                |telescope-lazy-plugins.nvim-custom-actions|
   - Custom Entries                |telescope-lazy-plugins.nvim-custom-entries|
-7. Highlights                         |telescope-lazy-plugins.nvim-highlights|
-8. Contributions                   |telescope-lazy-plugins.nvim-contributions|
+8. Highlights                         |telescope-lazy-plugins.nvim-highlights|
+9. Contributions                   |telescope-lazy-plugins.nvim-contributions|
 
 ==============================================================================
 1. Description                       *telescope-lazy-plugins.nvim-description*
 
 
   A Telescope <https://github.com/nvim-telescope/telescope.nvim> picker to
-  quickly access plugins config files for lazy.nvim
-  <https://github.com/folke/lazy.nvim> configurations.
+  quickly access configurations of plugins managed by lazy.nvim
+  <https://github.com/folke/lazy.nvim>.
 Simply search the plugin name and open its configuration at the corresponding
 line.
 
@@ -56,7 +57,14 @@ position.
 
 
 ==============================================================================
-2. Installation                     *telescope-lazy-plugins.nvim-installation*
+2. Requirements                     *telescope-lazy-plugins.nvim-requirements*
+
+- Neovim >= v0.9.0
+- lazy.nvim >= v11.0.0
+
+
+==============================================================================
+3. Installation                     *telescope-lazy-plugins.nvim-installation*
 
 - Add it into the Telescope dependencies:
 
@@ -81,7 +89,7 @@ position.
   loaded first).
 
 ==============================================================================
-3. Usage                                   *telescope-lazy-plugins.nvim-usage*
+4. Usage                                   *telescope-lazy-plugins.nvim-usage*
 
 - **Command-line:**
 
@@ -97,7 +105,7 @@ position.
 
 
 ==============================================================================
-4. Configuration:                 *telescope-lazy-plugins.nvim-configuration:*
+5. Configuration:                 *telescope-lazy-plugins.nvim-configuration:*
 
 Add the options in the `telescope.nvim` opts `extensions` table inside
 `lazy_plugins` (check the
@@ -197,7 +205,7 @@ DEFAULTS                                *telescope-lazy-plugins.nvim-defaults*
 
 
 ==============================================================================
-5. Configuration Examples:*telescope-lazy-plugins.nvim-configuration-examples:*
+6. Configuration Examples:*telescope-lazy-plugins.nvim-configuration-examples:*
 
 
 SIMPLE CONFIG:                    *telescope-lazy-plugins.nvim-simple-config:*
@@ -349,7 +357,7 @@ For example, for configurations in a single `init.lua` file:
 
 
 ==============================================================================
-6. Advanced Features           *telescope-lazy-plugins.nvim-advanced-features*
+7. Advanced Features           *telescope-lazy-plugins.nvim-advanced-features*
 
 
 CUSTOM ACTIONS                    *telescope-lazy-plugins.nvim-custom-actions*
@@ -462,7 +470,7 @@ Should follow this specs:
 
 
 ==============================================================================
-7. Highlights                         *telescope-lazy-plugins.nvim-highlights*
+8. Highlights                         *telescope-lazy-plugins.nvim-highlights*
 
 This are the highlights defined by **Telescope Lazy Plugins**
 
@@ -479,7 +487,7 @@ This are the highlights defined by **Telescope Lazy Plugins**
   ---------------------------------------------------------------------------
 
 ==============================================================================
-8. Contributions                   *telescope-lazy-plugins.nvim-contributions*
+9. Contributions                   *telescope-lazy-plugins.nvim-contributions*
 
 This plugin is made mainly for my personal use, but suggestions, issues, or
 pull requests are very welcome.
