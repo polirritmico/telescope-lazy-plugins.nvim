@@ -45,6 +45,13 @@ function M.line_number_search(repo_name, filepath)
     end
     current_line = current_line + 1
   end
+  local msg = string.format(
+    "Can't find '%s' from line %s inside the '%s' file. Maybe a duplicate fragment.",
+    repo_name,
+    from_line,
+    filepath
+  )
+  vim.notify(msg, vim.log.levels.WARN)
   return 1
 end
 
