@@ -34,7 +34,7 @@ dependencies._
 ⚡ No more head overload trying to remember in which file you changed that
 plugin option or searching through files to check for overlapping configs.
 
-⚡ Add custom entries for your special needs.
+⚡ Add custom entries to any file for your special needs.
 
 _For example a custom entry to quickly access a configuration file from a config
 distribution like LazyVim, NvChad, etc._
@@ -45,17 +45,16 @@ distribution like LazyVim, NvChad, etc._
 - Open the selected repository local clone directory (`<C-g>r`).
 - Open a `live_grep` picker from the selected repository local clone directory
   path (`<C-g>l`).
-- Create your custom actions.
+- Create/Add your custom actions.
 
-The plugin check the current `LazyPluginSpec`, extract each plugin data, and
-generate the full filepath for each plugin, including the corresponding line
-number. This allows the correct config file to open at the appropriate cursor
-position.
+The plugin checks the current `LazySpec` passed into `lazy.nvim`, imports all
+the configuration fragments of each plugin, extracts the plugin data, and
+generates the full plugin configuration list.
 
 ## 📌 Requirements
 
 - Neovim >= v0.9.0
-- lazy.nvim >= v11.0.0
+- lazy.nvim >= v10.24.3
 
 ## 📦 Installation
 
@@ -99,16 +98,15 @@ require("telescope").extensions.lazy_plugins.lazy_plugins()
 Add the options in the `telescope.nvim` opts `extensions` table inside
 `lazy_plugins` (check the [configuration examples](#-simple-config)).
 
-| Option            | Type      | Description                                                                                                                                                                                                                                                                   |
-| ----------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `lazy_config`     | `string`  | Path to the lua file containing the lazy options passed to the `setup()` call. With this value setted, the `lazy` entry is added, e.g. searching for `lazy` to open `nvim/lua/config/lazy.lua`.                                                                               |
-| `lazy_spec_table` | `string`  | If plugins are directly passed to the `require("lazy").setup()` function inside a plugins table (instead of using only imports paths), set this option to the file where that table is defined. When no module is found inside a plugin spec this path would be used instead. |
-| `name_only`       | `boolean` | Match only the repository name. Set to `false` to match the full `account/repo_name`.                                                                                                                                                                                         |
-| `show_disabled`   | `boolean` | Also show disabled plugins from the Lazy spec.                                                                                                                                                                                                                                |
-| `picker_opts`     | `table`   | Layout options passed into Telescope. Check `:h telescope.layout`.                                                                                                                                                                                                            |
-| `mappings`        | `table`   | Keymaps attached to the picker. See `:h telescope.mappings`. Also, '[Custom Actions](#-custom-actions)' could be added.                                                                                                                                                       |
-| `live_grep`       | `table`   | Options to pass into the Telescope builtin live_grep picker. See `:h telescope.builtin.live_grep`.                                                                                                                                                                            |
-| `custom_entries`  | `table`   | A collection of custom entries to add into the picker. See the '[Custom Entries](#-custom-entries)' section.                                                                                                                                                                  |
+| Option           | Type      | Description                                                                                                                                                                                     |
+| ---------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lazy_config`    | `string`  | Path to the lua file containing the lazy options passed to the `setup()` call. With this value setted, the `lazy` entry is added, e.g. searching for `lazy` to open `nvim/lua/config/lazy.lua`. |
+| `name_only`      | `boolean` | Match only the repository name. Set to `false` to match the full `account/repo_name`.                                                                                                           |
+| `show_disabled`  | `boolean` | Also show disabled plugins from the Lazy spec.                                                                                                                                                  |
+| `picker_opts`    | `table`   | Layout options passed into Telescope. Check `:h telescope.layout`.                                                                                                                              |
+| `mappings`       | `table`   | Keymaps attached to the picker. See `:h telescope.mappings`. Also, '[Custom Actions](#-custom-actions)' could be added.                                                                         |
+| `live_grep`      | `table`   | Options to pass into the Telescope builtin live_grep picker. See `:h telescope.builtin.live_grep`.                                                                                              |
+| `custom_entries` | `table`   | A collection of custom entries to add into the picker. See the '[Custom Entries](#-custom-entries)' section.                                                                                    |
 
 ### ⌨️ Mappings
 
@@ -134,7 +132,6 @@ require("telescope").extensions.lazy_plugins.actions
   name_only = true, -- match only the `repo_name`, false to match the full `account/repo_name`
   show_disabled = true, -- also show disabled plugins from the Lazy spec.
   lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy opts and setup() call.
-  lazy_spec_table = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy plugin spec table.
   custom_entries = {}, ---@type table<LazyPluginsCustomEntry>
   live_grep = {}, -- Opts to pass into `live_grep`. Check `:h telescope.builtin.live_grep`
   mappings = {
@@ -181,7 +178,7 @@ require("telescope").extensions.lazy_plugins.actions
   opts = {
     extensions = {
       lazy_plugins = {
-        lazy_config = vim.fn.stdpath("config") .. "/lua/lazy/init.lua", -- path to the file containing the lazy opts and setup() call.
+        lazy_config = vim.fn.stdpath("config") .. "/lua/lazy/init.lua", -- path to the file containing the lazy spec and setup() call.
       },
     },
     -- etc.
@@ -250,7 +247,6 @@ return {
         lazy_plugins = {
           show_disabled = true,
           lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy opts and setup() call.
-          lazy_spec_table = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy plugin spec table.
           -- This is not needed. It is just an example of how you can customize the picker layout. Check `:h telescope.layout`.
           picker_opts = {
             layout_strategy = "vertical",
@@ -280,9 +276,9 @@ return {
 ### 📜 Full spec table
 
 If your plugins are inside a large table passed directly to the
-`require('lazy').setup({...}, opts)` call, make sure to set the
-`lazy_spec_table` option to specify the file where the spec table is defined.
-For example, for configurations in a single `init.lua` file:
+`require('lazy').setup({...}, opts)` call, make sure to set the `lazy_config`
+option to specify the file where the spec table is defined. For example, for
+configurations in a single `init.lua` file:
 
 <!-- panvimdoc-ignore-start -->
 <details>
@@ -311,8 +307,8 @@ require("lazy").setup({
       extensions = {
         lazy_plugins = {
           -- Since this config is only in one big table, pass the path of this
-          -- file (~/.config/nvim/init.lua) into the `lazy_spec_table` field:
-          lazy_spec_table = vim.fn.stdpath("config") .. "/init.lua"
+          -- file (~/.config/nvim/init.lua) into the `lazy_config` field:
+          lazy_config = vim.fn.stdpath("config") .. "/init.lua"
         },
       },
     },
