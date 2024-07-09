@@ -424,11 +424,11 @@ Should follow this specs:
 --- Custom entry example:
 {
     name = "custom-entry",
-    filepath = vim.fn.stdpath("config") .. "lua/extra-options/somefile.lua",
+    filepath = vim.fn.stdpath("config") .. "/lua/extra-options/somefile.lua",
     -- Optional:
     line = 42,
     repo_url = "https://www.lua.org/manual/5.2/",
-    repo_dir = vim.fn.stdpath("config") .. "lua/extra-options/",
+    repo_dir = vim.fn.stdpath("config") .. "/lua/extra-options/",
 }
 
 ```
