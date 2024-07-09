@@ -276,6 +276,14 @@ function M.import(spec, path, parent_enabled)
       if inner_type == "table" or inner_type == "string" and not inner_spec:find("%s") then
         M.import(inner_spec, path, parent_enabled)
       end
+      -- HACK: Ensure that old 'inner_spec.dependencies' values are not carried
+      -- over by explicitly setting it to nil.
+      -- Without this, old dependencies tables may still be in memory and could
+      -- be accessed inside M.add at the `if spec.dependencies` check even if
+      -- the current inner_spec does not have any.
+      if inner_spec.dependencies then
+        inner_spec.dependencies = nil
+      end
     end
   elseif spec[1] or spec.dir or spec.url then
     M.add(spec, path, parent_enabled)
