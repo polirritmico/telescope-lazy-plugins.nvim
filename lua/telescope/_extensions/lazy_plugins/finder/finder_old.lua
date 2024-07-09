@@ -2,13 +2,12 @@ local finders = require("telescope.finders")
 local lp_config = require("telescope._extensions.lazy_plugins.config")
 local lp_make_entry = require("telescope._extensions.lazy_plugins.make_entry")
 
----@class TelescopeLazyPluginsFinder
-local lp_finder_old = {}
+local lp_finder = {}
 
 ---@param repo_name string Repository name (username/plugin)
 ---@param filepath string Full file path
 ---@return integer -- Matching line number
-function lp_finder_old.line_number_search(repo_name, filepath)
+function lp_finder.line_number_search(repo_name, filepath)
   local current_line = 1
   local search_str = string.format([["%s"]], repo_name)
   for line_str in io.lines(filepath) do
@@ -23,7 +22,7 @@ end
 ---Get the lazy_plugin module full filepath from the runtimepath
 ---@param lazy_plugin table Plugin spec to obtain the module full filepath
 ---@return string?
-function lp_finder_old.get_module_filepath(lazy_plugin)
+function lp_finder.get_module_filepath(lazy_plugin)
   local rtp = vim.opt.rtp:get()
 
   if not lazy_plugin._.module then
@@ -39,6 +38,7 @@ function lp_finder_old.get_module_filepath(lazy_plugin)
   end
 
   local mod = lazy_plugin._.module:gsub("%.", "/")
+  ---@diagnostic disable: param-type-mismatch rtp is an array
   for _, rtp_path in ipairs(rtp) do
     local check_path = string.format("%s/lua/%s", rtp_path, mod)
     if vim.fn.filereadable(check_path .. ".lua") == 1 then
@@ -54,10 +54,10 @@ end
 ---function recursively extract the `plugin._.super` field into one table.
 ---@param plugin table Plugin data from the lazy spec
 ---@return table<LazyPluginsData> collected_configs Contains all the plugin data from the lazy spec
-function lp_finder_old.collect_config_files(plugin)
+function lp_finder.collect_config_files(plugin)
   local collected_configs = {}
   if plugin._.super then
-    local inner_configs = lp_finder_old.collect_config_files(plugin._.super)
+    local inner_configs = lp_finder.collect_config_files(plugin._.super)
     for _, inner_plugin in pairs(inner_configs) do
       table.insert(collected_configs, inner_plugin)
     end
@@ -68,7 +68,7 @@ function lp_finder_old.collect_config_files(plugin)
   if not repo_name then
     return collected_configs
   end
-  local filepath = lp_finder_old.get_module_filepath(plugin)
+  local filepath = lp_finder.get_module_filepath(plugin)
   if not filepath then
     return collected_configs
   end
@@ -83,7 +83,7 @@ function lp_finder_old.collect_config_files(plugin)
     name = lp_config.options.name_only and plugin.name or repo_name,
     filepath = filepath,
     file = filepath:match(".*/(.*/.*)%.%w+"),
-    line = lp_finder_old.line_number_search(repo_name, filepath),
+    line = lp_finder.line_number_search(repo_name, filepath),
     disabled = false,
   }
   table.insert(collected_configs, current_plugin)
@@ -95,9 +95,9 @@ end
 ---@param tbl table<LazyPluginsData> Target table with the plugins collection
 ---@param lazy_plugin table Plugin spec to insert into the `tbl`
 ---@param disabled? boolean Optional. If disabled is true adds ' (disabled)' to the plugin name
-function lp_finder_old.add_plugin(tbl, lazy_plugin, disabled)
+function lp_finder.add_plugin(tbl, lazy_plugin, disabled)
   disabled = disabled or false
-  local configs = lp_finder_old.collect_config_files(lazy_plugin)
+  local configs = lp_finder.collect_config_files(lazy_plugin)
   if #configs == 0 then
     local msg = "No configuration files found for " .. lazy_plugin.name
     vim.notify(msg, vim.log.levels.WARN)
@@ -134,19 +134,19 @@ end
 ---of the Lua file containing the plugin config, and the line number where the
 ---repository name is found.
 ---@return table<LazyPluginsData>
-function lp_finder_old.get_plugins_data()
+function lp_finder.get_plugins_data()
   local plugins_collection = {}
   local lazy_config = require("lazy.core.config")
   local lazy_spec = lazy_config.spec
 
   for _, plugin in pairs(lazy_spec.plugins) do
     if plugin.name ~= "lazy.nvim" and plugin.name ~= "LazyVim" then
-      lp_finder_old.add_plugin(plugins_collection, plugin)
+      lp_finder.add_plugin(plugins_collection, plugin)
     end
   end
   if lp_config.options.show_disabled then
     for _, disabled_plugin in pairs(lazy_spec.disabled) do
-      lp_finder_old.add_plugin(plugins_collection, disabled_plugin, true)
+      lp_finder.add_plugin(plugins_collection, disabled_plugin, true)
     end
   end
 
@@ -171,13 +171,13 @@ end
 
 ---Finder to use with the Telescope API. Get the plugin data for each plugin
 ---registered on the Lazy spec.
-function lp_finder_old.finder(opts)
+function lp_finder.finder(opts)
   opts = vim.tbl_deep_extend("force", {}, lp_config.options, opts or {})
 
   return finders.new_table({
-    results = lp_finder_old.get_plugins_data(),
+    results = lp_finder.get_plugins_data(),
     entry_maker = lp_make_entry(opts),
   })
 end
 
-return lp_finder_old
+return lp_finder

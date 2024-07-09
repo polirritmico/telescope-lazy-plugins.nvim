@@ -26,6 +26,9 @@ function M.get_last_search_history(search, file)
   end
 end
 
+---Search the line number of the repo_name inside the target file. The function
+---stores the search pair (`repo_name`/`filepath`) into the `M.search_history`
+---table to continue from there at future searches of the same pair.
 ---@param repo_name string Repository name (username/plugin)
 ---@param filepath string Full file path
 ---@return integer -- Matching line number or 1
@@ -47,6 +50,7 @@ end
 
 ---Fast implementation to check if a table is a list
 ---@param obj table
+---@return boolean
 function M.is_list(obj)
   local i = 0
   for _ in pairs(obj) do
@@ -161,7 +165,7 @@ function M.lsmod(modname, fn)
   end)
 end
 
----Returns `true` if the plugin is disabled. `false` otherwise
+---Returns `false` if the plugin is disabled or `true` otherwise.
 ---@param spec LazyMinSpec|LazyPluginSpec
 function M.is_enabled(spec)
   if
@@ -175,6 +179,8 @@ function M.is_enabled(spec)
   return true
 end
 
+---Import/Read the spec.import modules and pass them into the import function,
+---while preserving a `parent_enabled = false` state for the inner module specs.
 ---@param spec LazyMinSpec
 ---@param parent_enabled? boolean
 function M.expand_import(spec, parent_enabled)
@@ -270,7 +276,7 @@ function M.collect_fragments()
   M.import(lazy_specs, lp_config.options.lazy_config)
 end
 
----Convert the fragment data into a LazyPluginData
+---Convert the fragment LazyMinSpec data into a LazyPluginData
 ---@param mod LazyMinSpec
 ---@param cfg_path string
 ---@return LazyPluginsData
@@ -300,6 +306,7 @@ function M.extract_plugin_info(mod, cfg_path)
   return plugin
 end
 
+---Use the collected fragments to build the list of LazyPluginsData
 function M.build_plugins_collection()
   if not M.fragments or #M.fragments < 1 then
     vim.notify("Empty fragments", vim.log.levels.WARN)
@@ -313,7 +320,6 @@ function M.build_plugins_collection()
     plugin.repo_dir = lazy_spec.plugins[plugin.name] and lazy_spec.plugins[plugin.name].dir
       or lazy_spec.disabled[plugin.name] and lazy_spec.disabled[plugin.name].dir
       or ""
-
     table.insert(M.plugins_collection, plugin)
   end
 
