@@ -394,7 +394,7 @@ lazy_plugins = {
         local args = { foo = "Plugin path from the selected entry.repo_dir: " }
         lp_actions.custom_action(
           prompt_bufnr,
-          "repo_dir", -- This is used to validate the entry. Could be any field of LazyPluginData (name, repo_name, filepath, line, repo_url or repo_dir).
+          "repo_dir", -- This is used to validate the entry. Could be any field of LazyPluginData (name, full_name, filepath, line, repo_url or repo_dir).
           demo_custom_function,
           args
         )
