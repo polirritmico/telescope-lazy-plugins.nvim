@@ -26,9 +26,9 @@ function M.get_last_search_history(search, file)
   end
 end
 
----Search the line number of the repo_name inside the target file. The function
+---Search the line number of the `repo_name` inside the target file. The function
 ---stores the search pair (`repo_name`/`filepath`) into the `M.search_history`
----table to continue from there at future searches of the same pair.
+---table to continue from that line in future searches of the same pair.
 ---@param repo_name string Repository name (username/plugin)
 ---@param filepath string Full file path
 ---@return integer -- Matching line number or 1
@@ -156,29 +156,36 @@ function M.ls(path, fn)
 end
 
 ---@param modname string
----@param fn fun(modname:string, modpath:string)
-function M.lsmod(modname, fn)
+---@return LazyPluginsFragment[] modspecs
+function M.lsmod(modname)
+  local modspecs = {}
+  local function add_modspec(mod, modpath)
+    modspecs[#modspecs + 1] = { mod = mod, path = modpath }
+  end
+
   local root, match = M.find_root(modname)
   if not root then
-    return
+    return {}
   end
 
   if match:sub(-4) == ".lua" then
-    fn(modname, match)
+    add_modspec(modname, match)
     if not vim.uv.fs_stat(root) then
-      return
+      return {}
     end
   end
 
   M.ls(root, function(path, name, type)
     if name == "init.lua" then
-      fn(modname, path)
+      add_modspec(modname, path)
     elseif (type == "file" or type == "link") and name:sub(-4) == ".lua" then
-      fn(modname .. "." .. name:sub(1, -5), path)
+      add_modspec(modname .. "." .. name:sub(1, -5), path)
     elseif type == "directory" and vim.uv.fs_stat(path .. "/init.lua") then
-      fn(modname .. "." .. name, path .. "/init.lua")
+      add_modspec(modname .. "." .. name, path .. "/init.lua")
     end
   end)
+
+  return modspecs
 end
 
 ---Returns `false` if the plugin is disabled or `true` otherwise.
@@ -222,9 +229,7 @@ function M.expand_import(spec, parent_enabled)
 
   local modspecs = {}
   if type(import_name) == "string" then
-    M.lsmod(import_name, function(modname, modpath)
-      modspecs[#modspecs + 1] = { mod = modname, path = modpath }
-    end)
+    modspecs = M.lsmod(import_name)
   else
     modspecs = { { mod = spec.import } }
   end
@@ -350,7 +355,7 @@ end
 ---obtains the plugin name, repository name (<username/plugin>), full file path
 ---of the Lua file containing the plugin config, and the line number where the
 ---repository name is found.
----@return table<LazyPluginsData>
+---@return LazyPluginsData[] M.plugins_collection
 function M.get_plugins_data()
   if M.plugins_collection then
     return M.plugins_collection
@@ -362,15 +367,17 @@ function M.get_plugins_data()
 
   if lp_config.options.lazy_config then
     local lazy = require("lazy.core.config")
-    table.insert(M.plugins_collection, {
-      name = lp_config.options.name_only and "lazy.nvim" or "folke/lazy.nvim",
+    ---@type LazyPluginsData
+    local lazy_data = {
+      name = "lazy.nvim",
       full_name = "folke/lazy.nvim",
       repo_url = "https://github.com/folke/lazy.nvim",
       repo_dir = lazy.me or lazy.options.root,
       filepath = lp_config.options.lazy_config,
       file = lp_config.options.lazy_config:match("[^/]+$"),
       line = 1,
-    })
+    }
+    table.insert(M.plugins_collection, lazy_data)
   end
 
   for _, entry in pairs(lp_config.options.custom_entries) do
