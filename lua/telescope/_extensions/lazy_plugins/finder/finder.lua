@@ -297,26 +297,28 @@ end
 ---@param cfg_path string
 ---@return LazyPluginsData
 function M.extract_plugin_info(mod, cfg_path)
-  local repo_name = mod.name or mod[1]
-  local name = repo_name:match("[^/]+$")
+  -- Full name of the plugin repository (usually account/repo) displayed if opts.name_only = false.
+  local repo_name = mod.name or mod[1] or mod.dir or mod.url
+  -- Short name of the plugin displayed by default
+  local name = mod.name or repo_name:match("[^/]+$")
   local line = M.line_number_search(repo_name, cfg_path)
-  local disabled = not mod.enabled
-
   local repo_url = mod.url and mod.url
-    or name:sub(1, 8) == "https://" and name
+    or repo_name:match("^http[s]?://") and repo_name
     or string.format("https://github.com/%s", repo_name)
-  repo_url = repo_url:gsub("%.git$", "")
+    or mod.dir and mod.dir
+    or ""
+  local disabled = not mod.enabled
 
   ---@type LazyPluginsData
   local plugin = {
-    name = name,
-    filepath = cfg_path,
+    disabled = disabled,
     file = cfg_path:match(".*/(.*/.*)%.%w+"),
+    filepath = cfg_path,
     line = line,
+    name = name,
+    repo_dir = "",
     repo_name = repo_name,
     repo_url = repo_url,
-    repo_dir = "",
-    disabled = disabled,
   }
 
   return plugin

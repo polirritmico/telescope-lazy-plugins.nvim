@@ -4,6 +4,7 @@ local make_entry = require("telescope.make_entry")
 ---@param opts TelescopeLazyPluginsConfig
 local function make_entry_lp(opts)
   local disabled = opts and opts.show_disabled == true
+  local full_name = opts and opts.name_only == false
 
   local lp_items
   if disabled then
@@ -33,12 +34,12 @@ local function make_entry_lp(opts)
   local function make_display(entry)
     if not disabled then
       return displayer({
-        { entry.value.name },
+        { full_name and entry.value.repo_name or entry.value.name },
         { entry.value.file, hl_file },
       })
     else
       return displayer({
-        { entry.value.name, hl_plugin },
+        { full_name and entry.value.repo_name or entry.value.name, hl_plugin },
         { entry.value.file, hl_file },
         entry.value.disabled and { "○", hl_disabled } or { "●", hl_enabled },
       })
