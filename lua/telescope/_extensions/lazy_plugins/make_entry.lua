@@ -55,7 +55,7 @@ local function make_entry_lp(opts)
     return make_entry.set_default_entry_mt({
       value = entry,
       display = make_display,
-      ordinal = entry.name,
+      ordinal = full_name and entry.full_name or entry.name,
       path = entry.filepath,
       lnum = entry.line,
     }, opts)
