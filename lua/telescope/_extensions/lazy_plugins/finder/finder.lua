@@ -273,7 +273,7 @@ end
 ---Convert the fragment data into a LazyPluginData
 ---@param mod LazyMinSpec
 ---@param cfg_path string
----@return LazyPluginData
+---@return LazyPluginsData
 function M.extract_plugin_info(mod, cfg_path)
   local repo_name = mod.name or mod[1]
   local name = repo_name:match("[^/]+$")
@@ -285,7 +285,7 @@ function M.extract_plugin_info(mod, cfg_path)
     or string.format("https://github.com/%s", repo_name)
   repo_url = repo_url:gsub("%.git$", "")
 
-  ---@type LazyPluginData
+  ---@type LazyPluginsData
   local plugin = {
     name = name,
     filepath = cfg_path,
@@ -326,7 +326,7 @@ end
 ---obtains the plugin name, repository name (<username/plugin>), full file path
 ---of the Lua file containing the plugin config, and the line number where the
 ---repository name is found.
----@return table<LazyPluginData>
+---@return table<LazyPluginsData>
 function M.get_plugins_data()
   if M.plugins_collection then
     return M.plugins_collection
