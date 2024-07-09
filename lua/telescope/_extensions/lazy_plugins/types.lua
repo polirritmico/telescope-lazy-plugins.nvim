@@ -1,7 +1,7 @@
 ---Stores the relevant Lazy plugin spec data to use by the picker.
 ---@class LazyPluginsData
 ---@field name string Name of the plugin showed in the picker
----@field repo_name string Full name of the plugin repository (account/repo)
+---@field full_name string Full name of the plugin repository (account/repo)
 ---@field filepath string Full file path to the plugin lua configuration
 ---@field line integer Line number of the plugin definition in the lua file
 ---@field repo_url string Url to the repo

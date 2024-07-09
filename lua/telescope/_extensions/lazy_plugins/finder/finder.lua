@@ -298,13 +298,13 @@ end
 ---@return LazyPluginsData
 function M.extract_plugin_info(mod, cfg_path)
   -- Full name of the plugin repository (usually account/repo) displayed if opts.name_only = false.
-  local repo_name = mod.name or mod[1] or mod.dir or mod.url
+  local full_name = mod.name or mod[1] or mod.dir or mod.url
   -- Short name of the plugin displayed by default
-  local name = mod.name or repo_name:match("[^/]+$")
-  local line = M.line_number_search(repo_name, cfg_path)
+  local name = mod.name or full_name:match("[^/]+$")
+  local line = M.line_number_search(full_name, cfg_path)
   local repo_url = mod.url and mod.url
-    or repo_name:match("^http[s]?://") and repo_name
-    or string.format("https://github.com/%s", repo_name)
+    or full_name:match("^http[s]?://") and full_name
+    or string.format("https://github.com/%s", full_name)
     or mod.dir and mod.dir
     or ""
   local disabled = not mod.enabled
@@ -317,7 +317,7 @@ function M.extract_plugin_info(mod, cfg_path)
     line = line,
     name = name,
     repo_dir = "",
-    repo_name = repo_name,
+    full_name = full_name,
     repo_url = repo_url,
   }
 
@@ -364,7 +364,7 @@ function M.get_plugins_data()
     local lazy = require("lazy.core.config")
     table.insert(M.plugins_collection, {
       name = lp_config.options.name_only and "lazy.nvim" or "folke/lazy.nvim",
-      repo_name = "folke/lazy.nvim",
+      full_name = "folke/lazy.nvim",
       repo_url = "https://github.com/folke/lazy.nvim",
       repo_dir = lazy.me or lazy.options.root,
       filepath = lp_config.options.lazy_config,

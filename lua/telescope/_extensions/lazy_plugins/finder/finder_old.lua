@@ -77,7 +77,7 @@ function lp_finder.collect_config_files(plugin)
 
   ---@type LazyPluginsData
   local current_plugin = {
-    repo_name = repo_name,
+    full_name = repo_name,
     repo_url = repo_url,
     repo_dir = plugin.dir,
     name = lp_config.options.name_only and plugin.name or repo_name,
@@ -112,7 +112,7 @@ function lp_finder.add_plugin(tbl, lazy_plugin, disabled)
     local duplicated = false
     for _, plugin_in_tbl in pairs(tbl) do
       if
-        plugin_cfg.repo_name == plugin_in_tbl.repo_name
+        plugin_cfg.full_name == plugin_in_tbl.full_name
         and plugin_cfg.filepath == plugin_in_tbl.filepath
         and plugin_cfg.line == plugin_in_tbl.line
       then
@@ -153,7 +153,7 @@ function lp_finder.get_plugins_data()
   if lp_config.options.lazy_config then
     table.insert(plugins_collection, {
       name = lp_config.options.name_only and "lazy.nvim" or "folke/lazy.nvim",
-      repo_name = "folke/lazy.nvim",
+      full_name = "folke/lazy.nvim",
       repo_url = "https://github.com/folke/lazy.nvim",
       repo_dir = lazy_config.me or lazy_config.options.root,
       filepath = lp_config.options.lazy_config,
