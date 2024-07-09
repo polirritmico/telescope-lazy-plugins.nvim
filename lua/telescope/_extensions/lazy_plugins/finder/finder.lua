@@ -374,7 +374,7 @@ function M.get_plugins_data()
       repo_url = "https://github.com/folke/lazy.nvim",
       repo_dir = lazy.me or lazy.options.root,
       filepath = lp_config.options.lazy_config,
-      file = lp_config.options.lazy_config:match("[^/]+$"),
+      file = lp_config.options.lazy_config:match(".*/(.*/.*)%.%w+"),
       line = 1,
     }
     table.insert(M.plugins_collection, lazy_data)
