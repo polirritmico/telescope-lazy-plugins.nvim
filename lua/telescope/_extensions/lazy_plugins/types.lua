@@ -1,5 +1,5 @@
 ---Stores the relevant Lazy plugin spec data to use by the picker.
----@class LazyPluginData
+---@class LazyPluginsData
 ---@field name string Plugin name
 ---@field repo_name string Full name of the plugin repository
 ---@field filepath string Full file path to the plugin lua configuration
@@ -17,7 +17,7 @@
 ---@field cond? boolean|fun():boolean
 ---@field enabled? boolean|fun():boolean
 
----@class LazyPluginFragment
+---@class LazyPluginsFragment
 ---@field mod LazyMinSpec
 ---@field path string
 
@@ -27,7 +27,7 @@
 ---@field name_only boolean Match only the `repo_name`, false to match the full `account/repo_name`
 ---@field picker_opts table Layout options passed into Telescope. Check `:h telescope.layout`
 ---@field show_disabled boolean Also show disabled plugins from the Lazy spec
----@field custom_entries? table<LazyPluginsCustomEntry|LazyPluginData> Table to pass custom entries to the picker.
+---@field custom_entries? table<LazyPluginsCustomEntry|LazyPluginsData> Table to pass custom entries to the picker.
 ---@field live_grep? table Options to pass into the `live_grep` telescope builtin picker
 
 ---@class LazyPluginsCustomEntry

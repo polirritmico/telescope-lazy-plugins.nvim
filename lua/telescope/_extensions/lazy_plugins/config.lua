@@ -49,7 +49,7 @@ function M.setup(opts)
   lp_highlights.setup()
 end
 
----@return table<LazyPluginData>
+---@return table<LazyPluginsData>
 function M.create_custom_entries_from_user_config()
   local function check_errors(entry)
     if not entry.name or type(entry.name) ~= "string" or entry.name == "" then

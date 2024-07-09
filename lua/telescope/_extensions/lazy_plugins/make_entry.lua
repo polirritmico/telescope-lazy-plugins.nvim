@@ -45,7 +45,7 @@ local function make_entry_lp(opts)
     end
   end
 
-  ---@param entry LazyPluginData
+  ---@param entry LazyPluginsData
   return function(entry)
     if not entry then
       return nil

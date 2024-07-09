@@ -25,9 +25,9 @@ end
 
 ---Check if the Telescope selected entry has the passed `field`
 ---@param field string LazyPluginData field of the selected entry to check.
----@return LazyPluginData? entry - `true` when the field is found
+---@return LazyPluginsData? entry - `true` when the field is found
 function lp_actions.get_selected_entry(field)
-  local selected_entry = action_state.get_selected_entry().value ---@type LazyPluginData
+  local selected_entry = action_state.get_selected_entry().value ---@type LazyPluginsData
   if not selected_entry[field] or selected_entry[field] == "" then
     local msg = "Missing `%s` field for `%s` from the Lazy plugin spec."
     vim.notify(string.format(msg, field, selected_entry.name), vim.log.levels.WARN)
@@ -41,7 +41,7 @@ end
 ---returns its output.
 ---@param prompt_bufnr integer Telescope prompt buffer value
 ---@param field string Field of the `LazyPluginData` to validate the selected entry (before the custom_function call).
----@param custom_function fun(prompt_bufnr: integer, entry: LazyPluginData, args: table?): any Custom function to execute.
+---@param custom_function fun(prompt_bufnr: integer, entry: LazyPluginsData, args: table?): any Custom function to execute.
 ---@param args table? Custom args if needed.
 ---@return any output The output of the custom_function, nil or the error object from pcall
 function lp_actions.custom_action(prompt_bufnr, field, custom_function, args)
@@ -132,8 +132,7 @@ function lp_actions.open_repo_url(prompt_bufnr)
   actions.close(prompt_bufnr)
   local cmd_output = vim.fn.jobstart({ open_url_cmd, entry.repo_url }, { detach = true })
   if cmd_output <= 0 then
-    local msg =
-      string.format("Error opening '%s' with '%s'.", entry.repo_url, open_url_cmd)
+    local msg = string.format("Error opening '%s' with '%s'.", entry.repo_url, open_url_cmd)
     vim.notify(msg, vim.log.levels.ERROR, { title = "Telescope Lazy Plugins" })
   end
 end
