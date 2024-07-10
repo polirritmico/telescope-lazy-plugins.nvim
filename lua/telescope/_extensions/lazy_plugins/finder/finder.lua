@@ -31,7 +31,7 @@ end
 ---table to continue from that line in future searches of the same pair.
 ---@param repo_name string Repository name (username/plugin)
 ---@param filepath string Full file path
----@return integer -- Matching line number or 1
+---@return integer, boolean -- Matching line number or 1, true if found string
 function M.line_number_search(repo_name, filepath)
   local search_str = string.format([["%s"]], repo_name)
   local from_line = M.get_last_search_history(search_str, filepath) or 0
@@ -40,7 +40,7 @@ function M.line_number_search(repo_name, filepath)
     if current_line > from_line then
       if string.find(line_str, search_str, 1, true) then
         M.add_search_history(search_str, filepath, current_line)
-        return current_line
+        return current_line, true
       end
     end
     current_line = current_line + 1
@@ -51,8 +51,8 @@ function M.line_number_search(repo_name, filepath)
     from_line,
     filepath
   )
-  vim.notify(msg, vim.log.levels.WARN)
-  return 1
+  vim.notify(msg, vim.log.levels.TRACE)
+  return 1, false
 end
 
 ---Fast implementation to check if a table is a list

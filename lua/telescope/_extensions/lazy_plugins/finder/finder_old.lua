@@ -6,17 +6,17 @@ local lp_finder = {}
 
 ---@param repo_name string Repository name (username/plugin)
 ---@param filepath string Full file path
----@return integer -- Matching line number
+---@return integer, boolean -- Matching line number or 1, true if found string
 function lp_finder.line_number_search(repo_name, filepath)
   local current_line = 1
   local search_str = string.format([["%s"]], repo_name)
   for line_str in io.lines(filepath) do
     if string.find(line_str, search_str, 1, true) then
-      return current_line
+      return current_line, true
     end
     current_line = current_line + 1
   end
-  return 1
+  return 1, false
 end
 
 ---Get the lazy_plugin module full filepath from the runtimepath
