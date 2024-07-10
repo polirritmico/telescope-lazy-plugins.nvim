@@ -10,6 +10,7 @@ local defaults = {
   lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy opts and setup() call.
   custom_entries = {}, ---@type table<LazyPluginsCustomEntry> Table to pass custom entries to the picker.
   live_grep = {}, -- Options to pass into the `live_grep` telescope builtin picker.
+  ignore_imports = {}, -- Add imports you want to ignore, e.g., "lazyvim.plugins".
   mappings = {
     ["i"] = {
       ["<C-g>x"] = lp_actions.open_repo_url,
@@ -46,7 +47,19 @@ function M.setup(opts)
     M.options.custom_entries = M.create_custom_entries_from_user_config()
   end
 
+  if #M.options.ignore_imports > 0 then
+    M.options.ignore_imports = M.array_to_lookup_table(M.options.ignore_imports)
+  end
+
   lp_highlights.setup()
+end
+
+function M.array_to_lookup_table(array_tbl)
+  local lookup_table = {}
+  for _, value in pairs(array_tbl) do
+    lookup_table[value] = true
+  end
+  return lookup_table
 end
 
 ---@return table<LazyPluginsData>

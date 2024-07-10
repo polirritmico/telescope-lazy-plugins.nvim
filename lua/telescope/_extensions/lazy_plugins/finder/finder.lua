@@ -215,6 +215,10 @@ function M.expand_import(spec, parent_enabled)
     return
   end
 
+  if lp_config.options.ignore_imports[spec.import] then
+    return
+  end
+
   local import_name = spec.name or spec.import
 
   -- Avoid re-importing modules

@@ -30,6 +30,7 @@
 ---@field show_disabled boolean Also show disabled plugins from the Lazy spec
 ---@field custom_entries? table<LazyPluginsCustomEntry|LazyPluginsData> Table to pass custom entries to the picker.
 ---@field live_grep? table Options to pass into the `live_grep` telescope builtin picker
+---@field ignore_imports? string[]|table<string, boolean> Array of imports to ignore
 
 ---@class LazyPluginsCustomEntry
 ---@field name string Entry name
