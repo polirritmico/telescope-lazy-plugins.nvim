@@ -2,9 +2,9 @@
 
 <!-- panvimdoc-ignore-start -->
 
-![Pull Requests](https://img.shields.io/badge/Pull_Requests-Welcome-a4e400?style=flat-square)
-![GitHub last commit](https://img.shields.io/github/last-commit/polirritmico/telescope-lazy-plugins.nvim/main?style=flat-square&color=62d8f1)
-![GitHub issues](https://img.shields.io/github/issues/polirritmico/telescope-lazy-plugins.nvim?style=flat-square&color=fc1a70)
+[![Pull Requests](https://img.shields.io/badge/Pull_Requests-Welcome-a4e400?style=flat-square)](https://github.com/polirritmico/telescope-lazy-plugins.nvim/pulls)
+[![GitHub issues](https://img.shields.io/github/issues/polirritmico/telescope-lazy-plugins.nvim?style=flat-square&color=fc1a70)](https://github.com/polirritmico/telescope-lazy-plugins.nvim/issues)
+[![GitHub last commit](https://img.shields.io/github/last-commit/polirritmico/telescope-lazy-plugins.nvim/main?style=flat-square&color=62d8f1)](https://github.com/polirritmico/telescope-lazy-plugins.nvim/commits/main/)
 
 <!-- panvimdoc-ignore-end -->
 
@@ -103,6 +103,7 @@ Add the options in the `telescope.nvim` opts `extensions` table inside
 | `lazy_config`    | `string`  | Path to the lua file containing the lazy options passed to the `setup()` call. With this value setted, the `lazy` entry is added, e.g. searching for `lazy` to open `nvim/lua/config/lazy.lua`. |
 | `name_only`      | `boolean` | Match only the repository name. Set to `false` to match the full `account/repo_name`.                                                                                                           |
 | `show_disabled`  | `boolean` | Also show disabled plugins from the Lazy spec.                                                                                                                                                  |
+| `ignore_imports` | `table`   | Array-like table with modules to ignore. Useful for config distributions like LazyVim to avoid importing the inner configurations, e.g., `lazyvim.plugins`.                                     |
 | `picker_opts`    | `table`   | Layout options passed into Telescope. Check `:h telescope.layout`.                                                                                                                              |
 | `mappings`       | `table`   | Keymaps attached to the picker. See `:h telescope.mappings`. Also, '[Custom Actions](#-custom-actions)' could be added.                                                                         |
 | `live_grep`      | `table`   | Options to pass into the Telescope builtin live_grep picker. See `:h telescope.builtin.live_grep`.                                                                                              |
@@ -133,7 +134,8 @@ require("telescope").extensions.lazy_plugins.actions
   show_disabled = true, -- also show disabled plugins from the Lazy spec.
   lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy opts and setup() call.
   custom_entries = {}, ---@type table<LazyPluginsCustomEntry>
-  live_grep = {}, -- Opts to pass into `live_grep`. Check `:h telescope.builtin.live_grep`
+  live_grep = {}, -- Opts to pass into `live_grep`. Check `:h telescope.builtin.live_grep`.
+  ignore_imports = {}, -- Add imports you want to ignore, e.g., "lazyvim.plugins".
   mappings = {
     ["i"] = {
       ["<C-g>x"] = lp_actions.open_repo_url,
@@ -430,7 +432,6 @@ Should follow this specs:
     repo_url = "https://www.lua.org/manual/5.2/",
     repo_dir = vim.fn.stdpath("config") .. "/lua/extra-options/",
 }
-
 ```
 
 ## 🎨 Highlights

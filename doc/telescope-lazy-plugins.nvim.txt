@@ -1,4 +1,4 @@
-*telescope-lazy-plugins.nvim.txt*  For Neovim >= 0.9 Last change: 2024 July 09
+*telescope-lazy-plugins.nvim.txt*  For Neovim >= 0.9 Last change: 2024 July 10
 
 ==============================================================================
 Table of Contents              *telescope-lazy-plugins.nvim-table-of-contents*
@@ -122,6 +122,10 @@ Add the options in the `telescope.nvim` opts `extensions` table inside
 
   show_disabled    boolean   Also show disabled plugins from the Lazy spec.
 
+  ignore_imports   table     Array-like table with modules to ignore. Useful for config
+                             distributions like LazyVim to avoid importing the inner
+                             configurations, e.g., lazyvim.plugins.
+
   picker_opts      table     Layout options passed into Telescope. Check
                              :h telescope.layout.
 
@@ -171,7 +175,8 @@ DEFAULTS                                *telescope-lazy-plugins.nvim-defaults*
       show_disabled = true, -- also show disabled plugins from the Lazy spec.
       lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy opts and setup() call.
       custom_entries = {}, ---@type table<LazyPluginsCustomEntry>
-      live_grep = {}, -- Opts to pass into `live_grep`. Check `:h telescope.builtin.live_grep`
+      live_grep = {}, -- Opts to pass into `live_grep`. Check `:h telescope.builtin.live_grep`.
+      ignore_imports = {}, -- Add imports you want to ignore, e.g., "lazyvim.plugins".
       mappings = {
         ["i"] = {
           ["<C-g>x"] = lp_actions.open_repo_url,
