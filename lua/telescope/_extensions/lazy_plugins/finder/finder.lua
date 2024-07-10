@@ -34,7 +34,7 @@ end
 ---@return integer -- Matching line number or 1
 function M.line_number_search(repo_name, filepath)
   local search_str = string.format([["%s"]], repo_name)
-  local from_line = M.get_last_search_history(search_str, filepath) or 1
+  local from_line = M.get_last_search_history(search_str, filepath) or 0
   local current_line = 1
   for line_str in io.lines(filepath) do
     if current_line > from_line then
