@@ -1,4 +1,4 @@
-*telescope-lazy-plugins.nvim.txt*  For Neovim >= 0.9 Last change: 2024 July 10
+*telescope-lazy-plugins.nvim.txt*  For Neovim >= 0.9 Last change: 2024 July 11
 
 ==============================================================================
 Table of Contents              *telescope-lazy-plugins.nvim-table-of-contents*
@@ -385,7 +385,7 @@ and returns its output.
   ----------------- ---------- --------------------------------------------------------------
   prompt_bufnr      integer    Telescope prompt buffer value
 
-  field             string     Field of the LazyPluginData to validate the selected entry
+  field             string     Field of the LazyPluginsData to validate the selected entry
                                (before the custom_function call). Check the ‘Custom Entries’
                                section for details on the entry field.
 
@@ -401,26 +401,37 @@ and returns its output.
 
 EXAMPLES: ~
 
-This show a message with the repository local clone path of the selected plugin
-entry.
+This example shows a message that displays the repository local clone path of
+the selected plugin entry.
 
 Use `custom_action` to access the selected entry and execute a custom function:
 
 >lua
+    --- The example function
     ---@param bufnr integer passed by the telescope mapping execution call
-    ---@param entry LazyPluginData passed inside `custom_action`
+    ---@param entry LazyPluginsData passed inside `custom_action`
     ---@param custom_args {foo: string} If needed custom_args could be added in a table
     local function demo_custom_function(bufnr, entry, custom_args)
       -- (require telescope inside the function call to not trigger a lazy load when
       -- parsing the config)
       local lp_actions = require("telescope").extensions.lazy_plugins.actions
     
-      vim.notify(string.format("%s%s", custom_args.foo, entry.repo_dir))
-      lp_actions.append_to_telescope_history(bufnr)
+      local arguments = custom_args.foo -- access values from the custom_args
+      local repository_dir = entry.repo_dir -- access values from the selected picker entry
+      local message = string.format("%s%s", arguments, repository_dir)
+      vim.notify(message)
+    
+      -- Use the provided helper builtin functions:
+      lp_actions.append_to_telescope_history(bufnr) -- Used by `:Telescope resume` and others.
       lp_actions.close(bufnr)
     end
     -- etc.
-    
+<
+
+Then add it to a map action:
+
+>lua
+    --- Inside the lazy_plugins config
     lazy_plugins = {
       mappings = {
         ["i"] = {
@@ -428,7 +439,7 @@ Use `custom_action` to access the selected entry and execute a custom function:
             local args = { foo = "Plugin path from the selected entry.repo_dir: " }
             lp_actions.custom_action(
               prompt_bufnr,
-              "repo_dir", -- This is used to validate the entry. Could be any field of LazyPluginData (name, full_name, filepath, line, repo_url or repo_dir).
+              "repo_dir", -- This is used to validate the entry. Could be any field of LazyPluginsData (name, full_name, filepath, line, repo_url or repo_dir).
               demo_custom_function,
               args
             )
