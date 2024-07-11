@@ -242,8 +242,7 @@ function M.expand_import(spec, parent_enabled)
     if type(mod) ~= "table" then
       vim.notify("expand_import: module spec is not a table", vim.log.levels.ERROR)
     end
-    -- HACK: tbl_deep_extend to ensure that old 'mod.dependencies' values are not carried over
-    M.import(vim.tbl_deep_extend("force", mod, {}), modspec.path, current_enabled)
+    M.import(mod, modspec.path, current_enabled)
   end
   return modspecs
 end
@@ -274,14 +273,22 @@ end
 function M.import(spec, path, parent_enabled)
   if type(spec) == "string" then
     M.add({ spec }, path, parent_enabled)
-  elseif #spec > 1 or M.is_list(spec) then
+    return
+  end
+
+  -- HACK: tbl_deep_extend to ensure that old 'spec.dependencies' values are not
+  -- carried over
+  if type(spec) == "table" then
+    spec = vim.tbl_deep_extend("force", spec, {})
+  end
+
+  if #spec > 1 or M.is_list(spec) then
     for _, inner_spec in pairs(spec) do
       local inner_type = type(inner_spec)
       if inner_type == "string" and not inner_spec:find("%s") then
         M.import(inner_spec, path, parent_enabled)
       elseif inner_type == "table" then
-        -- HACK: Ensure that old 'inner_spec.dependencies' values are not carried over
-        M.import(vim.tbl_deep_extend("force", inner_spec, {}), path, parent_enabled)
+        M.import(inner_spec, path, parent_enabled)
       end
     end
   elseif spec[1] or spec.dir or spec.url then
