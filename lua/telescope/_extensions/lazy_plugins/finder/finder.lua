@@ -28,18 +28,18 @@ end
 
 ---Search the line number of the `repo_name` inside the target file. The function
 ---stores the search pair (`repo_name`/`filepath`) into the `M.search_history`
----table to continue from that line in future searches of the same pair.
+---table to continue from the next line in future searches of the same pair.
 ---@param repo_name string Repository name (username/plugin)
 ---@param filepath string Full file path
 ---@return integer, boolean -- Matching line number or 1, true if found string
 function M.line_number_search(repo_name, filepath)
   local search_str = string.format([["%s"]], repo_name)
-  local from_line = M.get_last_search_history(search_str, filepath) or 0
+  local from_line = M.get_last_search_history(search_str, filepath) or 1
   local current_line = 1
   for line_str in io.lines(filepath) do
-    if current_line > from_line then
+    if current_line >= from_line then
       if string.find(line_str, search_str, 1, true) then
-        M.add_search_history(search_str, filepath, current_line)
+        M.add_search_history(search_str, filepath, current_line + 1)
         return current_line, true
       end
     end
@@ -159,6 +159,7 @@ end
 ---@return LazyPluginsFragment[] modspecs
 function M.lsmod(modname)
   local modspecs = {}
+
   local function add_modspec(mod, modpath)
     modspecs[#modspecs + 1] = { mod = mod, path = modpath }
   end
@@ -208,14 +209,12 @@ end
 ---@param parent_enabled? boolean
 function M.expand_import(spec, parent_enabled)
   if type(spec.import) == "function" and not spec.name then
-    vim.notify("import: Error missing spec.name", vim.log.levels.ERROR)
+    vim.notify("expand_import: Error missing spec.name", vim.log.levels.ERROR)
     return
   elseif type(spec.import) ~= "function" and type(spec.import) ~= "string" then
-    vim.notify("import: spec.import is not string", vim.log.levels.ERROR)
+    vim.notify("expand_import: spec.import is not a string", vim.log.levels.ERROR)
     return
-  end
-
-  if lp_config.options.ignore_imports[spec.import] then
+  elseif lp_config.options.ignore_imports[spec.import] then
     return
   end
 
@@ -224,11 +223,11 @@ function M.expand_import(spec, parent_enabled)
   -- Avoid re-importing modules
   if vim.tbl_contains(M.imported_modules, import_name) then
     return
+  else
+    M.imported_modules[#M.imported_modules + 1] = import_name
   end
-  M.imported_modules[#M.imported_modules + 1] = import_name
 
-  parent_enabled = parent_enabled == nil and true or parent_enabled
-  local current_enabled = not parent_enabled and false or M.is_enabled(spec)
+  local current_enabled = parent_enabled == false and false or M.is_enabled(spec)
   spec.enabled = current_enabled
 
   local modspecs = {}
@@ -240,12 +239,11 @@ function M.expand_import(spec, parent_enabled)
 
   for _, modspec in ipairs(modspecs) do
     local mod = type(modspec.mod) == "function" and modspec.mod() or require(modspec.mod)
-    -- HACK: Ensure that old 'mod.dependencies' values are not carried over
-    mod = vim.tbl_deep_extend("force", mod, {})
     if type(mod) ~= "table" then
-      vim.notify("import: module spec is not a table")
+      vim.notify("expand_import: module spec is not a table", vim.log.levels.ERROR)
     end
-    M.import(mod, modspec.path, current_enabled)
+    -- HACK: tbl_deep_extend to ensure that old 'mod.dependencies' values are not carried over
+    M.import(vim.tbl_deep_extend("force", mod, {}), modspec.path, current_enabled)
   end
   return modspecs
 end
@@ -294,7 +292,7 @@ function M.import(spec, path, parent_enabled)
   elseif spec.import then
     M.expand_import(spec, parent_enabled)
   else
-    vim.notify("lp_finder.import: Not supported spec", vim.log.levels.ERROR)
+    vim.notify("import: Not supported spec", vim.log.levels.ERROR)
   end
 end
 

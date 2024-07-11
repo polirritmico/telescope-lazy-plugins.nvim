@@ -14,7 +14,7 @@
 ---@field dir? string
 ---@field url? string
 ---@field name? string
----@field import? string|table<LazyMinSpec>
+---@field import? string|LazyMinSpec[]
 ---@field cond? boolean|fun():boolean
 ---@field enabled? boolean|fun():boolean
 
