@@ -256,7 +256,7 @@ function M.add(spec, path, parent_enabled)
   if not path then
     error("Adding spec without path")
   end
-  if spec.enabled == nil and parent_enabled ~= nil then
+  if parent_enabled == false or spec.enabled == nil then
     spec.enabled = parent_enabled
   end
   M.fragments[#M.fragments + 1] = { mod = spec, path = path }
