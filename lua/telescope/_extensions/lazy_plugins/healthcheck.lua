@@ -16,23 +16,47 @@ local function check_health()
     error("unexpected: Can't access Lazy config spec.")
     ok_requires = false
   end
-  local ok_cfg, config = pcall(require, "telescope._extensions.lazy_plugins.config")
-  if not ok_cfg or not config then
-    error("unexpected: Telescope Lazy Plugins configuration couldn't be loaded.")
+  if not telescope.extensions.lazy_plugins then
+    error("unexpected: Telescope Lazy Plugins is not loaded")
     ok_requires = false
   end
   if not ok_requires then
     return
   end
 
-  local opts = config.options ---@type TelescopeLazyPluginsConfig
+  --- Check config
+  local ok_configs = true
+  local ok_cfg, config = pcall(require, "telescope._extensions.lazy_plugins.config")
+  if not ok_cfg or not config then
+    local msg = "Telescope Lazy Plugins configuration couldn't be loaded."
+      .. " Maybe a problem in the configuration. Check to the config examples in the README."
+    error(msg)
+    ok_configs = false
+  else
+    ok("Telescope Lazy Plugins configuration found.")
+  end
+  if not config.options then
+    local msg = "Missing options field in configuration."
+      .. " Maybe a problem in the configuration. Check to the config examples in the README."
+    error(msg)
+    ok_configs = false
+  else
+    ok("Telescope Lazy Plugins configuration options found.")
+  end
+  if not ok_configs then
+    return
+  end
+
+  local opts = config.options --[[@as TelescopeLazyPluginsConfig]]
 
   --- Check Lazy config path
   if not (vim.uv or vim.loop).fs_stat(opts.lazy_config) then
     error("No Lazy configuration file found. (Set in `lazy_config`)")
   else
-    ok("Lazy configuration file was found.")
+    ok(string.format("lazy_config found: `%s`", opts.lazy_config))
   end
+
+  --- Check entries
 
   local lazy_version = tonumber(require("lazy.core.config").version:sub(1, 2))
 
