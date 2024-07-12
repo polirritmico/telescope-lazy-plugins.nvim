@@ -304,8 +304,7 @@ function M.import(spec, path, parent_enabled)
 end
 
 function M.collect_fragments()
-  local lazy_specs = require("lazy.core.config").options.spec
-  ---@cast lazy_specs LazyMinSpec
+  local lazy_specs = require("lazy.core.config").options.spec --[[@as LazyMinSpec]]
   M.fragments = {}
   M.imported_modules = {}
   M.import(lazy_specs, lp_config.options.lazy_config)
