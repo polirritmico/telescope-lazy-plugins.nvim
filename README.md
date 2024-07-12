@@ -41,10 +41,9 @@ distribution like LazyVim, NvChad, etc._
 
 ⚡ Quickly execute builtin actions on the selected entry:
 
-- Open the selected repository webpage (`<C-g>x`).
-- Open the selected repository local clone directory (`<C-g>r`).
-- Open a `live_grep` picker from the selected repository local clone directory
-  path (`<C-g>l`).
+- Open the selected plugin webpage (`<C-g>x`).
+- Open the selected plugin repository local clone directory (`<C-g>r`).
+- Open a `live_grep` picker at the plugin's local directory path (`<C-g>l`).
 - Create/Add your custom actions.
 
 The plugin checks the current `LazySpec` passed into `lazy.nvim`, imports all
@@ -70,14 +69,16 @@ return {
 }
 ```
 
-- Load the extension:
+- Manually loading the extension:
 
 ```lua
 require("telescope").load_extension("lazy_plugins")
 ```
 
-> Run `:checkhealth telescope` after the installation is recommended (needs to
-> be loaded first).
+> Run `:checkhealth telescope` after the installation is recommended (the
+> extension needs to be loaded first).
+
+Check the [configuration examples](#-simple-config) section.
 
 ## 🔍 Usage
 
@@ -96,7 +97,7 @@ require("telescope").extensions.lazy_plugins.lazy_plugins()
 ## 🛠️ Configuration:
 
 Add the options in the `telescope.nvim` opts `extensions` table inside
-`lazy_plugins` (check the [configuration examples](#-simple-config)).
+`lazy_plugins` ([configuration examples](#-simple-config)).
 
 | Option           | Type      | Description                                                                                                                                                                                     |
 | ---------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
