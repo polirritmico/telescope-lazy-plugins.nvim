@@ -94,7 +94,8 @@ local function check_health()
       local full_name = plugin.value.full_name
       if full_name ~= "folke/lazy.nvim" then
         local filepath = plugin.value.filepath
-        if plugin.value.line == 1 then -- since 1 is the default value only check those plugins
+        -- Only check line 1 plugins since that's the default
+        if plugin.value.line == 1 then
           local _, match = finder.line_number_search(full_name, filepath)
           if not match then
             table.insert(plugins_without_matches, { name = full_name, path = filepath })
@@ -102,6 +103,7 @@ local function check_health()
         end
       end
     end
+
     if #plugins_without_matches > 0 then
       local msg = "Problems detected searching plugin(s) in the config files:\n"
       for _, plugin in pairs(plugins_without_matches) do
