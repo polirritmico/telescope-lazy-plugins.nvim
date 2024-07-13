@@ -8,10 +8,12 @@ local lp_finder = {}
 ---@param filepath string Full file path
 ---@return integer, boolean -- Matching line number or 1, true if found string
 function lp_finder.line_number_search(repo_name, filepath)
+  local find = string.find
+  local dq_search = string.format([["%s"]], repo_name)
+  local sq_search = string.format([['%s']], repo_name)
   local current_line = 1
-  local search_str = string.format([["%s"]], repo_name)
   for line_str in io.lines(filepath) do
-    if string.find(line_str, search_str, 1, true) then
+    if find(line_str, dq_search, 1, true) or find(line_str, sq_search, 1, true) then
       return current_line, true
     end
     current_line = current_line + 1

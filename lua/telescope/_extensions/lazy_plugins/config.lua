@@ -42,13 +42,8 @@ function M.setup(opts)
 
   local lazy_cfg = vim.fn.expand(M.options.lazy_config)
   if not lazy_cfg or not (vim.uv or vim.loop).fs_stat(lazy_cfg) then
-    vim.notify(
-      string.format(
-        "telescope-lazy-plugins: lazy_config file cannot be accessed: '%s'.",
-        lazy_cfg
-      ),
-      vim.log.levels.WARN
-    )
+    local msg = "telescope-lazy-plugins: lazy_config file cannot be accessed: '%s'."
+    vim.notify(string.format(msg, lazy_cfg), vim.log.levels.WARN)
   end
   M.options.lazy_config = lazy_cfg
 
