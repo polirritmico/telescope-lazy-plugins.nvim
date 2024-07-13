@@ -33,20 +33,27 @@ end
 ---@param filepath string Full file path
 ---@return integer, boolean -- Matching line number or 1, true if found string
 function M.line_number_search(repo_name, filepath)
-  local search_str = string.format([["%s"]], repo_name)
-  local from_line = M.get_last_search_history(search_str, filepath) or 1
+  local double_quotes_search = string.format([["%s"]], repo_name)
+  local single_quotes_search = string.format([['%s']], repo_name)
+
+  local from_line = M.get_last_search_history(repo_name, filepath) or 1
   local current_line = 1
+
   for line_str in io.lines(filepath) do
     if current_line >= from_line then
-      if string.find(line_str, search_str, 1, true) then
-        M.add_search_history(search_str, filepath, current_line + 1)
+      if string.find(line_str, double_quotes_search, 1, true) then
+        M.add_search_history(repo_name, filepath, current_line + 1)
+        return current_line, true
+      elseif string.find(line_str, single_quotes_search, 1, true) then
+        M.add_search_history(repo_name, filepath, current_line + 1)
         return current_line, true
       end
     end
     current_line = current_line + 1
   end
+
   local msg = string.format(
-    "Can't find '%s' from line %s inside the '%s' file. Maybe a duplicate fragment.",
+    "Can't find '%s' from line %s inside the '%s' file. Use checkhealth for details.",
     repo_name,
     from_line,
     filepath
