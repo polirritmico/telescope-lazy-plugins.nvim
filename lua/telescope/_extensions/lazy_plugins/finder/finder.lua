@@ -33,18 +33,17 @@ end
 ---@param filepath string Full file path
 ---@return integer, boolean -- Matching line number or 1, true if found string
 function M.line_number_search(repo_name, filepath)
-  local double_quotes_search = string.format([["%s"]], repo_name)
-  local single_quotes_search = string.format([['%s']], repo_name)
+  local find = string.find
+  -- search patterns for single and double quotes
+  local dq_search = string.format([["%s"]], repo_name)
+  local sq_search = string.format([['%s']], repo_name)
 
   local from_line = M.get_last_search_history(repo_name, filepath) or 1
   local current_line = 1
 
   for line_str in io.lines(filepath) do
     if current_line >= from_line then
-      if string.find(line_str, double_quotes_search, 1, true) then
-        M.add_search_history(repo_name, filepath, current_line + 1)
-        return current_line, true
-      elseif string.find(line_str, single_quotes_search, 1, true) then
+      if find(line_str, dq_search, 1, true) or find(line_str, sq_search, 1, true) then
         M.add_search_history(repo_name, filepath, current_line + 1)
         return current_line, true
       end
