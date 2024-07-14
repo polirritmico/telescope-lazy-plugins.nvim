@@ -47,6 +47,8 @@ function M.setup(opts)
   end
   M.options.lazy_config = lazy_cfg
 
+  M.fix_non_unix_paths()
+
   if type(M.options.custom_entries) == "table" and #M.options.custom_entries > 0 then
     M.options.custom_entries = M.create_custom_entries_from_user_config()
   end
@@ -56,6 +58,22 @@ function M.setup(opts)
   end
 
   lp_highlights.setup()
+end
+
+function M.fix_non_unix_paths()
+  if not vim.uv.os_uname().version:match("Windows") then
+    return
+  end
+
+  M.options.lazy_config = M.options.lazy_config:gsub("\\", "/")
+
+  if type(M.options.custom_entries) == "table" and #M.options.custom_entries > 0 then
+    for _, entry in pairs(M.options.custom_entries) do
+      if entry.filepath then
+        entry.filepath = entry.filepath:gsub("\\", "/")
+      end
+    end
+  end
 end
 
 function M.array_to_lookup_table(array_tbl)
