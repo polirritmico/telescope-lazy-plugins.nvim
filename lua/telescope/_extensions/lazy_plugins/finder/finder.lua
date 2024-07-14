@@ -355,14 +355,16 @@ function M.build_plugins_collection()
     return {}
   end
 
-  local lazy_spec = require("lazy.core.config").spec
+  local spec = require("lazy.core.config").spec
 
   for _, fragment in pairs(M.fragments) do
-    local plugin = M.extract_plugin_info(fragment.mod, fragment.path)
-    plugin.repo_dir = lazy_spec.plugins[plugin.name] and lazy_spec.plugins[plugin.name].dir
-      or lazy_spec.disabled[plugin.name] and lazy_spec.disabled[plugin.name].dir
-      or ""
-    table.insert(M.plugins_collection, plugin)
+    if lp_config.options.show_disabled or fragment.mod.enabled then
+      local plugin = M.extract_plugin_info(fragment.mod, fragment.path)
+      plugin.repo_dir = spec.plugins[plugin.name] and spec.plugins[plugin.name].dir
+        or spec.disabled[plugin.name] and spec.disabled[plugin.name].dir
+        or ""
+      table.insert(M.plugins_collection, plugin)
+    end
   end
 
   -- no longer needed
