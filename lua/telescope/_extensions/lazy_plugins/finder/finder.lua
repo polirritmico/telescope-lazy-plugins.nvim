@@ -177,7 +177,7 @@ function M.lsmod(modname)
 
   if match:sub(-4) == ".lua" then
     add_modspec(modname, match)
-    if not vim.uv.fs_stat(root) then
+    if not vim.uv.fs_stat(match) then
       return {}
     end
   end
