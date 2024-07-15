@@ -5,7 +5,7 @@ local M = {}
 
 ---@type TelescopeLazyPluginsConfig
 local defaults = {
-  name_only = true, -- match only the `repo_name`, false to match the full `account/repo_name`
+  name_only = true, -- match only the `repo_name`, false to match the full `account/repo_name`.
   show_disabled = true, -- also show disabled plugins from the Lazy spec.
   lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy opts and setup() call.
   custom_entries = {}, ---@type table<LazyPluginsCustomEntry> Table to pass custom entries to the picker.
