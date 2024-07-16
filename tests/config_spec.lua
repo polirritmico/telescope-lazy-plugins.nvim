@@ -2,11 +2,11 @@ local utils = require("tests.utils")
 
 describe("[Config]", function()
   before_each(function()
-    utils.mute_notify()
+    stub(vim, "notify")
   end)
 
   teardown(function()
-    utils.unmute_notify()
+    vim.notify:revert()
   end)
 
   it("Check defaults correctly constructed", function()
@@ -68,5 +68,24 @@ describe("[Config]", function()
     assert.equal(exp.line, output[1].line)
     assert.equal(exp.repo_url, output[1].repo_url)
     assert.equal(exp.repo_dir, output[1].repo_dir)
+  end)
+
+  it("fix_non_unix_paths", function()
+    local tlp_cfg = require("telescope._extensions.lazy_plugins.config")
+    local case1 = "C:\\some\\nonesense\\path\\to\\user\\data.lua"
+    local case2 = "C:\\some/nonesense/path/to/user/data.lua"
+    local expected = "C:/some/nonesense/path/to/user/data.lua"
+
+    tlp_cfg.options.lazy_config = case1
+    tlp_cfg.options.custom_entries = { { filepath = case2 } }
+    ---@diagnostic disable: undefined-field
+    stub(vim.uv, "os_uname").returns({ version = "Windows" })
+    tlp_cfg.fix_non_unix_paths()
+    vim.uv.os_uname:revert()
+
+    local out_lazy_config = tlp_cfg.options.lazy_config
+    local out_entry = tlp_cfg.options.custom_entries[1]
+    assert.equal(expected, out_lazy_config)
+    assert.equal(out_entry.filepath, expected)
   end)
 end)

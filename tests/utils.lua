@@ -98,23 +98,6 @@ function M.fs_rmdir(dir)
   vim.uv.fs_rmdir(dir)
 end
 
-function M.mute_notify()
-  if M._vim_notify then
-    return
-  end
-  M._vim_notify = vim.notify
-  ---@diagnostic disable: duplicate-set-field
-  vim.notify = function() end
-end
-
-function M.unmute_notify()
-  if not M._vim_notify then
-    return
-  end
-  vim.notify = M._vim_notify
-  M._vim_notify = nil
-end
-
 function M.P(...)
   local args = { ... }
   local mapped = {}

@@ -15,10 +15,7 @@ describe("[Init]", function()
 
   it("Can access Telescope Lazy Plugins", function()
     local _, tele = pcall(require, "telescope")
-    utils.mute_notify()
-
     assert(tele.extensions.lazy_plugins, "Can't access Telescope Lazy Plugins")
-    utils.unmute_notify()
   end)
 
   it("Can access Telescope Lazy Plugins Config", function()
