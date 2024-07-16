@@ -113,6 +113,7 @@ function M.create_custom_entries_from_user_config()
       end
       return {}
     end
+    entry.full_name = entry.name
     entry["file"] = entry.file or entry.filepath:match(".*/(.*/.*)%.%w+")
     entry.line = entry.line or 1
     table.insert(custom_entries, entry)

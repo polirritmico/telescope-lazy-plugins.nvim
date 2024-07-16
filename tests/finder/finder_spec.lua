@@ -1,45 +1,28 @@
-local Finder = require("telescope._extensions.lazy_plugins.finder")
-local Utils = require("tests.utils")
-local Plugin = require("lazy.core.plugin")
+local finder = require("telescope._extensions.lazy_plugins.finder")
+local utils = require("tests.utils")
 
-local P = Utils.P
+describe("[finder.line_number_search]", function()
+  it("Single and double quotes", function()
+    local case = [=[return {
 
-describe("[Finder]", function()
-  local rtp = vim.opt.rtp:get()
-  before_each(function()
-    vim.opt.rtp = rtp
-    Utils.clean_loaded_packages()
-    Utils.clean_test_fs()
-    assert(not vim.uv.fs_stat(Utils.path("")), "root should be in a clean state")
-  end)
+      { "foo/double" },
 
-  it("import specs", function()
-    local fs_context = {
-      {
-        path = "foo/foo.lua",
-        data = [=[return {
-          { "foo/bar" },
-          { "foo/buz", opts = {} },
-        }]=],
-      },
-      {
-        path = "foo/bar.lua",
-        data = [=[return {
-          { "bar/fiz", opts = {} },
-          { "bar/foo", opts = {} },
-        }]=],
-      },
-    }
-    Utils.write_files(fs_context)
-    local case = { import = "foo" }
-    local expected = { "foo.bar", "foo.buz" }
+      { 'foo/single' },
+    }]=]
+    local case_filepath = utils.path("foo/quotes.lua")
+    local dq_search = "foo/double"
+    local sq_search = "foo/single"
+    local expected_dq = 3
+    local expected_sq = 5
 
-    -- Plugin.Spec.new(case)
-    Finder.fragments = {}
-    Finder.import(case)
-    P(Finder)
+    utils.write_file(case, case_filepath) -- would run path again?
 
-    local output = Finder.fragments
-    assert.same(expected, output)
+    local out_dq, dok = finder.line_number_search(dq_search, case_filepath)
+    local out_sq, sok = finder.line_number_search(sq_search, case_filepath)
+
+    assert(dok, "Not found double quote")
+    assert.equal(expected_dq, out_dq, "Wrong double quote line")
+    assert(sok, "Not found single quote")
+    assert.equal(expected_sq, out_sq, "Wrong single quote line")
   end)
 end)

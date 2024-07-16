@@ -66,6 +66,9 @@ end
 
 ---@param path string
 function M.path(path)
+  if path:sub(1, #M.fs_root) == M.fs_root then
+    return path
+  end
   return M.norm(M.fs_root .. "/" .. path)
 end
 
@@ -87,15 +90,29 @@ function M.fs_rmdir(dir)
   dir = M.norm(M.fs_root .. "/" .. dir)
   M.walk(dir, function(path, _, type)
     if type == "directory" then
-      -- vim.notify("vim.uv.fs_rmdir(path): " .. tostring(dir))
       vim.uv.fs_rmdir(path)
     else
-      -- vim.notify("vim.uv.fs_unlink(path): " .. tostring(path))
       vim.uv.fs_unlink(path)
     end
   end)
-  -- vim.notify("vim.uv.fs_rmdir(dir): " .. tostring(dir))
   vim.uv.fs_rmdir(dir)
+end
+
+function M.mute_notify()
+  if M._vim_notify then
+    return
+  end
+  M._vim_notify = vim.notify
+  ---@diagnostic disable: duplicate-set-field
+  vim.notify = function() end
+end
+
+function M.unmute_notify()
+  if not M._vim_notify then
+    return
+  end
+  vim.notify = M._vim_notify
+  M._vim_notify = nil
 end
 
 function M.P(...)
