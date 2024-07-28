@@ -401,8 +401,9 @@ lazy_plugins = {
   mappings = {
     ["i"] = {
       ["<C-g>d"] = function(prompt_bufnr)
+
         local args = { foo = "Plugin path from the selected entry.repo_dir: " }
-        lp_actions.custom_action(
+        require("telescope").extensions.lazy_plugins.actions.custom_action(
           prompt_bufnr,
           "repo_dir", -- This is used to validate the entry. Could be any field of LazyPluginsData (name, full_name, filepath, line, repo_url or repo_dir).
           demo_custom_function,

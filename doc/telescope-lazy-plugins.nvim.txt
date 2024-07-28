@@ -1,4 +1,4 @@
-*telescope-lazy-plugins.nvim.txt*  For Neovim >= 0.9 Last change: 2024 July 14
+*telescope-lazy-plugins.nvim.txt*  For Neovim >= 0.9 Last change: 2024 July 27
 
 ==============================================================================
 Table of Contents              *telescope-lazy-plugins.nvim-table-of-contents*
@@ -434,8 +434,9 @@ Then add it to a map action:
       mappings = {
         ["i"] = {
           ["<C-g>d"] = function(prompt_bufnr)
+    
             local args = { foo = "Plugin path from the selected entry.repo_dir: " }
-            lp_actions.custom_action(
+            require("telescope").extensions.lazy_plugins.actions.custom_action(
               prompt_bufnr,
               "repo_dir", -- This is used to validate the entry. Could be any field of LazyPluginsData (name, full_name, filepath, line, repo_url or repo_dir).
               demo_custom_function,
