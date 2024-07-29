@@ -1,4 +1,4 @@
-*telescope-lazy-plugins.nvim.txt*  For Neovim >= 0.9 Last change: 2024 July 27
+*telescope-lazy-plugins.nvim.txt*  For Neovim >= 0.9 Last change: 2024 July 29
 
 ==============================================================================
 Table of Contents              *telescope-lazy-plugins.nvim-table-of-contents*
@@ -167,6 +167,20 @@ module `telescope-lazy-plugins.actions`, accessible via:
   -------------------------------------------------------------------------------------------
 
 DEFAULTS                                *telescope-lazy-plugins.nvim-defaults*
+
+Click to see the configuration spec ~
+
+>lua
+    ---@class TelescopeLazyPluginsConfig
+    ---@field lazy_config string? Optional. Path to the file containing the lazy opts and setup() call
+    ---@field mappings table Keymaps attached to the picker. See `:h telescope.mappings`
+    ---@field name_only boolean Match only the `repo_name`, false to match the full `account/repo_name`
+    ---@field picker_opts table Layout options passed into Telescope. Check `:h telescope.layout`
+    ---@field show_disabled boolean Also show disabled plugins from the Lazy spec
+    ---@field custom_entries? table<LazyPluginsCustomEntry|LazyPluginsData> Table to pass custom entries to the picker.
+    ---@field live_grep? table Options to pass into the `live_grep` telescope builtin picker
+    ---@field ignore_imports? string[]|table<string, boolean> Array of imports to ignore
+<
 
 >lua
     {

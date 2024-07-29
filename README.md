@@ -126,6 +126,23 @@ require("telescope").extensions.lazy_plugins.actions
 
 ### ⚓ Defaults
 
+<details>
+<summary> Click to see the configuration spec </summary>
+
+```lua
+---@class TelescopeLazyPluginsConfig
+---@field lazy_config string? Optional. Path to the file containing the lazy opts and setup() call
+---@field mappings table Keymaps attached to the picker. See `:h telescope.mappings`
+---@field name_only boolean Match only the `repo_name`, false to match the full `account/repo_name`
+---@field picker_opts table Layout options passed into Telescope. Check `:h telescope.layout`
+---@field show_disabled boolean Also show disabled plugins from the Lazy spec
+---@field custom_entries? table<LazyPluginsCustomEntry|LazyPluginsData> Table to pass custom entries to the picker.
+---@field live_grep? table Options to pass into the `live_grep` telescope builtin picker
+---@field ignore_imports? string[]|table<string, boolean> Array of imports to ignore
+```
+
+</details>
+
 ```lua
 {
   name_only = true, -- match only the `repo_name`, false to match the full `account/repo_name`.
