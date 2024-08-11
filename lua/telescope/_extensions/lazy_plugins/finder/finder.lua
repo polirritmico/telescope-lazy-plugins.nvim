@@ -142,6 +142,8 @@ function M.find_root(modname)
   end
 end
 
+---Use fs_scandir to loop through each element inside the given path and
+---execute the passed fn. If the fn returns `false`, the scan loop breaks.
 ---@param path string
 ---@param fn fun(path: string, name:string, type:FileType):boolean?
 function M.ls(path, fn)

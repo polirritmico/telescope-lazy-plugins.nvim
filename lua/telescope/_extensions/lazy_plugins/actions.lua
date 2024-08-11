@@ -76,6 +76,41 @@ function lp_actions.open(prompt_bufnr)
   vim.cmd(":normal! zt")
 end
 
+---Custom picker action to open the plugin README file
+function lp_actions.open_readme(prompt_bufnr)
+  local entry = lp_actions.get_selected_entry("repo_dir")
+  if not entry then
+    return
+  end
+
+  local readme
+  local standard_readme_path = entry.repo_dir .. "/README.md"
+  if (vim.uv or vim.loop).fs_stat(standard_readme_path) then
+    readme = standard_readme_path
+  else
+    ---@type TelescopeLazyPluginsFinder
+    local lp_finder = require("telescope").extensions.lazy_plugins.finder
+    lp_finder.ls(entry.repo_dir, function(path, name, type)
+      if type == "file" and name:lower():match("readme") then
+        readme = path
+        return false
+      end
+    end)
+  end
+
+  if not readme then
+    vim.notify(
+      entry.disabled and "Disabled plugin: " or "" .. "README file not found.",
+      vim.log.levels.WARN
+    )
+    return
+  end
+
+  lp_actions.append_to_telescope_history(prompt_bufnr)
+  actions.close(prompt_bufnr)
+  vim.cmd.edit(readme)
+end
+
 ---Custom picker action to open the plugin repository local clone folder
 ---Uses the value of the `dir` field from the Lazy plugin spec.
 ---@param prompt_bufnr integer Telescope prompt buffer value
