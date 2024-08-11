@@ -326,7 +326,7 @@ function M.extract_plugin_info(mod, cfg_path)
   -- Short name of the plugin displayed by default
   local name = mod.name or full_name:match("[^/]+$")
   local line = M.line_number_search(full_name, cfg_path)
-  local repo_url = mod.url and mod.url
+  local repo_url = mod.url
     or full_name:match("^http[s]?://") and full_name
     or string.format("https://github.com/%s", full_name)
     or mod.dir and mod.dir

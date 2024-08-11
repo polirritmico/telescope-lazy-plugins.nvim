@@ -28,11 +28,19 @@ end
 ---@param path string
 function M.write_file(data, path)
   path = M.path(path)
-  -- print("[write] " .. path)
   vim.fn.mkdir(vim.fs.dirname(path), "p")
   local file = assert(io.open(path, "w"))
   file:write(data)
   file:close()
+end
+
+---@param data string|table
+---@param path string
+function M.write_plugin_spec_file(data, path)
+  if type(data) == "table" then
+    data = "return " .. vim.inspect(data)
+  end
+  M.write_file(data, path)
 end
 
 ---@param path string
