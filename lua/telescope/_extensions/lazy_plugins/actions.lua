@@ -90,7 +90,23 @@ function lp_actions.open_repo_dir(prompt_bufnr)
   vim.cmd("edit " .. entry.repo_dir)
 end
 
----Open the builtin `live_grep` Telescope picker at the plugin repo cwd
+---Open the builtin `find_files` Telescope picker at the plugin repo dir
+---@param prompt_bufnr integer Telescope prompt buffer value
+function lp_actions.open_repo_find_files(prompt_bufnr)
+  local entry = lp_actions.get_selected_entry("repo_dir")
+  if not entry then
+    return
+  end
+
+  lp_actions.append_to_telescope_history(prompt_bufnr)
+  actions.close(prompt_bufnr)
+  builtin.find_files({
+    prompt_title = string.format("Find Files - %s", entry.name),
+    cwd = entry.repo_dir,
+  })
+end
+
+---Open the builtin `live_grep` Telescope picker at the plugin repo dir
 ---@param prompt_bufnr integer Telescope prompt buffer value
 function lp_actions.open_repo_live_grep(prompt_bufnr)
   local entry = lp_actions.get_selected_entry("repo_dir")

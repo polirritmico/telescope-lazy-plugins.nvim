@@ -13,14 +13,16 @@ local defaults = {
   ignore_imports = {}, -- Add imports you want to ignore, e.g., "lazyvim.plugins".
   mappings = {
     ["i"] = {
-      ["<C-g>x"] = lp_actions.open_repo_url,
       ["<C-g>r"] = lp_actions.open_repo_dir,
+      ["<C-g>f"] = lp_actions.open_repo_find_files,
       ["<C-g>l"] = lp_actions.open_repo_live_grep,
+      ["<C-g>x"] = lp_actions.open_repo_url,
     },
     ["n"] = {
-      ["gx"] = lp_actions.open_repo_url,
       ["gr"] = lp_actions.open_repo_dir,
+      ["gf"] = lp_actions.open_repo_find_files,
       ["gl"] = lp_actions.open_repo_live_grep,
+      ["gx"] = lp_actions.open_repo_url,
     },
   },
   picker_opts = {
