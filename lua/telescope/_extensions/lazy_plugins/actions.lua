@@ -23,7 +23,8 @@ function lp_actions.close(prompt_bufnr)
   actions.close(prompt_bufnr)
 end
 
----Check if the Telescope selected entry has the passed `field`
+---Check if the Telescope selected entry has the `field` argument. If the field
+---is "repo_dir", then check that the path is valid.
 ---@param field string LazyPluginData field of the selected entry to check.
 ---@return LazyPluginsData? entry - `true` when the field is found
 function lp_actions.get_selected_entry(field)
@@ -33,6 +34,15 @@ function lp_actions.get_selected_entry(field)
     vim.notify(string.format(msg, field, selected_entry.name), vim.log.levels.WARN)
     return
   end
+  if field == "repo_dir" and not (vim.uv or vim.loop).fs_stat(selected_entry.repo_dir) then
+    local msg = "Path '%s' not found. Check the plugin installation."
+    if selected_entry.disabled then
+      msg = "Disabled plugin: " .. msg
+    end
+    vim.notify(string.format(msg, selected_entry.repo_dir), vim.log.levels.WARN)
+    return
+  end
+
   return selected_entry
 end
 
