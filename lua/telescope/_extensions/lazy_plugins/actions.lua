@@ -52,7 +52,7 @@ end
 ---@param prompt_bufnr integer Telescope prompt buffer value
 ---@param field string Field of the `LazyPluginData` to validate the selected entry (before the custom_function call).
 ---@param custom_function fun(prompt_bufnr: integer, entry: LazyPluginsData, args: table?): any Custom function to execute.
----@param args table? Custom args if needed.
+---@param args table? Optional custom args.
 ---@return any output The output of the custom_function, nil or the error object from pcall
 function lp_actions.custom_action(prompt_bufnr, field, custom_function, args)
   local selected_entry = lp_actions.get_selected_entry(field)

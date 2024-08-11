@@ -42,8 +42,10 @@ plugin option.
 
 - Open the selected plugin configuration (`<CR>`).
 - Open the selected plugin webpage in a browser (`<C-g>x`).
-- Open the selected plugin repository local clone directory (`<C-g>r`).
+- Open the selected plugin README file (`<C-g>r`).
+- Open the selected plugin repository local clone directory (`<C-g>d`).
 - Open a `live_grep` picker at the plugin's local directory path (`<C-g>l`).
+- Open a `find_files` picker at the plugin's local directory path (`<C-g>f`).
 - Create/Add your custom actions.
 
 ## 📌 Requirements
@@ -74,8 +76,8 @@ Check the [Configuration examples](#-simple-config) and the
 require("telescope").load_extension("lazy_plugins")
 ```
 
-> Run `:checkhealth telescope` after the installation is recommended (the
-> extension needs to be loaded first).
+> It's recommended to run `:checkhealth telescope` after the installation (make
+> sure the extension is loaded first).
 
 ## 🔍 Usage
 
@@ -109,20 +111,25 @@ Add the options in the `telescope.nvim` opts `extensions` table inside
 
 ### ⌨️ Mappings
 
-In the table, the `lp_actions` column refers to the actions provided by the
-module `telescope-lazy-plugins.actions`, accessible via:
+In the table, the `lp_actions` column refers to the actions functions provided
+by the module `telescope-lazy-plugins.actions`, accessible via:
 
 ```lua
 require("telescope").extensions.lazy_plugins.actions
 ```
 
-| Insert   | Normal | lp_actions            | Description                                                                                   |
-| -------- | ------ | --------------------- | --------------------------------------------------------------------------------------------- |
-| `<CR>`   | `<CR>` | `open`                | Open the selected plugin config file at the first line of the plugin spec.                    |
-| `<C-g>x` | `gx`   | `open_repo_url`       | Open the plugin repository url in the default web browser.                                    |
-| `<C-g>r` | `gr`   | `open_repo_dir`       | Open the local clone folder of the plugin repository.                                         |
-| `<C-g>l` | `gl`   | `open_repo_live_grep` | Open a Telescope `live_grep` picker at the repository local clone directory path.             |
-|          |        | `custom_action`       | A wrapper helper to use custom actions. See the '[Custom Actions](#-custom-actions)' section. |
+| Insert   | Normal | lp_actions             | Description                                                                                   |
+| -------- | ------ | ---------------------- | --------------------------------------------------------------------------------------------- |
+| `<CR>`   | `<CR>` | `open`                 | Open the selected plugin config file at the first line of the plugin spec.                    |
+| `<C-g>d` | `gd`   | `open_repo_dir`        | Open the local clone folder of the plugin repository.                                         |
+| `<C-g>f` | `gf`   | `open_repo_find_files` | Open a Telescope `find_files` picker at the repository local clone directory path.            |
+| `<C-g>l` | `gl`   | `open_repo_live_grep`  | Open a Telescope `live_grep` picker at the repository local clone directory path.             |
+| `<C-g>r` | `gr`   | `open_readme`          | Open the selected plugin README file.                                                         |
+| `<C-g>x` | `gx`   | `open_repo_url`        | Open the plugin repository url in the default web browser.                                    |
+|          |        | `custom_action`        | A wrapper helper to use custom actions. See the '[Custom Actions](#-custom-actions)' section. |
+
+- Open the selected plugin repository local clone directory (`<C-g>d`).
+- Open a `find_files` picker at the plugin's local directory path (`<C-g>f`).
 
 ### ⚓ Defaults
 
@@ -153,16 +160,21 @@ require("telescope").extensions.lazy_plugins.actions
   ignore_imports = {}, -- Add imports you want to ignore, e.g., "lazyvim.plugins".
   mappings = {
     ["i"] = {
-      ["<C-g>x"] = lp_actions.open_repo_url,
-      ["<C-g>r"] = lp_actions.open_repo_dir,
+      ["<C-g>d"] = lp_actions.open_repo_dir,
+      ["<C-g>f"] = lp_actions.open_repo_find_files,
       ["<C-g>l"] = lp_actions.open_repo_live_grep,
+      ["<C-g>r"] = lp_actions.open_readme,
+      ["<C-g>x"] = lp_actions.open_repo_url,
     },
     ["n"] = {
-      ["gx"] = lp_actions.open_repo_url,
-      ["gr"] = lp_actions.open_repo_dir,
+      ["gd"] = lp_actions.open_repo_dir,
+      ["gf"] = lp_actions.open_repo_find_files,
       ["gl"] = lp_actions.open_repo_live_grep,
+      ["gr"] = lp_actions.open_readme,
+      ["gx"] = lp_actions.open_repo_url,
     },
   },
+
   picker_opts = {
     sorting_strategy = "ascending",
     layout_strategy = "flex",
