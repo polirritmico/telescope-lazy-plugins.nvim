@@ -23,7 +23,7 @@
 ---@field path string
 
 ---@class TelescopeLazyPluginsConfig
----@field lazy_config string? Optional. Path to the file containing the lazy opts and setup() call
+---@field lazy_config string? Path to the file containing the lazy opts and setup() call
 ---@field mappings table Keymaps attached to the picker. See `:h telescope.mappings`
 ---@field name_only boolean Match only the `repo_name`, false to match the full `account/repo_name`
 ---@field picker_opts table Layout options passed into Telescope. Check `:h telescope.layout`

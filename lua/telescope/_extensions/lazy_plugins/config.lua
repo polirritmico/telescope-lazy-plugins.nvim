@@ -5,9 +5,9 @@ local M = {}
 
 ---@type TelescopeLazyPluginsConfig
 local defaults = {
+  lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- This must be a valid path to the file containing the lazy opts and setup() call.
   name_only = true, -- match only the `repo_name`, false to match the full `account/repo_name`.
   show_disabled = true, -- also show disabled plugins from the Lazy spec.
-  lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- path to the file containing the lazy opts and setup() call.
   custom_entries = {}, ---@type table<LazyPluginsCustomEntry> Table to pass custom entries to the picker.
   live_grep = {}, -- Options to pass into the `live_grep` telescope builtin picker.
   ignore_imports = {}, -- Add imports you want to ignore, e.g., "lazyvim.plugins".
