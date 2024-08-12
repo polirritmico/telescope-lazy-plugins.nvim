@@ -90,12 +90,18 @@ function lp_actions.open_readme(prompt_bufnr)
   else
     ---@type TelescopeLazyPluginsFinder
     local lp_finder = require("telescope").extensions.lazy_plugins.finder
-    lp_finder.ls(entry.repo_dir, function(path, name, type)
-      if type == "file" and name:lower():match("readme") then
-        readme = path
-        return false
+    local function find_readme(path, name, type)
+      if name:sub(1, 1) ~= "." then
+        if type == "file" and name:lower():match("readme") then
+          readme = path
+          return false
+        elseif type == "directory" then
+          lp_finder.ls(path, find_readme)
+        end
       end
-    end)
+    end
+
+    lp_finder.ls(entry.repo_dir, find_readme)
   end
 
   if not readme then
