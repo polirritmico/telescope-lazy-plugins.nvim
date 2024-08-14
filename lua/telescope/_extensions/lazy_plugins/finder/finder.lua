@@ -155,7 +155,7 @@ function M.ls(path, fn)
     end
 
     local fname = path .. "/" .. name
-    _type = _type and _type or vim.uv.fs_stat(fname).type
+    _type = _type or vim.uv.fs_stat(fname).type
     ---@cast _type string
     if fn(fname, name, _type) == false then
       break
@@ -229,10 +229,10 @@ function M.expand_import(spec, parent_enabled)
   local import_name = spec.name or spec.import
 
   -- Avoid re-importing modules
-  if vim.tbl_contains(M.imported_modules, import_name) then
+  if vim.tbl_contains(M.imported_modules_cache, import_name) then
     return
   else
-    M.imported_modules[#M.imported_modules + 1] = import_name
+    M.imported_modules_cache[#M.imported_modules_cache + 1] = import_name
   end
 
   local current_enabled = parent_enabled == false and false or M.is_enabled(spec)
@@ -314,7 +314,7 @@ end
 function M.collect_fragments()
   local lazy_specs = require("lazy.core.config").options.spec --[[@as LazyMinSpec]]
   M.fragments = {}
-  M.imported_modules = {}
+  M.imported_modules_cache = {}
   M.import(lazy_specs, lp_config.options.lazy_config)
 end
 
@@ -371,7 +371,21 @@ function M.build_plugins_collection()
 
   -- no longer needed
   M.fragments = nil
-  M.imported_modules = nil
+  M.imported_modules_cache = nil
+end
+
+---@param collection LazyPluginsData[]
+function M.add_lazy_itself(collection)
+  local lazy = require("lazy.core.config")
+  table.insert(collection, {
+    name = "lazy.nvim",
+    full_name = "folke/lazy.nvim",
+    repo_url = "https://github.com/folke/lazy.nvim",
+    repo_dir = lazy.me or lazy.options.root,
+    filepath = lp_config.options.lazy_config,
+    file = lp_config.options.lazy_config:match(".*/(.*/.*)%.%w+"),
+    line = 1,
+  } --[[@as LazyPluginsData]])
 end
 
 ---Get the Lazy plugin data from the Lazy specification. For each plugin,
@@ -389,18 +403,7 @@ function M.get_plugins_data()
   M.build_plugins_collection()
 
   if lp_config.options.lazy_config then
-    local lazy = require("lazy.core.config")
-    ---@type LazyPluginsData
-    local lazy_data = {
-      name = "lazy.nvim",
-      full_name = "folke/lazy.nvim",
-      repo_url = "https://github.com/folke/lazy.nvim",
-      repo_dir = lazy.me or lazy.options.root,
-      filepath = lp_config.options.lazy_config,
-      file = lp_config.options.lazy_config:match(".*/(.*/.*)%.%w+"),
-      line = 1,
-    }
-    table.insert(M.plugins_collection, lazy_data)
+    M.add_lazy_itself(M.plugins_collection)
   end
 
   for _, entry in pairs(lp_config.options.custom_entries) do

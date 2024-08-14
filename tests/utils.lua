@@ -17,7 +17,7 @@ function M.norm(path)
   return path:sub(-1) == "/" and path:sub(1, -2) or path
 end
 
----@param files table<{ path: string, data: string }>
+---@param files {path: string, data: string}[]
 function M.write_files(files)
   for _, file in pairs(files) do
     M.write_file(file.data, file.path)
@@ -43,8 +43,11 @@ function M.write_plugin_spec_file(data, path)
   M.write_file(data, path)
 end
 
+---Use fs_scandir to loop through each element inside the given path
+---(non-recursive)and execute the passed fn. If the fn returns `false`, the
+---scan loop breaks.
 ---@param path string
----@param fn function
+---@param fn fun(path:string, name:string, type:string): boolean?
 function M.ls(path, fn)
   path = M.norm(path)
   local handle = vim.uv.fs_scandir(path)
@@ -54,13 +57,15 @@ function M.ls(path, fn)
       break
     end
     local fname = path .. "/" .. name
+    ---@cast _type string
     if fn(fname, name, _type or vim.uv.fs_stat(fname).type) == false then
       break
     end
   end
 end
 
----Apply the passed function
+---Walk through the directory and its subfolders and apply the passed function
+---to every element.
 ---@param path string
 ---@param fn fun(path: string, name:string, type:string)
 function M.walk(path, fn)
