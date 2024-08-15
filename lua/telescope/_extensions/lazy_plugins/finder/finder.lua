@@ -284,10 +284,10 @@ function M.import(spec, path, parent_enabled)
     return
   end
 
-  -- HACK: tbl_deep_extend to ensure that old 'spec.dependencies' values are not
+  -- HACK: deepcopy to ensure that old 'spec.dependencies' values are not
   -- carried over
   if type(spec) == "table" then
-    spec = vim.tbl_deep_extend("force", spec, {})
+    spec = vim.deepcopy(spec)
   end
 
   if #spec > 1 or M.is_list(spec) then
