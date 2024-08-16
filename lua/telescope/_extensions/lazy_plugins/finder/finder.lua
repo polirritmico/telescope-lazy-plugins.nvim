@@ -311,7 +311,7 @@ end
 
 ---@param specs LazyMinSpec
 ---@param spec_path string
----@return LazyPluginsFragment[] fragments
+---@return LazyPluginsFragment[]
 function M.collect_fragments(specs, spec_path)
   M.fragments = {}
   M.imported_modules_cache = {}
@@ -408,7 +408,7 @@ end
 ---repository name is found.
 ---@param config_spec? LazyMinSpec[] Defaults to require("lazy.core.config").options.spec
 ---@param parsed_spec? LazyMinSpec[] Defaults to require("lazy.core.config").spec
----@param spec_path? string Defaults to lp_config.options.lazy
+---@param spec_path? string Defaults to lp_config.options.lazy_config
 ---@return LazyPluginsData[]
 function M.get_plugins_data(config_spec, parsed_spec, spec_path)
   if M.plugins_collection then
