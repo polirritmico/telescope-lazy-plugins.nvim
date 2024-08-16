@@ -19,7 +19,7 @@
 ---@field enabled? boolean|fun():boolean
 
 ---@class LazyPluginsFragment
----@field mod LazyMinSpec
+---@field mod LazyMinSpec|LazyPluginSpec
 ---@field path string
 
 ---@class TelescopeLazyPluginsConfig

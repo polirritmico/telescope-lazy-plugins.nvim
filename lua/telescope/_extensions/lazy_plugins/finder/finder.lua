@@ -309,11 +309,14 @@ function M.import(spec, path, parent_enabled)
   end
 end
 
-function M.collect_fragments()
-  local lazy_specs = require("lazy.core.config").options.spec --[[@as LazyMinSpec]]
+---@param specs LazyMinSpec
+---@param spec_path string
+---@return LazyPluginsFragment[] fragments
+function M.collect_fragments(specs, spec_path)
   M.fragments = {}
   M.imported_modules_cache = {}
-  M.import(lazy_specs, lp_config.options.lazy_config)
+  M.import(specs, spec_path)
+  return M.fragments
 end
 
 ---Convert the fragment LazyMinSpec data into a LazyPluginData
@@ -348,21 +351,32 @@ function M.extract_plugin_info(mod, cfg_path)
   return plugin
 end
 
+---@param plugin LazyPluginsData
+---@param spec LazyMinSpec|LazySpecLoader
+function M.get_repository_local_clone_dir(plugin, spec)
+  local repo = spec.plugins[plugin.name] and spec.plugins[plugin.name].dir
+    or spec.disabled[plugin.name] and spec.disabled[plugin.name].dir
+    or ""
+  return repo
+end
+
 ---Use the collected fragments to build the list of LazyPluginsData
-function M.build_plugins_collection()
+---@param spec LazyMinSpec|LazySpecLoader Full parsed spec
+---@param show_disabled? boolean
+---@return LazyPluginsData[]
+function M.build_plugins_collection(spec, show_disabled)
   if not M.fragments or #M.fragments < 1 then
     vim.notify("Empty fragments", vim.log.levels.WARN)
     return {}
   end
 
-  local spec = require("lazy.core.config").spec
+  show_disabled = show_disabled ~= nil and show_disabled or lp_config.options.show_disabled
 
   for _, fragment in pairs(M.fragments) do
-    if lp_config.options.show_disabled or fragment.mod.enabled then
+    if show_disabled or fragment.mod.enabled then
       local plugin = M.extract_plugin_info(fragment.mod, fragment.path)
-      plugin.repo_dir = spec.plugins[plugin.name] and spec.plugins[plugin.name].dir
-        or spec.disabled[plugin.name] and spec.disabled[plugin.name].dir
-        or ""
+      plugin.repo_dir = M.get_repository_local_clone_dir(plugin, spec)
+
       table.insert(M.plugins_collection, plugin)
     end
   end
@@ -370,6 +384,8 @@ function M.build_plugins_collection()
   -- no longer needed
   M.fragments = nil
   M.imported_modules_cache = nil
+
+  return M.plugins_collection
 end
 
 ---@param collection LazyPluginsData[]
@@ -390,21 +406,28 @@ end
 ---obtains the plugin name, repository name (<username/plugin>), full file path
 ---of the Lua file containing the plugin config, and the line number where the
 ---repository name is found.
----@return LazyPluginsData[] M.plugins_collection
-function M.get_plugins_data()
+---@param config_spec? LazyMinSpec[] Defaults to require("lazy.core.config").options.spec
+---@param parsed_spec? LazyMinSpec[] Defaults to require("lazy.core.config").spec
+---@param spec_path? string Defaults to lp_config.options.lazy
+---@return LazyPluginsData[]
+function M.get_plugins_data(config_spec, parsed_spec, spec_path)
   if M.plugins_collection then
     return M.plugins_collection
   end
 
-  M.plugins_collection = {}
-  M.collect_fragments()
-  M.build_plugins_collection()
+  spec_path = spec_path or vim.tbl_get(lp_config or {}, "options", "lazy_config")
+  parsed_spec = parsed_spec or require("lazy.core.config").spec --[=[@as LazyMinSpec[]]=]
+  config_spec = config_spec or require("lazy.core.config").options.spec --[[@as LazyMinSpec]]
 
-  if lp_config.options.lazy_config then
+  M.plugins_collection = {}
+  M.collect_fragments(config_spec, spec_path)
+  M.build_plugins_collection(parsed_spec)
+
+  if vim.tbl_get(lp_config or {}, "options", "lazy_config") then
     M.add_lazy_itself(M.plugins_collection)
   end
 
-  for _, entry in pairs(lp_config.options.custom_entries) do
+  for _, entry in pairs(vim.tbl_get(lp_config or {}, "options", "custom_entries") or {}) do
     table.insert(M.plugins_collection, entry)
   end
 
