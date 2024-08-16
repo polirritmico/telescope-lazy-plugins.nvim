@@ -1,4 +1,4 @@
-*telescope-lazy-plugins.nvim.txt* For Neovim >= 0.9Last change: 2024 August 12
+*telescope-lazy-plugins.nvim.txt* For Neovim >= 0.9Last change: 2024 August 15
 
 ==============================================================================
 Table of Contents              *telescope-lazy-plugins.nvim-table-of-contents*
@@ -79,6 +79,10 @@ Quickly execute builtin actions on the selected entry:
 Check the |telescope-lazy-plugins.nvim-configuration-examples| and the
 |telescope-lazy-plugins.nvim-configuration-section| for more details.
 
+
+  [!IMPORTANT] If your lazy configuration file is not located in the default path
+  (`nvim/lua/config/lazy.lua`), the `lazy_config` option must be set to a valid
+  path.
 - Manually loading the extension:
 
 >lua
@@ -86,8 +90,8 @@ Check the |telescope-lazy-plugins.nvim-configuration-examples| and the
 <
 
 
-  It’s recommended to run `:checkhealth telescope` after the installation (make
-  sure the extension is loaded first).
+  [!TIP] It’s recommended to run `:checkhealth telescope` after the
+  installation (make sure the extension is loaded first).
 
 ==============================================================================
 4. Usage                                   *telescope-lazy-plugins.nvim-usage*
@@ -151,12 +155,12 @@ via:
     require("telescope").extensions.lazy_plugins.actions
 <
 
-  -------------------------------------------------------------------------------------------
+  -----------------------------------------------------------------------------------------
   Insert   Normal   lp_actions             Description
-  mode                                     
-  -------- -------- ---------------------- --------------------------------------------------
-  <CR>     <CR>     open                   Open the selected plugin config file at the first
-                                           line of the plugin spec.
+  mode     mode                            
+  -------- -------- ---------------------- ------------------------------------------------
+  <CR>     <CR>     open                   Open the selected plugin config file at the
+                                           first line of the plugin spec.
 
   <C-g>d   gd       open_repo_dir          Open the local clone folder of the plugin
                                            repository.
@@ -169,12 +173,12 @@ via:
 
   <C-g>r   gr       open_readme            Open the selected plugin README file.
 
-  <C-g>x   gx       open_repo_url          Open the plugin repository url in the default web
-                                           browser.
+  <C-g>x   gx       open_repo_url          Open the plugin repository url in the default
+                                           web browser.
 
                     custom_action          A wrapper helper to use custom actions. See the
                                            ‘Custom Actions’ section.
-  -------------------------------------------------------------------------------------------
+  -----------------------------------------------------------------------------------------
 
 DEFAULTS                                *telescope-lazy-plugins.nvim-defaults*
 
@@ -463,7 +467,6 @@ Then add it to a map action:
       mappings = {
         ["i"] = {
           ["<C-g>d"] = function(prompt_bufnr)
-    
             local args = { foo = "Plugin path from the selected entry.repo_dir: " }
             require("telescope").extensions.lazy_plugins.actions.custom_action(
               prompt_bufnr,

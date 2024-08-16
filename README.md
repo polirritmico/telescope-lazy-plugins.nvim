@@ -70,14 +70,24 @@ return {
 Check the [Configuration examples](#-simple-config) and the
 [Configuration section](#-configuration) for more details.
 
+<!-- prettier-ignore-start -->
+> [!IMPORTANT]
+> 📌 If your lazy configuration file is not located in the default path
+> (`nvim/lua/config/lazy.lua`), the `lazy_config` option must be set to a valid
+> path.
+<!-- prettier-ignore-end -->
+
 - Manually loading the extension:
 
 ```lua
 require("telescope").load_extension("lazy_plugins")
 ```
 
+<!-- prettier-ignore-start -->
+> [!TIP]
 > It's recommended to run `:checkhealth telescope` after the installation (make
 > sure the extension is loaded first).
+<!-- prettier-ignore-end -->
 
 ## 🔍 Usage
 
@@ -118,15 +128,15 @@ provided by the module `telescope-lazy-plugins.actions`, accessible via:
 require("telescope").extensions.lazy_plugins.actions
 ```
 
-| Insert mode | Normal | lp_actions             | Description                                                                                   |
-| ----------- | ------ | ---------------------- | --------------------------------------------------------------------------------------------- |
-| `<CR>`      | `<CR>` | `open`                 | Open the selected plugin config file at the first line of the plugin spec.                    |
-| `<C-g>d`    | `gd`   | `open_repo_dir`        | Open the local clone folder of the plugin repository.                                         |
-| `<C-g>f`    | `gf`   | `open_repo_find_files` | Open a Telescope `find_files` picker at the repository local clone directory path.            |
-| `<C-g>l`    | `gl`   | `open_repo_live_grep`  | Open a Telescope `live_grep` picker at the repository local clone directory path.             |
-| `<C-g>r`    | `gr`   | `open_readme`          | Open the selected plugin README file.                                                         |
-| `<C-g>x`    | `gx`   | `open_repo_url`        | Open the plugin repository url in the default web browser.                                    |
-|             |        | `custom_action`        | A wrapper helper to use custom actions. See the '[Custom Actions](#-custom-actions)' section. |
+| Insert mode | Normal mode | lp_actions             | Description                                                                                   |
+| ----------- | ----------- | ---------------------- | --------------------------------------------------------------------------------------------- |
+| `<CR>`      | `<CR>`      | `open`                 | Open the selected plugin config file at the first line of the plugin spec.                    |
+| `<C-g>d`    | `gd`        | `open_repo_dir`        | Open the local clone folder of the plugin repository.                                         |
+| `<C-g>f`    | `gf`        | `open_repo_find_files` | Open a Telescope `find_files` picker at the repository local clone directory path.            |
+| `<C-g>l`    | `gl`        | `open_repo_live_grep`  | Open a Telescope `live_grep` picker at the repository local clone directory path.             |
+| `<C-g>r`    | `gr`        | `open_readme`          | Open the selected plugin README file.                                                         |
+| `<C-g>x`    | `gx`        | `open_repo_url`        | Open the plugin repository url in the default web browser.                                    |
+|             |             | `custom_action`        | A wrapper helper to use custom actions. See the '[Custom Actions](#-custom-actions)' section. |
 
 ### ⚓ Defaults
 
@@ -427,7 +437,6 @@ lazy_plugins = {
   mappings = {
     ["i"] = {
       ["<C-g>d"] = function(prompt_bufnr)
-
         local args = { foo = "Plugin path from the selected entry.repo_dir: " }
         require("telescope").extensions.lazy_plugins.actions.custom_action(
           prompt_bufnr,
