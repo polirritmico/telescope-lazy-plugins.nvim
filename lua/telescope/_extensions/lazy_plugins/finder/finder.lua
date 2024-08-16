@@ -202,9 +202,9 @@ end
 function M.is_enabled(spec)
   if
     spec.cond == false
-    or (type(spec.cond) == "function" and not spec.cond())
+    or (type(spec.cond) == "function" and spec.cond() == false)
     or spec.enabled == false
-    or (type(spec.enabled) == "function" and not spec.enabled())
+    or (type(spec.enabled) == "function" and spec.enabled() == false)
   then
     return false
   end
@@ -264,13 +264,11 @@ function M.add(spec, path, parent_enabled)
   if not path then
     error("Adding spec without path")
   end
-  if parent_enabled == false or spec.enabled == nil then
-    spec.enabled = parent_enabled
-  end
+  spec.enabled = parent_enabled ~= false and M.is_enabled(spec) or false
   M.fragments[#M.fragments + 1] = { mod = spec, path = path }
 
   if spec.dependencies then
-    M.import(spec.dependencies, path, M.is_enabled(spec))
+    M.import(spec.dependencies, path, spec.enabled --[[@as boolean]])
   end
 end
 
