@@ -1,7 +1,7 @@
 local finder = require("telescope._extensions.lazy_plugins.finder")
 local utils = require("tests.utils")
 
-describe("finder.extract_plugin_info", function()
+describe("[finder.extract_plugin_info]", function()
   it("should get correct repo_url", function()
     local case_path = utils.path("foo/repo-url.lua")
     local case = {

@@ -37,7 +37,8 @@ describe("[Config]", function()
   it("create_custom_entries_from_user_config", function()
     local filepath = utils.path("foo/custom.lua")
     local case = {
-      { --@class LazyPluginsCustomEntry
+      ---@class LazyPluginsCustomEntry
+      {
         name = "Foo",
         filepath = utils.path("foo/custom.lua"),
         line = 2,
