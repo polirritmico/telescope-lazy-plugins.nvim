@@ -29,7 +29,7 @@ local function check_health()
   local ok_cfg, config = pcall(require, "telescope._extensions.lazy_plugins.config")
   if not ok_cfg or not config then
     local msg = "Telescope Lazy Plugins configuration couldn't be loaded."
-      .. " Maybe a problem in the configuration. Check to the config examples in the README."
+      .. " Maybe a problem in the configuration. Refer to the config examples in the README."
     error(msg)
     ok_configs = false
   else
@@ -37,7 +37,7 @@ local function check_health()
   end
   if not config.options then
     local msg = "Missing options field in configuration."
-      .. " Maybe a problem in the configuration. Check to the config examples in the README."
+      .. " Maybe a problem in the configuration. Refer to the config examples in the README."
     error(msg)
     ok_configs = false
   else
@@ -89,10 +89,24 @@ local function check_health()
       error("Missing plugins (at least 4). Check configuration.")
     end
 
+    ---@param entry LazyPluginsData
+    ---@return boolean
+    local function is_custom_entry(entry)
+      local custom_entries = vim.tbl_get(config, "options", "custom_entries")
+      if custom_entries and #custom_entries > 0 then
+        for _, custom in pairs(custom_entries) do
+          if entry.name == custom.name and entry.filepath == custom.filepath then
+            return true
+          end
+        end
+      end
+      return false
+    end
+
     local plugins_without_matches = {}
     for _, plugin in pairs(plugins_collection.results) do
       local full_name = plugin.value.full_name
-      if full_name ~= "folke/lazy.nvim" then
+      if not is_custom_entry(plugin.value) and full_name ~= "folke/lazy.nvim" then
         local filepath = plugin.value.filepath
         -- Only check line 1 plugins since that's the default
         if plugin.value.line == 1 then
@@ -123,11 +137,11 @@ local function check_health()
     for i, entry in ipairs(config.raw_custom_entries) do
       local msg = ""
       if not entry.name or type(entry.name) ~= "string" or entry.name == "" then
-        msg = string.format("- name: '%s'\n", entry.name)
+        msg = string.format("- name: '%s'\n", entry.name or "Empty name")
         errors_detected = true
       end
-      if entry.filepath and vim.fn.filereadable(entry.filepath) ~= 1 then
-        msg = msg .. string.format("- filepath: '%s'\n", entry.filepath)
+      if not entry.filepath or vim.fn.filereadable(entry.filepath) ~= 1 then
+        msg = msg .. string.format("- filepath: '%s'\n", entry.filepath or "Empty filepath")
         errors_detected = true
       end
       if entry.repo_dir and vim.fn.isdirectory(entry.repo_dir) ~= 1 then

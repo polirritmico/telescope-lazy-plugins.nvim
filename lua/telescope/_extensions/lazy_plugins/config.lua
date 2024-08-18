@@ -88,13 +88,13 @@ function M.array_to_lookup_table(array_tbl)
   return lookup_table
 end
 
----@return table<LazyPluginsData>
+---@return LazyPluginsData[]
 function M.create_custom_entries_from_user_config()
   local function check_errors(entry)
     if not entry.name or type(entry.name) ~= "string" or entry.name == "" then
       return true
     end
-    if entry.filepath and vim.fn.filereadable(entry.filepath) ~= 1 then
+    if not entry.filepath or vim.fn.filereadable(entry.filepath) ~= 1 then
       return true
     end
     if entry.repo_dir and vim.fn.isdirectory(entry.repo_dir) ~= 1 then
@@ -103,6 +103,7 @@ function M.create_custom_entries_from_user_config()
     return false
   end
 
+  ---@type LazyPluginsData[]
   local custom_entries = {}
   for _, entry in pairs(M.options.custom_entries) do
     if check_errors(entry) then
@@ -117,8 +118,9 @@ function M.create_custom_entries_from_user_config()
       end
       return {}
     end
+    ---@cast entry LazyPluginsData
     entry.full_name = entry.name
-    entry["file"] = entry.file or entry.filepath:match(".*/(.*/.*)%.%w+")
+    entry.file = entry.file or entry.filepath:match(".*/(.*/.*)%.%w+")
     entry.line = entry.line or 1
     table.insert(custom_entries, entry)
   end
