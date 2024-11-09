@@ -51,7 +51,7 @@ plugin option.
 ## 📌 Requirements
 
 - Neovim >= v0.9.0
-- lazy.nvim >= v10.24.3
+- lazy.nvim >= v11.0.0
 
 ## 📦 Installation
 

@@ -1,4 +1,4 @@
-*telescope-lazy-plugins.nvim.txt* For Neovim >= 0.9Last change: 2024 August 15
+*telescope-lazy-plugins.nvim.txt*For Neovim >= 0.9Last change: 2024 November 09
 
 ==============================================================================
 Table of Contents              *telescope-lazy-plugins.nvim-table-of-contents*
@@ -58,7 +58,7 @@ Quickly execute builtin actions on the selected entry:
 2. Requirements                     *telescope-lazy-plugins.nvim-requirements*
 
 - Neovim >= v0.9.0
-- lazy.nvim >= v10.24.3
+- lazy.nvim >= v11.0.0
 
 
 ==============================================================================
