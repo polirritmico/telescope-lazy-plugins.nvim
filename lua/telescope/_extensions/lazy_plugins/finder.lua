@@ -286,6 +286,7 @@ function M.import(spec, path, parent_enabled)
   -- carried over
   if type(spec) == "table" then
     spec = vim.deepcopy(spec)
+    spec["recommended"] = nil -- Remove non-lazy spec field (used by lazyvim.extras)
   end
 
   if #spec > 1 or M.is_list(spec) then
