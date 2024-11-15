@@ -1,8 +1,9 @@
+#!/usr/bin/env -S nvim -l
+
 Remote = false
 vim.env.LAZY_STDPATH = ".tests"
-vim.env.LAZY_PATH = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-
 local url = "https://raw.githubusercontent.com/folke/lazy.nvim/main/bootstrap.lua"
+
 if Remote then
   load(vim.fn.system("curl -s " .. url))()
 else
@@ -14,10 +15,8 @@ else
   loadfile(bootstrap)()
 end
 
-vim.opt.rtp:prepend(".")
-
 -- Setup lazy.nvim
-require("lazy.minit").setup({
+require("lazy.minit").busted({
   spec = {
     {
       "nvim-telescope/telescope.nvim",
