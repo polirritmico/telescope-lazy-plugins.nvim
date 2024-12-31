@@ -4,7 +4,7 @@ local actions = require("telescope.actions")
 local builtin = require("telescope.builtin")
 
 ---Collection of plugin's actions and helpers functions to create your own
----@class TelescopeLazyPluginActions
+---@class TelescopeLazyPluginsActions
 local lp_actions = {}
 
 ---Append the current search into Telescope history
@@ -25,8 +25,8 @@ end
 
 ---Check if the Telescope selected entry has the `field` argument. If the field
 ---is "repo_dir", then check that the path is valid.
----@param field string LazyPluginData field of the selected entry to check.
----@return LazyPluginsData? entry - `true` when the field is found
+---@param field LazyPluginsDataField|string LazyPluginData field of the selected entry to check.
+---@return LazyPluginsData? selected_entry
 function lp_actions.get_selected_entry(field)
   local selected_entry = action_state.get_selected_entry().value ---@type LazyPluginsData
   if not selected_entry[field] or selected_entry[field] == "" then
@@ -50,7 +50,7 @@ end
 ---entry field, executes the passed `custom_function` in a protected call and
 ---returns its output.
 ---@param prompt_bufnr integer Telescope prompt buffer value
----@param field string Field of the `LazyPluginData` to validate the selected entry (before the custom_function call).
+---@param field LazyPluginsDataField Field of `LazyPluginData` to validate the selected entry (before the custom_function call).
 ---@param custom_function fun(prompt_bufnr: integer, entry: LazyPluginsData, args: table?): any Custom function to execute.
 ---@param args table? Optional custom args.
 ---@return any output The output of the custom_function, nil or the error object from pcall
@@ -77,7 +77,8 @@ function lp_actions.open(prompt_bufnr)
 end
 
 ---Custom picker action to open the plugin README file
-function lp_actions.open_readme(prompt_bufnr)
+---@param prompt_bufnr integer Telescope prompt buffer value
+function lp_actions.open_plugin_readme(prompt_bufnr)
   local entry = lp_actions.get_selected_entry("repo_dir")
   if not entry then
     return
@@ -170,6 +171,7 @@ end
 local open_url_cmd = "" ---@type string|nil
 
 ---Custom picker action to open the repo url in the default browser
+---@param prompt_bufnr integer Telescope prompt buffer value
 function lp_actions.open_repo_url(prompt_bufnr)
   local entry = lp_actions.get_selected_entry("repo_url")
   if not entry or not open_url_cmd then

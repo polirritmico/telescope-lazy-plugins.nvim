@@ -38,3 +38,12 @@
 ---@field line? integer Optional: Line number to set the view on the target file
 ---@field repo_url? string Optional: Url to open with the `open_repo_url` action
 ---@field repo_dir? string Optional: Directory path to open with the `open_repo_dir` action
+
+---@alias LazyPluginsDataField
+--- | "name" Name of the plugin showed in the picker
+--- | "full_name" Full name of the plugin repository (account/repo)
+--- | "filepath" Full file path to the plugin lua configuration
+--- | "line" Line number of the plugin definition in the lua file
+--- | "repo_url" Url to the repo
+--- | "repo_dir" Path to the local repository clone
+--- | "file" Path to the config filename showed in the picker
