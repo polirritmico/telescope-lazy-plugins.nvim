@@ -93,9 +93,7 @@ function M.clean_loaded_packages()
   end
 end
 
-function M.clean_test_fs()
-  M.fs_rmdir("")
-end
+function M.clean_test_fs() M.fs_rmdir("") end
 
 ---@param dir string
 function M.fs_rmdir(dir)
@@ -109,6 +107,24 @@ function M.fs_rmdir(dir)
     end
   end)
   vim.uv.fs_rmdir(dir)
+end
+
+---@param spec LazyPlugin
+---@param replace_plugins? boolean Replace with the spec the current lazy.nvim plugins
+function M.load_plugin_in_lazy_nvim(spec, replace_plugins)
+  replace_plugins = replace_plugins == nil and true or replace_plugins
+
+  local Config = require("lazy.core.config")
+  local Plugin = require("lazy.core.plugin")
+  Config.options.defaults.lazy = false
+
+  local new_spec = Plugin.Spec.new(spec)
+  if replace_plugins then
+    Config.plugins = new_spec.plugins
+    Plugin.update_state()
+  end
+
+  return new_spec
 end
 
 function M.P(...)
