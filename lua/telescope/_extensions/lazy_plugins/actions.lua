@@ -206,4 +206,27 @@ function lp_actions.open_repo_url(prompt_bufnr)
   end
 end
 
+---Custom picker action to show the full generated plugin options table passed
+---into the `require("plugin_name").setup(opts)` of the selected entry.
+---
+---_Note: This show function placeholders, not the actual function code_
+---@param prompt_bufnr integer Telescope prompt buffer value
+function lp_actions.open_plugin_opts(prompt_bufnr)
+  local lp_cfg_extractor = require("telescope._extensions.lazy_plugins.config_extractor")
+  lp_actions.append_to_telescope_history(prompt_bufnr)
+  local entry = lp_actions.get_selected_entry("name")
+  if not entry then
+    return
+  end
+
+  local function close_picker_fn()
+    actions.close(prompt_bufnr)
+  end
+
+  local opts = require("telescope._extensions.lazy_plugins.config") or {}
+  opts = vim.tbl_get(opts, "options")
+
+  lp_cfg_extractor.open_config_from_lazy_nvim(close_picker_fn, entry, opts)
+end
+
 return lp_actions

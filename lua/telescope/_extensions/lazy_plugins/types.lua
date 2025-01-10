@@ -35,6 +35,7 @@
 ---@field custom_entries? table<LazyPluginsCustomEntry|LazyPluginsData> Table to pass custom entries to the picker.
 ---@field live_grep? table Options to pass into the `live_grep` telescope builtin picker
 ---@field ignore_imports? string[]|table<string, boolean> Array of imports to ignore
+---@field config_viewer? LazyPluginsConfigViewer
 
 ---@class LazyPluginsCustomEntry
 ---@field name string Entry name
@@ -51,3 +52,7 @@
 --- | "repo_url" Url to the repo
 --- | "repo_dir" Path to the local repository clone
 --- | "file" Path to the config filename showed in the picker
+
+---@alias LazyPluginsConfigViewer
+--- | "float" Default. Open the plugin config in a float window.
+--- | "tab" Open the plugin config in a new tab.

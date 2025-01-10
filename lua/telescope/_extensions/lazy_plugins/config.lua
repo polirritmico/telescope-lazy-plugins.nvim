@@ -6,8 +6,9 @@ local M = {}
 ---@type TelescopeLazyPluginsConfig
 local defaults = {
   lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- This must be a valid path to the file containing the lazy opts and setup() call.
-  name_only = true, -- match only the `repo_name`, false to match the full `account/repo_name`.
-  show_disabled = true, -- also show disabled plugins from the Lazy spec.
+  name_only = true, -- Match only the `repo_name`, false to match the full `account/repo_name`.
+  show_disabled = true, -- Also show disabled plugins from the Lazy spec.
+  config_viewer = "float", -- How to open the plugin config.
   custom_entries = {}, ---@type table<LazyPluginsCustomEntry> Table to pass custom entries to the picker.
   live_grep = {}, -- Options to pass into the `live_grep` telescope builtin picker.
   ignore_imports = {}, -- Add imports you want to ignore, e.g., "lazyvim.plugins".
@@ -16,6 +17,7 @@ local defaults = {
       ["<C-g>d"] = lp_actions.open_repo_dir,
       ["<C-g>f"] = lp_actions.open_repo_find_files,
       ["<C-g>l"] = lp_actions.open_repo_live_grep,
+      ["<C-g>c"] = lp_actions.open_plugin_opts,
       ["<C-g>r"] = lp_actions.open_plugin_readme,
       ["<C-g>x"] = lp_actions.open_repo_url,
     },
@@ -23,6 +25,7 @@ local defaults = {
       ["gd"] = lp_actions.open_repo_dir,
       ["gf"] = lp_actions.open_repo_find_files,
       ["gl"] = lp_actions.open_repo_live_grep,
+      ["gc"] = lp_actions.open_plugin_opts,
       ["gr"] = lp_actions.open_plugin_readme,
       ["gx"] = lp_actions.open_repo_url,
     },
