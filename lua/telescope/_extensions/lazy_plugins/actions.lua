@@ -223,8 +223,8 @@ function lp_actions.open_plugin_opts(prompt_bufnr)
     actions.close(prompt_bufnr)
   end
 
-  local opts = require("telescope._extensions.lazy_plugins.config") or {}
-  opts = vim.tbl_get(opts, "options")
+  local lp_opts = require("telescope._extensions.lazy_plugins.config")
+  local opts = vim.tbl_get(lp_opts, "options", "actions") or {}
 
   lp_cfg_extractor.open_config_from_lazy_nvim(close_picker_fn, entry, opts)
 end
