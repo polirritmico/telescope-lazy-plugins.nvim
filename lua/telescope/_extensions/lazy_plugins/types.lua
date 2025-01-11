@@ -32,10 +32,17 @@
 ---@field name_only boolean Match only the `repo_name`, false to match the full `account/repo_name`
 ---@field picker_opts table Layout options passed into Telescope. Check `:h telescope.layout`
 ---@field show_disabled boolean Also show disabled plugins from the Lazy spec
----@field custom_entries? table<LazyPluginsCustomEntry|LazyPluginsData> Table to pass custom entries to the picker.
+---@field custom_entries? (LazyPluginsCustomEntry|LazyPluginsData)[] Table to pass custom entries to the picker.
 ---@field live_grep? table Options to pass into the `live_grep` telescope builtin picker
 ---@field ignore_imports? string[]|table<string, boolean> Array of imports to ignore
----@field config_viewer? LazyPluginsConfigViewer
+---@field actions? LazyPluginsConfigActions Actions options
+
+---@class LazyPluginsConfigActions
+---@field opts_viewer? LazyPluginsActionOptsViewer
+
+---@alias LazyPluginsActionOptsViewer
+--- | "float" Default. Open the plugin config in a float window.
+--- | "tab" Open the plugin config in a new tab.
 
 ---@class LazyPluginsCustomEntry
 ---@field name string Entry name
@@ -52,7 +59,3 @@
 --- | "repo_url" Url to the repo
 --- | "repo_dir" Path to the local repository clone
 --- | "file" Path to the config filename showed in the picker
-
----@alias LazyPluginsConfigViewer
---- | "float" Default. Open the plugin config in a float window.
---- | "tab" Open the plugin config in a new tab.

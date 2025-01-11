@@ -207,7 +207,7 @@ function lp_actions.open_repo_url(prompt_bufnr)
 end
 
 ---Custom picker action to show the full generated plugin options table passed
----into the `require("plugin_name").setup(opts)` of the selected entry.
+---into the `require("plugin_name").setup(opts)` call of the selected entry.
 ---
 ---_Note: This show function placeholders, not the actual function code_
 ---@param prompt_bufnr integer Telescope prompt buffer value
