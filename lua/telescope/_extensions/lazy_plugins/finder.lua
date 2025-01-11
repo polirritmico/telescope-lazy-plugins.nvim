@@ -222,7 +222,7 @@ function M.expand_import(spec, parent_enabled)
   elseif type(spec.import) ~= "function" and type(spec.import) ~= "string" then
     vim.notify("expand_import: spec.import is not a string", vim.log.levels.ERROR)
     return
-  elseif lp_config.options.ignore_imports[spec.import] then
+  elseif vim.tbl_get(lp_config, "options", "ignore_imports", spec.import) then
     return
   end
 
