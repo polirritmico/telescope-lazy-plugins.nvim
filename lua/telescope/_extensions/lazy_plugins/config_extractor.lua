@@ -142,7 +142,7 @@ function ConfigExtractor.open_config_from_lazy_nvim(close_picker_fn, entry, opts
   end
 
   close_picker_fn()
-  if vim.tbl_get(opts, "config_viewer") == "tab" then
+  if vim.tbl_get(opts, "opts_viewer") == "tab" then
     ConfigExtractor.create_newtab(title, content)
   else
     ConfigExtractor.create_floating_window(title, content)
