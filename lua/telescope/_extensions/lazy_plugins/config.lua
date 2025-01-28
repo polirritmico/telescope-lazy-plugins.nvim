@@ -47,7 +47,7 @@ local defaults = {
 
 M.options = M.options or {}
 
----@param opts TelescopeLazyPluginsConfig?
+---@param opts? TelescopeLazyPluginsUserConfig | TelescopeLazyPluginsConfig
 function M.setup(opts)
   M.options = vim.tbl_deep_extend("force", defaults, M.options, opts or {})
 
