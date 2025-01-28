@@ -435,6 +435,12 @@ function M.get_plugins_data(config_spec, parsed_spec, spec_path)
   return M.plugins_collection
 end
 
+---Remove the collected data to force the rebuild of the plugins_collection
+function M.reset()
+  M.plugins_collection = nil
+  M.search_history = {}
+end
+
 ---Finder to use with the Telescope API. Get the plugin data for each plugin
 ---registered on the Lazy spec.
 function M.finder(opts)
