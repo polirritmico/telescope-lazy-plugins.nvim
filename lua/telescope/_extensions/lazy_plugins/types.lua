@@ -32,7 +32,7 @@
 ---@field name_only boolean Match only the `repo_name`, false to match the full `account/repo_name`.
 ---@field picker_opts table Layout options passed into Telescope. Check `:h telescope.layout`.
 ---@field show_disabled boolean Also show disabled plugins from the Lazy spec.
----@field auto_rescan boolean Automatic rescan and rebuild the spec list when lazy detects a change in the config.
+---@field auto_rescan boolean Automatic rescan and rebuild the spec list if lazy detects a change in the config.
 ---@field custom_entries? (LazyPluginsCustomEntry|LazyPluginsData)[] Table to pass custom entries to the picker.
 ---@field live_grep? table Options to pass into the `live_grep` telescope builtin picker.
 ---@field ignore_imports? string[]|table<string, boolean> Array of imports to ignore.
@@ -44,7 +44,7 @@
 ---@field name_only? boolean Match only the `repo_name`, false to match the full `account/repo_name`.
 ---@field picker_opts? table Layout options passed into Telescope. Check `:h telescope.layout`.
 ---@field show_disabled? boolean Also show disabled plugins from the Lazy spec.
----@field auto_rescan? boolean Automatic rescan and rebuild the spec list when lazy detects a change in the config.
+---@field auto_rescan? boolean Automatic rescan and rebuild the spec list if lazy detects a change in the config.
 ---@field custom_entries? (LazyPluginsCustomEntry|LazyPluginsData)[] Table to pass custom entries to the picker.
 ---@field live_grep? table Options to pass into the `live_grep` telescope builtin picker.
 ---@field ignore_imports? string[]|table<string, boolean> Array of imports to ignore.
