@@ -23,7 +23,7 @@ local defaults = {
       ["<C-g>c"] = lp_actions.open_plugin_opts,
       ["<C-g>r"] = lp_actions.open_plugin_readme,
       ["<C-g>x"] = lp_actions.open_repo_url,
-      ["<C-g>R"] = lp_actions.reload_plugins_list,
+      ["<C-g>R"] = lp_actions.rescan_plugins,
     },
     ["n"] = {
       ["gd"] = lp_actions.open_repo_dir,
@@ -32,7 +32,7 @@ local defaults = {
       ["gc"] = lp_actions.open_plugin_opts,
       ["gr"] = lp_actions.open_plugin_readme,
       ["gx"] = lp_actions.open_repo_url,
-      ["gR"] = lp_actions.reload_plugins_list,
+      ["gR"] = lp_actions.rescan_plugins,
     },
   },
   picker_opts = {
