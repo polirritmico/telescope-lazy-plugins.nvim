@@ -229,8 +229,11 @@ function lp_actions.open_plugin_opts(prompt_bufnr)
   lp_cfg_extractor.open_config_from_lazy_nvim(close_picker_fn, entry, opts)
 end
 
+---@param prompt_bufnr? integer
 function lp_actions.reload_plugins_list(prompt_bufnr)
-  actions.close(prompt_bufnr)
+  if prompt_bufnr then
+    actions.close(prompt_bufnr)
+  end
   require("telescope._extensions.lazy_plugins.finder").reset()
   vim.notify("Regenerated Telescope Lazy Plugins list")
   require("telescope._extensions.lazy_plugins.picker")()

@@ -1,3 +1,4 @@
+---@class TestUtils
 local M = {}
 
 M.fs_root = vim.fn.fnamemodify("./.tests/fs", ":p")
@@ -125,6 +126,22 @@ function M.load_plugin_in_lazy_nvim(spec, replace_plugins)
   end
 
   return new_spec
+end
+
+---@param finder TelescopeLazyPluginsFinder
+---@param plugin LazyPluginsData
+---@return LazyPluginsData?
+function M.get_plugin_entry_from_finder_collection(finder, plugin)
+  if not vim.tbl_get(finder, "plugins_collection") then
+    return
+  end
+  plugin = type(plugin[1]) == "table" and plugin[1] or plugin
+  for _, lp_plugin in pairs(finder.plugins_collection) do
+    ---@cast lp_plugin LazyPluginsData
+    if plugin[1] == lp_plugin.name or plugin[1] == lp_plugin.full_name then
+      return lp_plugin
+    end
+  end
 end
 
 function M.P(...)

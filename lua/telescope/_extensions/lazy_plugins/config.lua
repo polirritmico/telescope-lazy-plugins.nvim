@@ -68,6 +68,16 @@ function M.setup(opts)
     M.options.ignore_imports = M.array_to_lookup_table(M.options.ignore_imports)
   end
 
+  if M.options.auto_reload then
+    vim.api.nvim_create_autocmd("LazyReload", {
+      desc = "Reload TelescopeLazyPlugins specs",
+      callback = function()
+        require("telescope._extensions.lazy_plugins.actions").reload_plugins_list()
+        vim.notify("Reload Lazy Plugins")
+      end,
+    })
+  end
+
   lp_highlights.setup()
 end
 

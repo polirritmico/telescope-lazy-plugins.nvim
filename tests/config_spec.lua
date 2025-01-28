@@ -1,13 +1,9 @@
 local utils = require("tests.utils")
 
 describe("[Config]", function()
-  before_each(function()
-    stub(vim, "notify")
-  end)
+  before_each(function() stub(vim, "notify") end)
 
-  teardown(function()
-    vim.notify:revert()
-  end)
+  teardown(function() vim.notify:revert() end)
 
   it("Check defaults correctly constructed", function()
     local tlp_cfg = require("telescope._extensions.lazy_plugins.config")
@@ -37,7 +33,7 @@ describe("[Config]", function()
   it("create_custom_entries_from_user_config", function()
     local filepath = utils.path("foo/custom.lua")
     local case = {
-      ---@class LazyPluginsCustomEntry
+      ---@type LazyPluginsCustomEntry
       {
         name = "Foo",
         filepath = utils.path("foo/custom.lua"),
