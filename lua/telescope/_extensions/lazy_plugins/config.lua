@@ -8,6 +8,7 @@ local defaults = {
   lazy_config = vim.fn.stdpath("config") .. "/lua/config/lazy.lua", -- This must be a valid path to the file containing the lazy opts and setup() call.
   name_only = true, -- Match only the `repo_name`, false to match the full `account/repo_name`.
   show_disabled = true, -- Also show disabled plugins from the Lazy spec.
+  auto_rescan = true, -- Automatic rescan and rebuild the spec list when lazy detects a change in the config.
   custom_entries = {}, -- Table to pass custom entries to the picker.
   live_grep = {}, -- Options to pass into the `live_grep` telescope builtin picker.
   ignore_imports = {}, -- Add imports you want to ignore, e.g., "lazyvim.plugins".
@@ -68,14 +69,8 @@ function M.setup(opts)
     M.options.ignore_imports = M.array_to_lookup_table(M.options.ignore_imports)
   end
 
-  if M.options.auto_reload then
-    vim.api.nvim_create_autocmd("LazyReload", {
-      desc = "Reload TelescopeLazyPlugins specs",
-      callback = function()
-        require("telescope._extensions.lazy_plugins.actions").reload_plugins_list()
-        vim.notify("Reload Lazy Plugins")
-      end,
-    })
+  if M.options.auto_rescan then
+    M.attach_auto_rescan_autocmd()
   end
 
   lp_highlights.setup()
@@ -142,6 +137,17 @@ function M.create_custom_entries_from_user_config()
     table.insert(custom_entries, entry)
   end
   return custom_entries
+end
+
+function M.attach_auto_rescan_autocmd()
+  vim.api.nvim_create_autocmd("User", {
+    desc = "Rescan and rebuild TelescopeLazyPlugins specs when changes are detected",
+    pattern = "LazyReload",
+    group = vim.api.nvim_create_augroup("LazyPluginsAutoRescan", { clear = false }),
+    callback = function()
+      require("telescope._extensions.lazy_plugins.finder").reset()
+    end,
+  })
 end
 
 return M
