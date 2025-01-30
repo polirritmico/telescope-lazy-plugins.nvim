@@ -1,4 +1,4 @@
-*telescope-lazy-plugins.nvim.txt*For Neovim >= 0.9Last change: 2025 January 28
+*telescope-lazy-plugins.nvim.txt*For Neovim >= 0.9Last change: 2025 January 30
 
 ==============================================================================
 Table of Contents              *telescope-lazy-plugins.nvim-table-of-contents*
@@ -116,22 +116,23 @@ Check the |telescope-lazy-plugins.nvim-configuration-examples| and the
 Add the options in the `telescope.nvim` opts `extensions` table inside
 `lazy_plugins` (|telescope-lazy-plugins.nvim-configuration-examples|).
 
-  -----------------------------------------------------------------------------------------------
+  ------------------------------------------------------------------------------------------------
   Option                Type      Description
-  --------------------- --------- ---------------------------------------------------------------
-  lazy_config           string    Path to the lua file containing the lazy options passed to the
-                                  setup() call. This is the first-level imported file and the one
-                                  you would be directed by searching lazy.nvim. Should be set if
-                                  the lazy.nvim config file path differs from the defaults.
+  --------------------- --------- ----------------------------------------------------------------
+  lazy_config           string    Path to the lua file containing the lazy.nvim plugins and/or
+                                  opts passed to the require("lazy").setup(...) call. This is the
+                                  first-level imported file and the one you would be directed by
+                                  searching lazy.nvim. Should be set if the lazy.nvim config file
+                                  path differs from the defaults.
 
   name_only             boolean   Match only the repository name. Set to false to match the full
                                   account/repo_name.
 
   show_disabled         boolean   Also show disabled plugins from the Lazy spec.
 
-  auto_rescan           boolean   Automatically rescans and rebuilds the spec list if Lazy
-                                  detects a change in the config (the rebuild occurs when the
-                                  picker is reopened).
+  auto_rescan           boolean   Automatically rescans and rebuilds the spec list if Lazy detects
+                                  a change in the config (the rebuild occurs when the picker is
+                                  reopened).
 
   ignore_imports        table     Array-like string table with modules to ignore. Useful for
                                   config distributions like LazyVim to avoid importing the inner
@@ -140,8 +141,8 @@ Add the options in the `telescope.nvim` opts `extensions` table inside
   picker_opts           table     Telescope layout options passed to the picker. Check
                                   :h telescope.layout.
 
-  mappings              table     Keymaps attached to the picker. See :h telescope.mappings.
-                                  Also, ‘Custom Actions’ could be added.
+  mappings              table     Keymaps attached to the picker. See :h telescope.mappings. Also,
+                                  ‘Custom Actions’ could be added.
 
   live_grep             table     Custom options to be used by the live_grep picker action
                                   (<C-g>l). See :h telescope.builtin.live_grep.
@@ -151,7 +152,7 @@ Add the options in the `telescope.nvim` opts `extensions` table inside
 
   custom_entries        table     A collection of custom entries to add into the picker. See the
                                   ‘Custom Entries’ section.
-  -----------------------------------------------------------------------------------------------
+  ------------------------------------------------------------------------------------------------
 
 MAPPINGS                                *telescope-lazy-plugins.nvim-mappings*
 
