@@ -41,10 +41,13 @@ function M.line_number_search(repo_name, filepath)
   local from_line = M.get_last_search_history(repo_name, filepath) or 1
   local current_line = 1
 
-  for line_str in io.lines(filepath) do
+  local file, err = io.open(filepath)
+  assert(file, err)
+  for line_str in file:lines() do
     if current_line >= from_line then
       if find(line_str, dq_search, 1, true) or find(line_str, sq_search, 1, true) then
         M.add_search_history(repo_name, filepath, current_line + 1)
+        file:close()
         return current_line, true
       end
     end
