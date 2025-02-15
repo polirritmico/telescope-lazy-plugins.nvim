@@ -1,5 +1,5 @@
 local finder = require("telescope._extensions.lazy_plugins.finder")
-local utils = require("tests.utils")
+local utils = require("tests.utils") --[[@as LazyPluginsTestUtils]]
 
 describe("[finder.line_number_search]", function()
   it("should find single and double quotes", function()

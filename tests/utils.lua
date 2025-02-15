@@ -1,4 +1,4 @@
----@class TestUtils
+---@class LazyPluginsTestUtils
 local M = {}
 
 M.fs_root = vim.fn.fnamemodify("./.tests/fs", ":p")

@@ -1,5 +1,5 @@
 local finder = require("telescope._extensions.lazy_plugins.finder")
-local utils = require("tests.utils") ---@type TestUtils
+local utils = require("tests.utils") ---@type LazyPluginsTestUtils
 
 describe("actions.reset_plugins_list", function()
   it("should remove history and collected new plugins", function()
