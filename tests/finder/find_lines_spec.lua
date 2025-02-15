@@ -61,4 +61,47 @@ describe("[finder.line_number_search]", function()
     assert.False(found)
     assert.equal(expected, out)
   end)
+
+  it("should not raise 'too many open files error' (>256|512 files)", function()
+    ---@param total_specs integer Number of mock specs to generate
+    ---@param case_path string Path to write the generated spec files
+    ---@return table
+    local function generate_mock_specs_and_write_files(total_specs, case_path)
+      local inner_spec_opts = {}
+      for i = 1, 10, 1 do
+        inner_spec_opts["opt" .. i] = i
+      end
+
+      local mock_specs = {}
+      for i = 1, total_specs do
+        local spec_filepath = string.format("%s/spec-%s.lua", case_path, i)
+        local bar_spec = { "foo/bar" .. i, opts = inner_spec_opts }
+        local buz_spec = { "foo/buz", enabled = true }
+
+        mock_specs[#mock_specs + 1] = { bar_spec, spec_filepath }
+        mock_specs[#mock_specs + 1] = { buz_spec, spec_filepath }
+
+        utils.write_plugin_spec_file({ bar_spec, buz_spec }, spec_filepath)
+      end
+      return mock_specs
+    end
+
+    local total_specs = 600
+    local case_path = utils.path("multiple-specs")
+    local expected_foo_line = 14
+
+    local mock_specs = generate_mock_specs_and_write_files(total_specs, case_path)
+    local counter = 0
+    for _, spec in pairs(mock_specs) do
+      local plugin = finder.extract_plugin_info(spec[1], spec[2])
+
+      if string.find(plugin.name, "bar.*") then
+        counter = counter + 1
+        assert.equal("bar" .. counter, plugin.name)
+      else
+        assert.equal(expected_foo_line, plugin.line)
+      end
+    end
+    assert.equal(total_specs, counter)
+  end)
 end)
