@@ -5,18 +5,20 @@ local P = utils.P
 describe("[finder enabled/disabled]", function()
   before_each(function() utils.clean_test_fs() end)
 
+  local base_case = {
+    { "enabled/case2", cond = true, enabled = true },
+    { "enabled/case3", cond = true, enabled = false },
+    { "enabled/case4", cond = true, enabled = nil },
+    { "enabled/case5", cond = false, enabled = true },
+    { "enabled/case6", cond = false, enabled = false },
+    { "enabled/case7", cond = false, enabled = nil },
+    { "enabled/case8", cond = nil, enabled = true },
+    { "enabled/case9", cond = nil, enabled = false },
+    { "enabled/case10", cond = nil, enabled = nil },
+  }
+
   it("plugin should be enabled when cond and enabled are not false", function()
-    local case = {
-      { "enabled/case1", cond = true, enabled = true },
-      { "enabled/case2", cond = true, enabled = false },
-      { "enabled/case3", cond = true, enabled = nil },
-      { "enabled/case4", cond = false, enabled = true },
-      { "enabled/case5", cond = false, enabled = false },
-      { "enabled/case6", cond = false, enabled = nil },
-      { "enabled/case7", cond = nil, enabled = true },
-      { "enabled/case8", cond = nil, enabled = false },
-      { "enabled/case9", cond = nil, enabled = nil },
-    }
+    local case = vim.deepcopy(base_case)
     local expected = { true, false, true, false, false, false, true, false, true }
 
     finder.fragments = {}
@@ -27,24 +29,13 @@ describe("[finder enabled/disabled]", function()
     end
   end)
 
-  local base_parent_case = {
-    "enabled/parent",
-    dependencies = {
-      { "enabled/case2", cond = true, enabled = true },
-      { "enabled/case3", cond = true, enabled = false },
-      { "enabled/case4", cond = true, enabled = nil },
-      { "enabled/case5", cond = false, enabled = true },
-      { "enabled/case6", cond = false, enabled = false },
-      { "enabled/case7", cond = false, enabled = nil },
-      { "enabled/case8", cond = nil, enabled = true },
-      { "enabled/case9", cond = nil, enabled = false },
-      { "enabled/case10", cond = nil, enabled = nil },
-    },
-  }
-
   it("should be disable when parent is false", function()
     local case_filepath = utils.path("foo/parent_disabled.lua")
-    local case = vim.deepcopy(base_parent_case)
+    local case = {
+      "enabled/parent",
+      dependencies = vim.deepcopy(base_case),
+    }
+
     case[1] = case[1] .. "-disabled"
     case.cond = true
     case.enabled = function() return false end
