@@ -99,7 +99,7 @@ function PluginSpecExtractor.generate_plugin_opts_buf_content(plugin_opts, entry
     content[i] = line:gsub(pattern, new_string)
   end
   local comment = "-- %s options passed into `<plugin_module>.setup(opts)` by lazy.nvim"
-  local info = "-- (Use `q` for close)"
+  local info = "-- (Use `q` to close)"
   table.insert(content, 1, info)
   table.insert(content, 1, string.format(comment, entry.full_name))
 

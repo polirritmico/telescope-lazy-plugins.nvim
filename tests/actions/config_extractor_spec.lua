@@ -15,7 +15,7 @@ describe("actions.extract_plugin_config", function()
     local case_entry = { name = "plugin-opts", full_name = "buz/plugin-opts" }
     local expected = {
       "-- buz/plugin%-opts options passed into `<plugin_module>%.setup%(opts%)` by lazy%.nvim",
-      "-- %(Use `q` for close%)",
+      "-- %(Use `q` to close%)",
       "return {",
       "  bar = 123",
       "  buz = function%(%) end, %-%- <function #1>",
