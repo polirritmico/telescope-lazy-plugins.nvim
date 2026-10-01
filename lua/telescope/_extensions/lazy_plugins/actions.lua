@@ -179,18 +179,18 @@ function lp_actions.open_repo_url(prompt_bufnr)
   end
 
   if open_url_cmd == "" then
-    if vim.fn.executable("xdg-open") == 1 then
-      open_url_cmd = "xdg-open"
-    elseif vim.fn.executable("open") == 1 then
-      open_url_cmd = "open"
-    elseif vim.fn.executable("start") == 1 then
-      open_url_cmd = "start"
-    elseif vim.fn.executable("wslview") == 1 then
+    if vim.fn.has("wsl") == 1 then
       open_url_cmd = "wslview"
+    elseif vim.fn.has("linux") == 1 then
+      open_url_cmd = "xdg-open"
+    elseif vim.fn.has("mac") == 1 then
+      open_url_cmd = "open"
+    elseif vim.fn.has("win32") == 1 then
+      open_url_cmd = "start"
     else
       open_url_cmd = nil
       vim.notify(
-        "Error: Missing supported url handler (xdg-open, open, start or wslview).",
+        "Error: Unsupported operating system for opening URLs.",
         vim.log.levels.ERROR,
         { title = "Telescope Lazy Plugins" }
       )
